@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  db-local:
+    extends:
+      file: docker-compose.common.yml
+      service: db
+    container_name: dev-postgres
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  db-tests:
+    extends:
+      file: docker-compose.common.yml
+      service: db
+    container_name: tests-postgres
+    ports:
+      - 5433:5432
+
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none' # disable saving logs
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
