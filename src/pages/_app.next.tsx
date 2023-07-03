@@ -51,7 +51,7 @@ const App = ({
       </Head>
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} />
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
           <CssBaseline />
           <ThemeProvider theme={theme}>
             <Layout>
