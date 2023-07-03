@@ -55,7 +55,7 @@
     "jest-environment-jsdom": "^29.5.0",
     "msw": "^1.2.2",
     "prettier": "^2.8.8",
-    "prisma": "^4.15.0",
+    "prisma": "^4.16.2",
     "typescript": "^5.1.6"
   }
 }
