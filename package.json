@@ -29,7 +29,7 @@
     "@trpc/client": "^10.33.0",
     "@trpc/server": "^10.33.0",
     "immer": "^10.0.2",
-    "next": "^13.4.5",
+    "next": "^13.4.7",
     "next-auth": "^4.22.1",
     "nodemailer": "^6.9.3",
     "react": "^18.2.0",
