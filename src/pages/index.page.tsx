@@ -1,14 +1,15 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import useGreeting from '@lib/greetings/useGreeting';
 import WithAuthentication from '@components/WithAuthentication';
 
 const Home: NextPage = () => {
-  const { status, data } = useSession();
+  const { data } = useSession();
   const { data: greeting } = useGreeting({
     name: data?.user?.email || '',
   });
@@ -23,16 +24,11 @@ const Home: NextPage = () => {
         <Typography variant="h4" component="h1">
           {greeting ? greeting.greeting : 'Hello'}
         </Typography>
-        {status === 'unauthenticated' && (
-          <Button color="primary" variant="contained" onClick={() => signIn()}>
-            Sign in
-          </Button>
-        )}
-        {status === 'authenticated' && (
+        <Box>
           <Button color="primary" variant="contained" onClick={() => signOut()}>
             Sign out
           </Button>
-        )}
+        </Box>
       </Stack>
     </>
   );
