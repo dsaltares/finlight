@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { Session } from 'next-auth';
 import CssBaseline from '@mui/material/CssBaseline';
+import Head from 'next/head';
 
 type PageProps = {
   session: Session | null;
@@ -35,13 +36,21 @@ const App = ({
   );
 
   return (
-    <SessionProvider session={session}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <CssBaseline />
-        <Component {...pageProps} />
-      </QueryClientProvider>
-    </SessionProvider>
+    <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+      </Head>
+      <SessionProvider session={session}>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <CssBaseline />
+          <Component {...pageProps} />
+        </QueryClientProvider>
+      </SessionProvider>
+    </>
   );
 };
 
