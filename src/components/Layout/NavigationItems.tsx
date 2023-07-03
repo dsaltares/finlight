@@ -10,6 +10,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Link from 'next/link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import { useRouter } from 'next/router';
 import Routes from '@lib/routes';
 
 const items = [
@@ -45,19 +46,26 @@ const items = [
   },
 ];
 
-const NavigationItems = () => (
-  <List>
-    {items.map((item) => (
-      <ListItem key={item.href} disablePadding>
-        <ListItemButton component={Link} href={item.href}>
-          <ListItemIcon>
-            <item.icon />
-          </ListItemIcon>
-          <ListItemText>{item.label}</ListItemText>
-        </ListItemButton>
-      </ListItem>
-    ))}
-  </List>
-);
+const NavigationItems = () => {
+  const { pathname } = useRouter();
+  return (
+    <List>
+      {items.map((item) => (
+        <ListItem key={item.href} disablePadding>
+          <ListItemButton
+            component={Link}
+            href={item.href}
+            selected={pathname.startsWith(item.href)}
+          >
+            <ListItemIcon>
+              <item.icon />
+            </ListItemIcon>
+            <ListItemText>{item.label}</ListItemText>
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
+  );
+};
 
 export default NavigationItems;

@@ -41,10 +41,13 @@ const App = ({
   return (
     <>
       <Head>
+        <title>Budget</title>
+        <meta name="description" content="Budgetting app" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
