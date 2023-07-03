@@ -1,13 +1,9 @@
 import Stack from '@mui/material/Stack';
+import NavigationItems from './NavigationItems';
 
 const SidebarContent = () => (
   <Stack justifyContent="space-between" height="100%" padding={1}>
-    <div>
-      <p>Hello</p>
-    </div>
-    <div>
-      <p>Bye</p>
-    </div>
+    <NavigationItems />
   </Stack>
 );
 
