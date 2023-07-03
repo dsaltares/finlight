@@ -10,6 +10,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { Session } from 'next-auth';
 import CssBaseline from '@mui/material/CssBaseline';
 import Head from 'next/head';
+import Layout from '@components/Layout';
 
 type PageProps = {
   session: Session | null;
@@ -47,7 +48,9 @@ const App = ({
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={false} />
           <CssBaseline />
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </QueryClientProvider>
       </SessionProvider>
     </>
