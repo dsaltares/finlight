@@ -10,10 +10,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import Link from 'next/link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 import Routes from '@lib/routes';
 import useAvatar from '@lib/useAvatar';
 import useMenu from '@lib/useMenu';
-import { Typography } from '@mui/material';
 
 const buttonId = 'user-menu-button';
 const menuId = 'user-menu';
