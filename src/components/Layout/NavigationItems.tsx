@@ -49,7 +49,7 @@ const items = [
 const NavigationItems = () => {
   const { pathname } = useRouter();
   return (
-    <List>
+    <List disablePadding>
       {items.map((item) => (
         <ListItem key={item.href} disablePadding>
           <ListItemButton
