@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Routes from '@lib/routes';
 import useAvatar from '@lib/useAvatar';
 import useMenu from '@lib/useMenu';
+import { Typography } from '@mui/material';
 
 const buttonId = 'user-menu-button';
 const menuId = 'user-menu';
@@ -62,7 +63,7 @@ const UserMenu = () => {
           <Avatar sx={{ backgroundColor: color }} src={src}>
             {letter}
           </Avatar>
-          {name}
+          <Typography variant="body1">{name}</Typography>
         </Stack>
       </Button>
       <Menu
