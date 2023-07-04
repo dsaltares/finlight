@@ -4,37 +4,13 @@ import path from 'path';
 import startOfYear from 'date-fns/startOfYear';
 import addYears from 'date-fns/addYears';
 import addDays from 'date-fns/addDays';
-import isTomorrow from 'date-fns/isTomorrow';
+import isToday from 'date-fns/isToday';
 import format from 'date-fns/format';
 import chunk from 'lodash.chunk';
 import fetch from 'node-fetch';
-import z from 'zod';
+import { PolygonGroupedDailyFX } from './types';
 
 const ratesPath = path.join('data', 'exchangeRates');
-
-const PolygonGroupedDailyFX = z.object({
-  adjusted: z.boolean(),
-  count: z.number().optional(),
-  queryCount: z.number(),
-  resultsCount: z.number(),
-  status: z.literal('OK'),
-  request_id: z.string(),
-  results: z
-    .array(
-      z.object({
-        T: z.string(),
-        c: z.number(),
-        h: z.number(),
-        l: z.number(),
-        n: z.number(),
-        o: z.number(),
-        t: z.number(),
-        v: z.number(),
-        vw: z.number().optional(),
-      })
-    )
-    .optional(),
-});
 
 const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
@@ -44,7 +20,7 @@ const getDatesToFetch = () => {
   const dates: Date[] = [];
   for (
     let date = startOfYear(addYears(new Date(), -1));
-    !isTomorrow(date);
+    !isToday(date);
     date = addDays(date, 1)
   ) {
     const fileExists = fs.existsSync(
@@ -76,14 +52,23 @@ const fetchExchangeRatesForDate = async (date: Date) => {
   }
 };
 
+const rateLimit = async <T>(
+  data: T[],
+  fn: (item: T) => Promise<void>,
+  concurrency: number,
+  timeUnitMs: number
+) => {
+  const chunks = chunk(data, concurrency);
+  for (const chunk of chunks) {
+    await Promise.all(chunk.map(fn));
+    console.log(`Waiting ${timeUnitMs / 1000} seconds...`);
+    await wait(timeUnitMs);
+  }
+};
+
 const fetchExchangeRates = async () => {
   const dates = getDatesToFetch();
-  const dateChunks = chunk(dates, 5);
-  for (const dateChunk of dateChunks) {
-    await Promise.all(dateChunk.map(fetchExchangeRatesForDate));
-    console.log('Waiting 1 minute...');
-    await wait(60 * 1000);
-  }
+  await rateLimit(dates, fetchExchangeRatesForDate, 5, 60 * 1000);
 };
 
 void fetchExchangeRates();
