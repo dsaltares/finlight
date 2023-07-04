@@ -1,7 +1,7 @@
 name: Update exchange rates
 on:
   schedule:
-    - cron: '* * * * *'
+    - cron: '30 12 * * *' # at 12.30 every day
 
 jobs:
   updateExchangeRates:
