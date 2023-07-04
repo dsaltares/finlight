@@ -15,8 +15,8 @@
     "test": "yarn test:unit && yarn test:integration",
     "test:unit": "jest -c jest.unit.config.js",
     "test:integration": "dotenv -e .env.tests prisma migrate dev && jest -c jest.integration.config.js ",
-    "fetchExchangeRates": "dotenv -e .env ts-node ./src/scripts/fetchExchangeRates.ts",
-    "importExchangeRates": "dotenv -e .env ts-node ./src/scripts/importExchangeRates.ts"
+    "fetchExchangeRates": "dotenv -e .env tsx ./src/scripts/fetchExchangeRates.ts",
+    "importExchangeRates": "dotenv -e .env tsx ./src/scripts/importExchangeRates.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -30,10 +30,10 @@
     "@tanstack/react-query-devtools": "^4.19.0",
     "@trpc/client": "^10.33.0",
     "@trpc/server": "^10.33.0",
-    "immer": "^10.0.2",
-    "next": "^13.4.7",
     "date-fns": "^2.30.0",
+    "immer": "^10.0.2",
     "lodash.chunk": "^4.2.0",
+    "next": "^13.4.7",
     "next-auth": "^4.22.1",
     "node-fetch": "2",
     "nodemailer": "^6.9.3",
@@ -46,9 +46,9 @@
     "@testing-library/react": "^14.0.0",
     "@types/lodash.chunk": "^4.2.7",
     "@types/node": "^20.3.1",
+    "@types/node-fetch": "^2.6.4",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
-    "@types/node-fetch": "^2.6.4",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "comment-json": "^4.2.3",
@@ -63,7 +63,8 @@
     "msw": "^1.2.2",
     "prettier": "^2.8.8",
     "prisma": "^4.16.2",
-    "typescript": "^5.1.6",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "tsx": "^3.12.7",
+    "typescript": "^5.1.6"
   }
 }

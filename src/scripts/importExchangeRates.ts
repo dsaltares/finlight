@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
 import fs from 'fs';
 import path from 'path';
-import { PrismaClient } from '@prisma/client';
-import { PolygonGroupedDailyFX } from './types';
-
-const prisma = new PrismaClient();
+import prisma from '@server/prisma';
+import { PolygonGroupedDailyFX } from '@lib/polygon';
 
 const ratesPath = path.join('data', 'exchangeRates');
 
@@ -14,9 +12,10 @@ const getFiles = () => {
 };
 
 const importExchangeRatesForFile = async (file: string) => {
-  const rates =
+  const rates = (
     PolygonGroupedDailyFX.parse(JSON.parse(fs.readFileSync(file, 'utf8')))
-      .results || [];
+      .results || []
+  ).filter((rate) => rate.T.split(':')[1].startsWith('EUR'));
   const date = new Date(path.basename(file, '.json'));
   console.log(`Importing ${rates.length} rates for ${date}`);
   await prisma.exchangeRate.createMany({

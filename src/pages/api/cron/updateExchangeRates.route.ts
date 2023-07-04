@@ -2,32 +2,8 @@
 import format from 'date-fns/format';
 import startOfYesterday from 'date-fns/startOfYesterday';
 import type { NextApiHandler } from 'next';
-import z from 'zod';
 import prisma from '@server/prisma';
-
-export const PolygonGroupedDailyFX = z.object({
-  adjusted: z.boolean(),
-  count: z.number().optional(),
-  queryCount: z.number(),
-  resultsCount: z.number(),
-  status: z.literal('OK'),
-  request_id: z.string(),
-  results: z
-    .array(
-      z.object({
-        T: z.string(),
-        c: z.number(),
-        h: z.number(),
-        l: z.number(),
-        n: z.number(),
-        o: z.number(),
-        t: z.number(),
-        v: z.number(),
-        vw: z.number().optional(),
-      })
-    )
-    .optional(),
-});
+import { PolygonGroupedDailyFX } from '@lib/polygon';
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== 'POST') {
@@ -46,8 +22,9 @@ const handler: NextApiHandler = async (req, res) => {
   const response = await fetch(
     `https://api.polygon.io/v2/aggs/grouped/locale/global/market/fx/${formattedDate}?adjusted=true&apiKey=${process.env.POLYGON_API_KEY}`
   );
-  const rates =
-    PolygonGroupedDailyFX.parse(await response.json()).results || [];
+  const rates = (
+    PolygonGroupedDailyFX.parse(await response.json()).results || []
+  ).filter((rate) => rate.T.split(':')[1].startsWith('EUR'));
   console.log(`Saving ${rates.length} rates for ${formattedDate}`);
   await prisma.exchangeRate.createMany({
     data: rates.map((rate) => ({

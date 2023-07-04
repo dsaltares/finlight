@@ -8,7 +8,7 @@ import isToday from 'date-fns/isToday';
 import format from 'date-fns/format';
 import chunk from 'lodash.chunk';
 import fetch from 'node-fetch';
-import { PolygonGroupedDailyFX } from './types';
+import { PolygonGroupedDailyFX } from '@lib/polygon';
 
 const ratesPath = path.join('data', 'exchangeRates');
 
