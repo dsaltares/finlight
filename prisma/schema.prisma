@@ -74,16 +74,16 @@ model ExchangeRate {
 }
 
 model BankAccount {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   userId            String
   name              String
-  initialBalance    Float    @default(0)
-  balance           Float    @default(0)
+  initialBalance    Float     @default(0)
+  balance           Float     @default(0)
   currency          String
   csvImportPresetId String?
-  deleted           Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   csvImportPreset CSVImportPreset? @relation(fields: [csvImportPresetId], references: [id], onDelete: SetNull)
@@ -93,12 +93,13 @@ model BankAccount {
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  name      String
-  userId    String
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id     String @id @default(cuid())
+  name   String
+  userId String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
@@ -107,15 +108,15 @@ model Category {
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   amount      Float
-  date        DateTime @default(now())
-  description String   @default("")
+  date        DateTime  @default(now())
+  description String    @default("")
   accountId   String
   categoryId  String?
-  deleted     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
   account  BankAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
   category Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -143,9 +144,9 @@ model CSVImportPreset {
   rowsToSkipStart Int              @default(0)
   rowsToSkipEnd   Int              @default(0)
 
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   accounts BankAccount[]
