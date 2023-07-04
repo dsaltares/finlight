@@ -38,13 +38,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id               String            @id @default(cuid())
+  name             String?
+  email            String?           @unique
+  emailVerified    DateTime?
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  bankAccounts     BankAccount[]
+  categories       Category[]
+  cSVImportPresets CSVImportPreset[]
 }
 
 model VerificationToken {
@@ -53,4 +56,97 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model ExchangeRate {
+  id     String   @id @default(cuid())
+  ticker String
+  open   Float
+  high   Float
+  low    Float
+  close  Float
+  date   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ticker, date])
+}
+
+model BankAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  name              String
+  initialBalance    Float    @default(0)
+  balance           Float    @default(0)
+  currency          String
+  csvImportPresetId String?
+  deleted           Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  csvImportPreset CSVImportPreset? @relation(fields: [csvImportPresetId], references: [id], onDelete: SetNull)
+  transactions    Transaction[]
+
+  @@unique([userId, name])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([userId, name])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  amount      Float
+  date        DateTime @default(now())
+  description String   @default("")
+  accountId   String
+  categoryId  String?
+  deleted     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  account  BankAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+}
+
+enum CSVImportField {
+  Date
+  Amount
+  Withdrawal
+  Deposit
+  Fee
+  Description
+  Ignore
+}
+
+model CSVImportPreset {
+  id     String @id @default(cuid())
+  name   String
+  userId String
+
+  fields          CSVImportField[]
+  dateFormat      String
+  delimiter       String
+  decimal         String
+  rowsToSkipStart Int              @default(0)
+  rowsToSkipEnd   Int              @default(0)
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accounts BankAccount[]
 }
