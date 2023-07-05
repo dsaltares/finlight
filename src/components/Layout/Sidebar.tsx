@@ -33,12 +33,14 @@ const Sidebar = ({ mobileOpen, onClose }: Props) => {
   ) : (
     <Box
       component="nav"
-      sx={{ width: { sm: DrawerWidth }, flexShrink: { sm: 0 } }}
+      sx={{
+        width: { sm: DrawerWidth },
+        flexShrink: { sm: 0 },
+      }}
     >
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', md: 'block' },
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',

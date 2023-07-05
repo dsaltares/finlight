@@ -14,7 +14,7 @@ const SidebarLayout = ({ children }: PropsWithChildren) => {
       <Stack
         sx={{
           flexGrow: 1,
-          width: { sm: `calc(100% - ${DrawerWidth}px)` },
+          width: `calc(100% - ${DrawerWidth}px)`,
         }}
       >
         <MobileHeader onOpenSidebar={handleDrawerToggle} />

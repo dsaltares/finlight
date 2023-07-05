@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export const dateSchema = z.union([z.string(), z.date()]);
+
 export const Account = z.object({
   id: z.string(),
   name: z.string(),
@@ -7,8 +9,8 @@ export const Account = z.object({
   balance: z.number(),
   currency: z.string(),
   csvImportPresetId: z.string().nullable(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
 });
 
 export const GetAccountsInput = z.void();

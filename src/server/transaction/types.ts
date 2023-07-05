@@ -1,14 +1,16 @@
 import { z } from 'zod';
 
+export const dateSchema = z.union([z.string(), z.date()]);
+
 export const Transaction = z.object({
   id: z.string(),
   amount: z.number(),
-  date: z.date(),
+  date: dateSchema,
   description: z.string(),
   categoryId: z.string().nullable(),
   accountId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
 });
 
 export const GetTransactionsInput = z.object({
