@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 /* eslint-disable import/export */
-import React, { useState, type PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { render } from '@testing-library/react';
 import { SessionProvider } from 'next-auth/react';
 import type { NextRouter } from 'next/router';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import type { Session } from 'next-auth';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { rest } from 'msw';
 import type { TRPCError } from '@trpc/server';
+import client from './api';
 
 const customRender = (
   ui: React.ReactElement,
@@ -21,40 +21,18 @@ type ProviderData = {
 };
 
 const createProviders = ({ session, router }: ProviderData) => {
-  const Providers = ({ children }: PropsWithChildren) => {
-    const [queryClient] = useState(
-      () =>
-        new QueryClient({
-          defaultOptions: {
-            queries: {
-              retry: false,
-            },
-            mutations: {
-              retry: false,
-            },
-          },
-          logger: {
-            log: console.log,
-            warn: console.warn,
-            error: () => {},
-          },
-        })
-    );
-    return (
-      <RouterContext.Provider value={{ ...mockRouter, ...(router || {}) }}>
-        <SessionProvider
-          session={session}
-          basePath="http://localhost:3000/api/auth"
-        >
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </SessionProvider>
-      </RouterContext.Provider>
-    );
-  };
+  const Providers = ({ children }: PropsWithChildren) => (
+    <RouterContext.Provider value={{ ...mockRouter, ...(router || {}) }}>
+      <SessionProvider
+        session={session}
+        basePath="http://localhost:3000/api/auth"
+      >
+        {children}
+      </SessionProvider>
+    </RouterContext.Provider>
+  );
 
-  return Providers;
+  return client.withTRPC(Providers);
 };
 
 export const mockRouter: NextRouter = {

@@ -1,4 +1,7 @@
-import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+/* eslint-disable no-console */
+import { httpBatchLink } from '@trpc/client';
+import { createTRPCNext } from '@trpc/next';
+import type { QueryClientConfig } from '@tanstack/react-query';
 import type { AppRouter } from '@server/router';
 
 const getBaseUrl = (): string => {
@@ -15,13 +18,50 @@ const getBaseUrl = (): string => {
   return `http://localhost:${process.env.PORT ?? 3000}`;
 };
 
-const client = createTRPCProxyClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: `${getBaseUrl()}/api/trpc`,
-      maxURLLength: 2083,
-    }),
-  ],
+const queryClientConfig: QueryClientConfig = {
+  defaultOptions: {
+    queries: {
+      staleTime: 1 * 60 * 1000, // 1 minute
+      cacheTime: 12 * 60 * 60 * 1000, // 12 hours
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: 'always',
+      refetchOnMount: true,
+      keepPreviousData: true,
+    },
+  },
+};
+
+const testingQueryClientConfig: QueryClientConfig = {
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    error: () => {},
+  },
+};
+
+const client = createTRPCNext<AppRouter>({
+  config() {
+    return {
+      links: [
+        httpBatchLink({
+          url: `${getBaseUrl()}/api/trpc`,
+          maxURLLength: 2083,
+        }),
+      ],
+      queryClientConfig:
+        process.env.IS_TEST_ENV === 'true'
+          ? testingQueryClientConfig
+          : queryClientConfig,
+    };
+  },
 });
 
 export default client;
