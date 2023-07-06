@@ -15,15 +15,16 @@ import Routes from '@lib/routes';
 
 const items = [
   {
-    label: 'Transactions',
-    href: Routes.transactions,
-    icon: ReceiptLongIcon,
-  },
-  {
     label: 'Accounts',
     href: Routes.accounts,
     icon: AccountBalanceIcon,
   },
+  {
+    label: 'Transactions',
+    href: Routes.transactions,
+    icon: ReceiptLongIcon,
+  },
+
   {
     label: 'Categories',
     href: Routes.categories,

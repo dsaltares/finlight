@@ -31,7 +31,10 @@ import type { Transaction } from '@server/transaction/types';
 import { formatAmount, formatDate } from '@lib/format';
 import useDialogForId from '@lib/useDialogForId';
 import useDeleteTransaction from '@lib/transactions/useDeleteTransaction';
+import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
+import useDialogFromUrl from '@lib/useDialogFromUrl';
 import ConfirmationDialog from './ConfirmationDialog';
+import CreateUpdateTransactionDialog from './CreateUpdateTransactionDialog';
 
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -63,15 +66,9 @@ type Props = {
   transactions: Transaction[];
   accounts: Account[];
   categories: Category[];
-  onUpdateTransaction: (id: string) => void;
 };
 
-const TransactionTable = ({
-  transactions,
-  categories,
-  accounts,
-  onUpdateTransaction,
-}: Props) => {
+const TransactionTable = ({ transactions, categories, accounts }: Props) => {
   const { query } = useRouter();
   const { sorting, toggleSort } = useSortFromUrl(DefaultSort);
   const { filters } = useFiltersFromurl();
@@ -85,6 +82,19 @@ const TransactionTable = ({
     useDeleteTransaction();
   const handleDelete = () =>
     openFor ? deleteTransaction({ id: openFor }) : undefined;
+
+  const {
+    openFor: transactionId,
+    open: isUpdateDialogOpen,
+    onOpen: onUpdateDialogOpen,
+    onClose: onUpdateDialogClose,
+  } = useDialogFromUrl('transactionId');
+  const { mutateAsync: updateTransaction, isLoading: isUpdating } =
+    useUpdateTransaction();
+  const transaction = useMemo(
+    () => transactions?.find((transaction) => transaction.id === transactionId),
+    [transactions, transactionId]
+  );
 
   const tableTransactions = useMemo(() => {
     const accountsById = (accounts || []).reduce(
@@ -153,7 +163,7 @@ const TransactionTable = ({
           <Stack direction="row" gap={1}>
             <IconButton
               aria-label="Edit"
-              onClick={() => onUpdateTransaction(original.id)}
+              onClick={() => onUpdateDialogOpen(original.id)}
             >
               <EditIcon />
             </IconButton>
@@ -167,7 +177,7 @@ const TransactionTable = ({
         ),
       }),
     ],
-    [query, onDeleteOpen, onUpdateTransaction]
+    [query, onDeleteOpen, onUpdateDialogOpen]
   );
 
   const table = useReactTable({
@@ -245,6 +255,17 @@ const TransactionTable = ({
           undone.
         </Typography>
       </ConfirmationDialog>
+      {!!transaction && (
+        <CreateUpdateTransactionDialog
+          transaction={transaction}
+          open={isUpdateDialogOpen}
+          loading={isUpdating}
+          accounts={accounts || []}
+          categories={categories || []}
+          onClose={onUpdateDialogClose}
+          onUpdate={updateTransaction}
+        />
+      )}
     </Paper>
   );
 };

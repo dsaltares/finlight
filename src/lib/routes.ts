@@ -4,6 +4,8 @@ const Routes = {
   signOut: '/api/auth/signout',
   notFound: '/404',
   transactions: '/transactions',
+  transactionsForCategory: (categoryId: string) =>
+    `/transactions?categoryId=${categoryId}`,
   accounts: '/accounts',
   insights: '/insights',
   budget: '/budget',
