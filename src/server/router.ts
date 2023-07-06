@@ -13,7 +13,7 @@ import updateCSVImportPreset from './csvImportPreset/updateCSVImportPreset';
 import createTransaction from './transaction/createTransaction';
 import deleteTransaction from './transaction/deleteTransaction';
 import getTransactions from './transaction/getTransactions';
-import updateTransaction from './transaction/updateTransactions';
+import updateTransaction from './transaction/updateTransaction';
 import trpc from './trpc';
 
 const router = trpc.router({

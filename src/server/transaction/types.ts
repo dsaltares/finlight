@@ -28,7 +28,7 @@ export const CreateTransactionOutput = Transaction;
 export const UpdateTransactionInput = z.object({
   id: z.string(),
   amount: z.number().optional(),
-  date: z.date().optional(),
+  date: dateSchema.optional(),
   description: z.string().optional(),
   categoryId: z.string().nullable().optional(),
 });

@@ -7,6 +7,8 @@ import type { NextRouter } from 'next/router';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import type { Session } from 'next-auth';
 import { rest } from 'msw';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import type { TRPCError } from '@trpc/server';
 import client from './api';
 
@@ -22,14 +24,16 @@ type ProviderData = {
 
 const createProviders = ({ session, router }: ProviderData) => {
   const Providers = ({ children }: PropsWithChildren) => (
-    <RouterContext.Provider value={{ ...mockRouter, ...(router || {}) }}>
-      <SessionProvider
-        session={session}
-        basePath="http://localhost:3000/api/auth"
-      >
-        {children}
-      </SessionProvider>
-    </RouterContext.Provider>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <RouterContext.Provider value={{ ...mockRouter, ...(router || {}) }}>
+        <SessionProvider
+          session={session}
+          basePath="http://localhost:3000/api/auth"
+        >
+          {children}
+        </SessionProvider>
+      </RouterContext.Provider>
+    </LocalizationProvider>
   );
 
   return client.withTRPC(Providers);

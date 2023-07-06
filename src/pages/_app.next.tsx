@@ -9,6 +9,8 @@ import type { Session } from 'next-auth';
 import CssBaseline from '@mui/material/CssBaseline';
 import Head from 'next/head';
 import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Layout from '@components/Layout';
 import theme from '@lib/theme';
 import client from '@lib/api';
@@ -31,15 +33,17 @@ const App = ({
       />
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <SessionProvider session={session}>
-      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-      <CssBaseline />
-      <ThemeProvider theme={theme}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </ThemeProvider>
-    </SessionProvider>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <SessionProvider session={session}>
+        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+        <CssBaseline />
+        <ThemeProvider theme={theme}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </SessionProvider>
+    </LocalizationProvider>
   </>
 );
 
