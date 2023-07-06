@@ -30,7 +30,7 @@ import type { Category } from '@server/category/types';
 import type { Transaction } from '@server/transaction/types';
 import { formatAmount, formatDate } from '@lib/format';
 import useDialogForId from '@lib/useDialogForId';
-import client from '@lib/api';
+import useDeleteTransaction from '@lib/transactions/useDeleteTransaction';
 import ConfirmationDialog from './ConfirmationDialog';
 
 declare module '@tanstack/table-core' {
@@ -82,7 +82,7 @@ const TransactionTable = ({
     onClose: onDeleteClose,
   } = useDialogForId();
   const { mutateAsync: deleteTransaction, isLoading: isDeleting } =
-    client.deleteTransaction.useMutation();
+    useDeleteTransaction();
   const handleDelete = () =>
     openFor ? deleteTransaction({ id: openFor }) : undefined;
 

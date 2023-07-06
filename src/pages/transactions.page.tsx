@@ -10,6 +10,8 @@ import useDialog from '@lib/useDialog';
 import CreateUpdateTransactionDialog from '@components/CreateUpdateTransactionDialog';
 import TransactionTable from '@components/TransactionTable';
 import useDialogFromUrl from '@lib/useDialogFromUrl';
+import useCreateTransaction from '@lib/transactions/useCreateTransaction';
+import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
 
 const TransactionsPage: NextPage = () => {
   const {
@@ -27,9 +29,9 @@ const TransactionsPage: NextPage = () => {
   const { data: accounts } = client.getAccounts.useQuery();
   const { data: categories } = client.getCategories.useQuery();
   const { mutateAsync: createTransaction, isLoading: isCreating } =
-    client.createTransaction.useMutation();
+    useCreateTransaction();
   const { mutateAsync: updateTransaction, isLoading: isUpdating } =
-    client.updateTransaction.useMutation();
+    useUpdateTransaction();
   const transaction = useMemo(
     () => transactions?.find((transaction) => transaction.id === transactionId),
     [transactions, transactionId]
