@@ -8,6 +8,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import stringToColor from 'string-to-color';
 import { useRouter } from 'next/router';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
@@ -23,6 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import type { Account } from '@server/account/types';
@@ -33,6 +35,7 @@ import useDialogForId from '@lib/useDialogForId';
 import useDeleteTransaction from '@lib/transactions/useDeleteTransaction';
 import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
 import useDialogFromUrl from '@lib/useDialogFromUrl';
+import Routes from '@lib/routes';
 import ConfirmationDialog from './ConfirmationDialog';
 import CreateUpdateTransactionDialog from './CreateUpdateTransactionDialog';
 
@@ -152,7 +155,25 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
       columnHelper.accessor('categoryId', {
         header: 'Category',
         cell: (info) =>
-          info.row.original.accountName ? info.row.original.accountName : '',
+          info.row.original.categoryId && info.row.original.categoryName ? (
+            <Link
+              href={Routes.transactionsForCategory(
+                info.row.original.categoryId
+              )}
+            >
+              <Chip
+                sx={{
+                  backgroundColor: stringToColor(
+                    info.row.original.categoryName
+                  ),
+                }}
+                label={info.row.original.categoryName}
+                clickable
+              />
+            </Link>
+          ) : (
+            ''
+          ),
       }),
       columnHelper.accessor('description', {
         header: 'Description',
