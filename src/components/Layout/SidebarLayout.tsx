@@ -1,6 +1,12 @@
 import Box from '@mui/material/Box';
-import { useState, type PropsWithChildren } from 'react';
+import {
+  useState,
+  type PropsWithChildren,
+  useEffect,
+  useCallback,
+} from 'react';
 import Stack from '@mui/material/Stack';
+import { useRouter } from 'next/router';
 import Sidebar from './Sidebar';
 import { DrawerWidth } from './constants';
 import MobileHeader from './MobileHeader';
@@ -8,6 +14,7 @@ import MobileHeader from './MobileHeader';
 const SidebarLayout = ({ children }: PropsWithChildren) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
+  useRouteChange(useCallback(() => setMobileOpen(false), [setMobileOpen]));
   return (
     <Box sx={{ display: 'flex', flexGrow: 1, height: '100%' }}>
       <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />
@@ -27,3 +34,11 @@ const SidebarLayout = ({ children }: PropsWithChildren) => {
 };
 
 export default SidebarLayout;
+
+const useRouteChange = (onRouteChange: () => void) => {
+  const router = useRouter();
+  useEffect(() => {
+    router.events.on('routeChangeStart', onRouteChange);
+    return () => router.events.off('routeChangeStart', onRouteChange);
+  }, [router, onRouteChange]);
+};
