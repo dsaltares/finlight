@@ -10,30 +10,38 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Link from 'next/link';
 import stringToColor from 'string-to-color';
 import Routes from '@lib/routes';
-import type { Category } from '@server/category/types';
+import type { Account } from '@server/account/types';
+import flags from '@lib/flags';
+import { formatAmount } from '@lib/format';
 
 type Props = {
-  category: Category;
+  account: Account;
   onUpdate: (id: string) => void;
   onDelete: (id: string) => void;
 };
 
-const CategoryListItem = ({ category, onUpdate, onDelete }: Props) => (
+const AccountListItem = ({ account, onUpdate, onDelete }: Props) => (
   <ListItem disableGutters>
     <ListItemButton
       component={Link}
-      href={Routes.transactionsForCategory(category.id)}
+      href={Routes.transactionsForAccount(account.id)}
     >
       <ListItemAvatar>
-        <Avatar sx={{ backgroundColor: stringToColor(category.name) }}>
-          {category.name[0]}
+        <Avatar
+          sx={{ backgroundColor: stringToColor(account.name) }}
+          src={flags[account.currency.toLowerCase()]}
+        >
+          {account.name}
         </Avatar>
       </ListItemAvatar>
-      <ListItemText primary={category.name} />
+      <ListItemText
+        primary={account.name}
+        secondary={formatAmount(account.balance, account.currency)}
+      />
       <Stack direction="row" gap={1}>
         <IconButton
           onClick={(e) => {
-            onUpdate(category.id);
+            onUpdate(account.id);
             e.preventDefault();
           }}
         >
@@ -41,7 +49,7 @@ const CategoryListItem = ({ category, onUpdate, onDelete }: Props) => (
         </IconButton>
         <IconButton
           onClick={(e) => {
-            onDelete(category.id);
+            onDelete(account.id);
             e.preventDefault();
           }}
         >
@@ -52,4 +60,4 @@ const CategoryListItem = ({ category, onUpdate, onDelete }: Props) => (
   </ListItem>
 );
 
-export default CategoryListItem;
+export default AccountListItem;

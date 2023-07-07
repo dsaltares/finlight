@@ -5,7 +5,9 @@ const Routes = {
   notFound: '/404',
   transactions: '/transactions',
   transactionsForCategory: (categoryId: string) =>
-    `/transactions?categoryId=${categoryId}`,
+    `/transactions?filterByCategoryId=${categoryId}`,
+  transactionsForAccount: (accountId: string) =>
+    `/transactions?filterByAccountId=${accountId}`,
   accounts: '/accounts',
   insights: '/insights',
   budget: '/budget',

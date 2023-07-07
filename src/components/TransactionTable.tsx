@@ -149,9 +149,10 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
         ),
         meta: { numeric: true },
       }),
-      columnHelper.accessor('categoryName', {
+      columnHelper.accessor('categoryId', {
         header: 'Category',
-        cell: (info) => (info.getValue() ? info.getValue() : ''),
+        cell: (info) =>
+          info.row.original.accountName ? info.row.original.accountName : '',
       }),
       columnHelper.accessor('description', {
         header: 'Description',

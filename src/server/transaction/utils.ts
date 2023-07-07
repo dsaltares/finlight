@@ -7,7 +7,7 @@ export const updateAccountBalance = async (accountId: string) => {
   const transactions = await prisma.transaction.findMany({
     where: { accountId, deletedAt: null },
   });
-  await prisma.bankAccount.update({
+  return prisma.bankAccount.update({
     where: { id: accountId },
     data: {
       balance: transactions.reduce(

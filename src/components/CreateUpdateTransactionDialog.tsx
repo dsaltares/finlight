@@ -20,6 +20,7 @@ import type {
 } from '@server/transaction/types';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
+import { isOptionEqualToValue } from '@lib/autoCompleteOptions';
 
 type BaseProps = {
   open: boolean;
@@ -179,13 +180,12 @@ const CreateUpdateTransactionDialog = ({
             rules={{ required: true }}
             render={({ field: { value, onChange, onBlur } }) => (
               <Autocomplete
-                disablePortal
                 disableClearable
                 id="account-autocomplete"
                 value={value}
                 onChange={(_event, newValue) => onChange(newValue!)}
                 options={accountOptions}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
+                isOptionEqualToValue={isOptionEqualToValue}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -204,12 +204,11 @@ const CreateUpdateTransactionDialog = ({
             name="category"
             render={({ field: { value, onChange, onBlur } }) => (
               <Autocomplete
-                disablePortal
                 id="category-autocomplete"
                 value={value}
                 onChange={(_event, newValue) => onChange(newValue!)}
                 options={categoryOptions}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
+                isOptionEqualToValue={isOptionEqualToValue}
                 renderInput={(params) => (
                   <TextField
                     {...params}

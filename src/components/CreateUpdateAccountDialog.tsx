@@ -1,0 +1,207 @@
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useTheme } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
+import Stack from '@mui/material/Stack';
+import { useCallback } from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import Avatar from '@mui/material/Avatar';
+import type {
+  Account,
+  CreateAccountInput,
+  UpdateAccountInput,
+} from '@server/account/types';
+import {
+  currencyOptionsById,
+  currencyOptions,
+  isOptionEqualToValue,
+  getOptionLabel,
+} from '@lib/autoCompleteOptions';
+import flags from '@lib/flags';
+
+type BaseProps = {
+  open: boolean;
+  loading: boolean;
+  onClose: () => void;
+};
+
+type CreateProps = {
+  onCreate: (input: CreateAccountInput) => Promise<unknown>;
+  account?: never;
+  onUpdate?: never;
+};
+
+type EditProps = {
+  account: Account;
+  onUpdate: (input: UpdateAccountInput) => Promise<unknown>;
+  onCreate?: never;
+};
+
+type Props = BaseProps & (CreateProps | EditProps);
+
+const id = 'create-update-account-dialog';
+
+type Option = { label: string; id: string };
+type AccountFormValues = {
+  name: string;
+  initialBalance: string;
+  currency: Option;
+};
+
+const CreateUpdateAccountDialog = ({
+  open,
+  loading,
+  account,
+  onClose,
+  onCreate,
+  onUpdate,
+}: Props) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const {
+    watch,
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<AccountFormValues>({
+    mode: 'onBlur',
+    defaultValues: {
+      name: account?.name,
+      currency: currencyOptionsById[account?.currency || 'EUR'],
+      initialBalance: (account?.initialBalance || 0).toString(),
+    },
+  });
+  const onSubmit: SubmitHandler<AccountFormValues> = useCallback(
+    async (values) => {
+      if (account) {
+        await onUpdate({
+          ...account,
+          ...values,
+          currency: values.currency.id,
+          initialBalance: parseFloat(values.initialBalance),
+        });
+      } else {
+        await onCreate({
+          ...values,
+          currency: values.currency.id,
+          initialBalance: parseFloat(values.initialBalance),
+        });
+      }
+      onClose();
+    },
+    [onCreate, onUpdate, onClose, account]
+  );
+  const currencyWatch = watch('currency');
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      id={id}
+      aria-labelledby={`${id}-title`}
+      fullScreen={fullScreen}
+      keepMounted={false}
+    >
+      <DialogTitle id={`${id}-title`}>
+        {account ? 'Edit account' : 'Create account'}
+      </DialogTitle>
+      <DialogContent>
+        <Stack
+          paddingY={1}
+          gap={1.5}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <TextField
+            required
+            label="Name"
+            error={!!errors.name}
+            {...register('name', { required: true })}
+          />
+          <Controller
+            control={control}
+            name="currency"
+            rules={{ required: true }}
+            render={({ field: { value, onChange, onBlur } }) => (
+              <Autocomplete
+                disableClearable
+                id="currency-autocomplete"
+                value={value}
+                onChange={(_event, newValue) => onChange(newValue!)}
+                options={currencyOptions}
+                isOptionEqualToValue={isOptionEqualToValue}
+                getOptionLabel={getOptionLabel}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Currency"
+                    required
+                    error={!!errors.currency}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <Avatar
+                          src={flags[currencyWatch.id.toLowerCase()]}
+                          sx={{ width: 24, height: 24 }}
+                        >
+                          {currencyWatch.label}
+                        </Avatar>
+                      ),
+                    }}
+                  />
+                )}
+                renderOption={(props, option) => (
+                  <li {...props}>
+                    <Stack direction="row" alignItems="center" gap={1}>
+                      <Avatar
+                        src={flags[option.id.toLowerCase()]}
+                        sx={{ width: 24, height: 24 }}
+                      >
+                        {option.label}
+                      </Avatar>
+                      {option.label}
+                    </Stack>
+                  </li>
+                )}
+                onBlur={onBlur}
+              />
+            )}
+          />
+          <TextField
+            required
+            type="number"
+            label="Initial balance"
+            error={!!errors.initialBalance}
+            inputProps={{
+              step: 0.01,
+            }}
+            {...register('initialBalance', { required: true })}
+          />
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" onClick={onClose}>
+          Cancel
+        </Button>
+        <LoadingButton
+          variant="contained"
+          color="primary"
+          loading={loading}
+          disabled={!isValid}
+          onClick={handleSubmit(onSubmit)}
+        >
+          Save
+        </LoadingButton>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default CreateUpdateAccountDialog;

@@ -1,5 +1,6 @@
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
+import { updateAccountBalance } from '@server/transaction/utils';
 import { UpdateAccountInput, UpdateAccountOutput } from './types';
 
 export const updateAccount: Procedure<
@@ -15,7 +16,7 @@ export const updateAccount: Procedure<
       userId: session?.userId as string,
     },
   });
-  return prisma.bankAccount.update({
+  const account = await prisma.bankAccount.update({
     where: {
       id,
     },
@@ -27,6 +28,9 @@ export const updateAccount: Procedure<
       deletedAt: null,
     },
   });
+  return typeof initialBalance !== 'undefined'
+    ? updateAccountBalance(id)
+    : account;
 };
 
 export default procedure
