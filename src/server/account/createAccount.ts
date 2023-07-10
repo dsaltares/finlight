@@ -5,7 +5,10 @@ import { CreateAccountInput, CreateAccountOutput } from './types';
 export const createAccount: Procedure<
   CreateAccountInput,
   CreateAccountOutput
-> = async ({ input: { name, initialBalance, currency }, ctx: { session } }) => {
+> = async ({
+  input: { name, initialBalance, currency, csvImportPresetId },
+  ctx: { session },
+}) => {
   const account = await prisma.bankAccount.findFirst({
     where: {
       name,
@@ -24,6 +27,7 @@ export const createAccount: Procedure<
         initialBalance,
         balance: initialBalance,
         currency,
+        csvImportPresetId,
         deletedAt: null,
       },
     });
@@ -35,6 +39,7 @@ export const createAccount: Procedure<
       initialBalance,
       balance: initialBalance,
       currency,
+      csvImportPresetId,
       userId: session?.userId as string,
     },
   });

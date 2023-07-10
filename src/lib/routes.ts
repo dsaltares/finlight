@@ -13,6 +13,7 @@ const Routes = {
   budget: '/budget',
   settings: '/settings',
   categories: '/categories',
+  csvImportPresets: '/csvImportPresets',
   privacyPolicy: '/privacy_policy.pdf',
   termsAndConditions: '/terms_and_conditions.pdf',
   cookiePolicy: '/cookie_policy.pdf',

@@ -6,15 +6,17 @@ import useDialogFromUrl from '@lib/useDialogFromUrl';
 import type { Account } from '@server/account/types';
 import useDeleteAccount from '@lib/accounts/useDeleteCategory';
 import useUpdateAccount from '@lib/accounts/useUpdateCategory';
+import type { CSVImportPreset } from '@server/csvImportPreset/types';
 import ConfirmationDialog from './ConfirmationDialog';
 import AccountListItem from './AccountListItem';
 import CreateUpdateAccountDialog from './CreateUpdateAccountDialog';
 
 type Props = {
   accounts: Account[];
+  presets: CSVImportPreset[];
 };
 
-const AccountList = ({ accounts }: Props) => {
+const AccountList = ({ accounts, presets }: Props) => {
   const {
     openFor,
     open: deleteOpen,
@@ -67,6 +69,7 @@ const AccountList = ({ accounts }: Props) => {
       {!!account && (
         <CreateUpdateAccountDialog
           account={account}
+          presets={presets}
           open={isUpdateDialogOpen}
           loading={isUpdating}
           onClose={onUpdateDialogClose}
