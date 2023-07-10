@@ -39,7 +39,7 @@
     "date-fns": "^2.30.0",
     "immer": "^10.0.2",
     "lodash.chunk": "^4.2.0",
-    "next": "^13.4.7",
+    "next": "^13.4.9",
     "next-auth": "^4.22.1",
     "node-fetch": "2",
     "nodemailer": "^6.9.3",
