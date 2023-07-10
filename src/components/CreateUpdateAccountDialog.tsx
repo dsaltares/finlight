@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Avatar from '@mui/material/Avatar';
 import type {
@@ -24,11 +24,13 @@ import {
   getOptionLabel,
 } from '@lib/autoCompleteOptions';
 import flags from '@lib/flags';
+import type { CSVImportPreset } from '@server/csvImportPreset/types';
 
 type BaseProps = {
   open: boolean;
   loading: boolean;
   onClose: () => void;
+  presets: CSVImportPreset[];
 };
 
 type CreateProps = {
@@ -52,18 +54,27 @@ type AccountFormValues = {
   name: string;
   initialBalance: string;
   currency: Option;
+  csvImportPreset?: Option | null;
 };
 
 const CreateUpdateAccountDialog = ({
   open,
   loading,
   account,
+  presets,
   onClose,
   onCreate,
   onUpdate,
 }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const { presetOptions, csvImportPreset } = useMemo(() => {
+    const presetOptions = presets.map(({ id, name }) => ({ id, label: name }));
+    const csvImportPreset = account
+      ? presetOptions.find((option) => option.id === account.csvImportPresetId)
+      : null;
+    return { presetOptions, csvImportPreset };
+  }, [presets, account]);
   const {
     watch,
     control,
@@ -76,6 +87,7 @@ const CreateUpdateAccountDialog = ({
       name: account?.name,
       currency: currencyOptionsById[account?.currency || 'EUR'],
       initialBalance: (account?.initialBalance || 0).toString(),
+      csvImportPreset,
     },
   });
   const onSubmit: SubmitHandler<AccountFormValues> = useCallback(
@@ -85,12 +97,14 @@ const CreateUpdateAccountDialog = ({
           ...account,
           ...values,
           currency: values.currency.id,
+          csvImportPresetId: values.csvImportPreset?.id,
           initialBalance: parseFloat(values.initialBalance),
         });
       } else {
         await onCreate({
           ...values,
           currency: values.currency.id,
+          csvImportPresetId: values.csvImportPreset?.id || null,
           initialBalance: parseFloat(values.initialBalance),
         });
       }
@@ -183,6 +197,28 @@ const CreateUpdateAccountDialog = ({
               step: 0.01,
             }}
             {...register('initialBalance', { required: true })}
+          />
+          <Controller
+            control={control}
+            name="csvImportPreset"
+            render={({ field: { value, onChange, onBlur } }) => (
+              <Autocomplete
+                id="csv-import-preset-autocomplete"
+                value={value}
+                onChange={(_event, newValue) => onChange(newValue!)}
+                options={presetOptions}
+                isOptionEqualToValue={isOptionEqualToValue}
+                getOptionLabel={getOptionLabel}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="CSV import preset"
+                    error={!!errors.csvImportPreset}
+                  />
+                )}
+                onBlur={onBlur}
+              />
+            )}
           />
         </Stack>
       </DialogContent>

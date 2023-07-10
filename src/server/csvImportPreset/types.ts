@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-export const CSVImportField = z.enum([
+export const dateSchema = z.union([z.string(), z.date()]);
+
+export const CSVImportFields = [
   'Date',
   'Amount',
   'Withdrawal',
@@ -8,7 +10,9 @@ export const CSVImportField = z.enum([
   'Fee',
   'Description',
   'Ignore',
-]);
+] as const;
+
+export const CSVImportField = z.enum(CSVImportFields);
 
 export const CSVImportPreset = z.object({
   id: z.string(),
@@ -19,8 +23,8 @@ export const CSVImportPreset = z.object({
   decimal: z.string(),
   rowsToSkipStart: z.number(),
   rowsToSkipEnd: z.number(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
 });
 
 export const GetCSVImportPresetsInput = z.void();

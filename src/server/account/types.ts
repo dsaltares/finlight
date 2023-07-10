@@ -19,6 +19,7 @@ export const CreateAccountInput = Account.pick({
   name: true,
   initialBalance: true,
   currency: true,
+  csvImportPresetId: true,
 });
 export const CreateAccountOutput = Account;
 export const UpdateAccountInput = z.object({

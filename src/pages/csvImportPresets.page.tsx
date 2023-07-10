@@ -1,31 +1,30 @@
 import type { NextPage } from 'next';
 import Typography from '@mui/material/Typography';
+import AddIcon from '@mui/icons-material/Add';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
 import WithAuthentication from '@components/WithAuthentication';
 import client from '@lib/api';
 import useDialog from '@lib/useDialog';
-import useCreateAccount from '@lib/accounts/useCreateCategory';
-import AccountList from '@components/AccountList';
-import CreateUpdateAccountDialog from '@components/CreateUpdateAccountDialog';
+import useCreateCSVImportPreset from '@lib/csvImportPresets/useCreateCSVImportPreset';
+import CSVImportPresetList from '@components/CSVImportPresetList';
+import CreateUpdateCSVImportPresetDialog from '@components/CreateUpdateCSVImportPresetDialog';
 
-const AccountsPage: NextPage = () => {
-  const { data: accounts } = client.getAccounts.useQuery();
+const CSVImportPresetsPage: NextPage = () => {
+  const { data: presets } = client.getCSVImportPresets.useQuery();
   const {
     open: isCreateDialogOpen,
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
   } = useDialog();
-  const { mutateAsync: createAccount, isLoading: isCreating } =
-    useCreateAccount();
-  const { data: presets } = client.getCSVImportPresets.useQuery();
+  const { mutateAsync: createCSVImportPreset, isLoading: isCreating } =
+    useCreateCSVImportPreset();
 
   return (
     <Stack gap={2}>
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="h4" component="h1">
-          Categories
+          CSV Import Presets
         </Typography>
         <Stack direction="row" gap={1}>
           <Button
@@ -38,16 +37,15 @@ const AccountsPage: NextPage = () => {
           </Button>
         </Stack>
       </Stack>
-      <AccountList accounts={accounts || []} presets={presets || []} />
-      <CreateUpdateAccountDialog
-        presets={presets || []}
+      <CSVImportPresetList presets={presets || []} />
+      <CreateUpdateCSVImportPresetDialog
         open={isCreateDialogOpen}
         loading={isCreating}
         onClose={onCreateDialogClose}
-        onCreate={createAccount}
+        onCreate={createCSVImportPreset}
       />
     </Stack>
   );
 };
 
-export default WithAuthentication(AccountsPage);
+export default WithAuthentication(CSVImportPresetsPage);

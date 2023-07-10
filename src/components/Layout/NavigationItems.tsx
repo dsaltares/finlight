@@ -4,6 +4,7 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import SavingsIcon from '@mui/icons-material/Savings';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LabelIcon from '@mui/icons-material/Label';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -24,11 +25,15 @@ const items = [
     href: Routes.transactions,
     icon: ReceiptLongIcon,
   },
-
   {
     label: 'Categories',
     href: Routes.categories,
     icon: LabelIcon,
+  },
+  {
+    label: 'CSV Import Presets',
+    href: Routes.csvImportPresets,
+    icon: FileUploadIcon,
   },
   {
     label: 'Insights',
