@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   type RowData,
   createColumnHelper,
@@ -7,6 +7,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  type RowSelectionState,
 } from '@tanstack/react-table';
 import stringToColor from 'string-to-color';
 import { useRouter } from 'next/router';
@@ -25,6 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
+import Checkbox from '@mui/material/Checkbox';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import type { Account } from '@server/account/types';
@@ -74,6 +76,7 @@ type Props = {
 const TransactionTable = ({ transactions, categories, accounts }: Props) => {
   const { query } = useRouter();
   const { sorting, toggleSort } = useSortFromUrl(DefaultSort);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { filters } = useFiltersFromurl();
   const {
     openFor,
@@ -118,8 +121,26 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
       toTransactionTableRow(transaction, accountsById, categoriesById)
     );
   }, [accounts, transactions, categories]);
+
   const columns = useMemo(
     () => [
+      columnHelper.display({
+        id: 'selection',
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+            disabled={!row.getCanSelect()}
+          />
+        ),
+        enableSorting: false,
+      }),
       columnHelper.accessor('date', {
         header: 'Date',
         cell: (info) => formatDate(info.getValue()),
@@ -208,10 +229,13 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
     state: {
       sorting,
       columnFilters: filters,
+      rowSelection,
     },
+    enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
   });
 
   return (
@@ -231,16 +255,23 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
                         : 'left'
                     }
                   >
-                    <TableSortLabel
-                      active={!!header.column.getIsSorted()}
-                      direction={header.column.getIsSorted() || undefined}
-                      onClick={() => toggleSort(header.column.id)}
-                    >
-                      {flexRender(
+                    {header.column.columnDef.enableSorting !== false ? (
+                      <TableSortLabel
+                        active={!!header.column.getIsSorted()}
+                        direction={header.column.getIsSorted() || undefined}
+                        onClick={() => toggleSort(header.column.id)}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </TableSortLabel>
+                    ) : (
+                      flexRender(
                         header.column.columnDef.header,
                         header.getContext()
-                      )}
-                    </TableSortLabel>
+                      )
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
