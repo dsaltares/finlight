@@ -1,5 +1,3 @@
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {
   type SubmitHandler,
   useForm,
@@ -18,12 +16,13 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useCallback } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import type {
-  CSVImportField,
   CSVImportPreset,
   CreateCSVImportPresetInput,
   UpdateCSVImportPresetInput,
 } from '@server/csvImportPreset/types';
-import ImportFields from './ImportFields';
+import ImportFields from '../ImportFields';
+import type { CSVImportPresetFormValues } from './types';
+import ImportPreview from './ImportPreview';
 
 type BaseProps = {
   open: boolean;
@@ -67,16 +66,6 @@ const dateFormats = [
   'yyyy/MM/dd',
 ];
 
-type CSVImportPresetFormValues = {
-  name: string;
-  fields: { id: CSVImportField; value: CSVImportField }[];
-  dateFormat: string;
-  delimiter: string;
-  decimal: string;
-  rowsToSkipStart: string;
-  rowsToSkipEnd: string;
-};
-
 const CreateUpdateCSVImportPresetDialog = ({
   open,
   loading,
@@ -85,9 +74,8 @@ const CreateUpdateCSVImportPresetDialog = ({
   onCreate,
   onUpdate,
 }: Props) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const {
+    watch,
     control,
     register,
     handleSubmit,
@@ -146,7 +134,7 @@ const CreateUpdateCSVImportPresetDialog = ({
       onClose={onClose}
       id={id}
       aria-labelledby={`${id}-title`}
-      fullScreen={fullScreen}
+      fullScreen
       keepMounted={false}
     >
       <DialogTitle id={`${id}-title`}>
@@ -237,6 +225,7 @@ const CreateUpdateCSVImportPresetDialog = ({
             onRemove={removeItem}
             onMove={moveItem}
           />
+          <ImportPreview watch={watch} />
         </Stack>
       </DialogContent>
       <DialogActions>
