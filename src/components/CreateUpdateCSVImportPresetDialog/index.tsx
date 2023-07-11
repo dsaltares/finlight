@@ -62,7 +62,6 @@ const dateFormats = [
   'dd MMM yy',
   'dd-MMM-yy',
   'yyyy-MM-dd',
-  'dd/MM/yyyy',
   'yyyy/MM/dd',
 ];
 
