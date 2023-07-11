@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import {
   type RowData,
+  type RowSelectionState,
+  type OnChangeFn,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -25,6 +27,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
+import Checkbox from '@mui/material/Checkbox';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import type { Account } from '@server/account/types';
@@ -32,7 +35,7 @@ import type { Category } from '@server/category/types';
 import type { Transaction } from '@server/transaction/types';
 import { formatAmount, formatDate } from '@lib/format';
 import useDialogForId from '@lib/useDialogForId';
-import useDeleteTransaction from '@lib/transactions/useDeleteTransaction';
+import useDeleteTransactions from '@lib/transactions/useDeleteTransactions';
 import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
 import useDialogFromUrl from '@lib/useDialogFromUrl';
 import Routes from '@lib/routes';
@@ -69,22 +72,30 @@ type Props = {
   transactions: Transaction[];
   accounts: Account[];
   categories: Category[];
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: OnChangeFn<RowSelectionState>;
+  multiDeleteOpen: boolean;
+  onMultiDeleteClose: () => void;
 };
 
-const TransactionTable = ({ transactions, categories, accounts }: Props) => {
+const TransactionTable = ({
+  transactions,
+  categories,
+  accounts,
+  rowSelection,
+  onRowSelectionChange,
+  multiDeleteOpen,
+  onMultiDeleteClose,
+}: Props) => {
   const { query } = useRouter();
   const { sorting, toggleSort } = useSortFromUrl(DefaultSort);
   const { filters } = useFiltersFromurl();
   const {
-    openFor,
-    open: deleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
+    openFor: singleDeleteOpenFor,
+    open: singleDeleteOpen,
+    onOpen: onSingleDeleteOpen,
+    onClose: onSingleDeleteClose,
   } = useDialogForId();
-  const { mutateAsync: deleteTransaction, isLoading: isDeleting } =
-    useDeleteTransaction();
-  const handleDelete = () =>
-    openFor ? deleteTransaction({ id: openFor }) : undefined;
 
   const {
     openFor: transactionId,
@@ -118,8 +129,26 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
       toTransactionTableRow(transaction, accountsById, categoriesById)
     );
   }, [accounts, transactions, categories]);
+
   const columns = useMemo(
     () => [
+      columnHelper.display({
+        id: 'selection',
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+            disabled={!row.getCanSelect()}
+          />
+        ),
+        enableSorting: false,
+      }),
       columnHelper.accessor('date', {
         header: 'Date',
         cell: (info) => formatDate(info.getValue()),
@@ -191,7 +220,7 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
             </IconButton>
             <IconButton
               aria-label="Delete"
-              onClick={() => onDeleteOpen(original.id)}
+              onClick={() => onSingleDeleteOpen(original.id)}
             >
               <DeleteIcon />
             </IconButton>
@@ -199,7 +228,7 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
         ),
       }),
     ],
-    [query, onDeleteOpen, onUpdateDialogOpen]
+    [query, onSingleDeleteOpen, onUpdateDialogOpen]
   );
 
   const table = useReactTable({
@@ -208,11 +237,25 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
     state: {
       sorting,
       columnFilters: filters,
+      rowSelection,
     },
+    enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: onRowSelectionChange,
   });
+
+  const { mutateAsync: deleteTransactions, isLoading: isDeleting } =
+    useDeleteTransactions();
+  const handleSingleDelete = () =>
+    singleDeleteOpenFor
+      ? deleteTransactions({ ids: [singleDeleteOpenFor] })
+      : undefined;
+  const handleMultiDelete = () =>
+    deleteTransactions({
+      ids: table.getSelectedRowModel().flatRows.map((row) => row.original.id),
+    });
 
   return (
     <Paper>
@@ -231,16 +274,23 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
                         : 'left'
                     }
                   >
-                    <TableSortLabel
-                      active={!!header.column.getIsSorted()}
-                      direction={header.column.getIsSorted() || undefined}
-                      onClick={() => toggleSort(header.column.id)}
-                    >
-                      {flexRender(
+                    {header.column.columnDef.enableSorting !== false ? (
+                      <TableSortLabel
+                        active={!!header.column.getIsSorted()}
+                        direction={header.column.getIsSorted() || undefined}
+                        onClick={() => toggleSort(header.column.id)}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </TableSortLabel>
+                    ) : (
+                      flexRender(
                         header.column.columnDef.header,
                         header.getContext()
-                      )}
-                    </TableSortLabel>
+                      )
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
@@ -267,14 +317,28 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
       <ConfirmationDialog
         id="delete-transaction"
         title="Delete transaction"
-        open={deleteOpen}
+        open={singleDeleteOpen}
         loading={isDeleting}
-        onClose={onDeleteClose}
-        onConfirm={handleDelete}
+        onClose={onSingleDeleteClose}
+        onConfirm={handleSingleDelete}
       >
         <Typography variant="body1">
           Are you sure you want to delete this transaction? The action cannot be
           undone.
+        </Typography>
+      </ConfirmationDialog>
+      <ConfirmationDialog
+        id="delete-transactions"
+        title="Delete transactions"
+        open={multiDeleteOpen}
+        loading={isDeleting}
+        onClose={onMultiDeleteClose}
+        onConfirm={handleMultiDelete}
+      >
+        <Typography variant="body1">
+          {`Are you sure you want to delete ${
+            Object.keys(rowSelection).length
+          } transactions? The action cannot be undone.`}
         </Typography>
       </ConfirmationDialog>
       {!!transaction && (
