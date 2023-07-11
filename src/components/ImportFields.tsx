@@ -26,7 +26,7 @@ type Props = {
 const ImportFields = ({ fields, onAppend, onRemove, onMove }: Props) => (
   <Stack gap={0.5}>
     <Select
-      value={null}
+      value=""
       displayEmpty
       onChange={(event) => onAppend(event.target.value as CSVImportField)}
       renderValue={() => <em>Set field order</em>}
