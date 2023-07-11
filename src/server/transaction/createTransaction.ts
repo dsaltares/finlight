@@ -17,7 +17,7 @@ export const createTransaction: Procedure<
       deletedAt: null,
     },
   });
-  const transaction = prisma.transaction.create({
+  const transaction = await prisma.transaction.create({
     data: {
       amount,
       date,

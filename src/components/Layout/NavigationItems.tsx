@@ -2,7 +2,6 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import InsightsIcon from '@mui/icons-material/Insights';
 import SavingsIcon from '@mui/icons-material/Savings';
-import SettingsIcon from '@mui/icons-material/Settings';
 import LabelIcon from '@mui/icons-material/Label';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import List from '@mui/material/List';
@@ -44,11 +43,6 @@ const items = [
     label: 'Budget',
     href: Routes.budget,
     icon: SavingsIcon,
-  },
-  {
-    label: 'Settings',
-    href: Routes.settings,
-    icon: SettingsIcon,
   },
 ];
 
