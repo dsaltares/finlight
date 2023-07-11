@@ -12,7 +12,7 @@ import getCSVImportPresets from './csvImportPreset/getCSVImportPresets';
 import updateCSVImportPreset from './csvImportPreset/updateCSVImportPreset';
 import createTransaction from './transaction/createTransaction';
 import createTransactions from './transaction/createTransactions';
-import deleteTransaction from './transaction/deleteTransaction';
+import deleteTransactions from './transaction/deleteTransactions';
 import getTransactions from './transaction/getTransactions';
 import updateTransaction from './transaction/updateTransaction';
 import trpc from './trpc';
@@ -30,7 +30,7 @@ const router = trpc.router({
   createTransaction,
   createTransactions,
   updateTransaction,
-  deleteTransaction,
+  deleteTransactions,
   getCSVImportPresets,
   createCSVImportPreset,
   updateCSVImportPreset,

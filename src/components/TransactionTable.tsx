@@ -1,13 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   type RowData,
+  type RowSelectionState,
+  type OnChangeFn,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-  type RowSelectionState,
 } from '@tanstack/react-table';
 import stringToColor from 'string-to-color';
 import { useRouter } from 'next/router';
@@ -34,7 +35,7 @@ import type { Category } from '@server/category/types';
 import type { Transaction } from '@server/transaction/types';
 import { formatAmount, formatDate } from '@lib/format';
 import useDialogForId from '@lib/useDialogForId';
-import useDeleteTransaction from '@lib/transactions/useDeleteTransaction';
+import useDeleteTransactions from '@lib/transactions/useDeleteTransactions';
 import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
 import useDialogFromUrl from '@lib/useDialogFromUrl';
 import Routes from '@lib/routes';
@@ -71,23 +72,30 @@ type Props = {
   transactions: Transaction[];
   accounts: Account[];
   categories: Category[];
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: OnChangeFn<RowSelectionState>;
+  multiDeleteOpen: boolean;
+  onMultiDeleteClose: () => void;
 };
 
-const TransactionTable = ({ transactions, categories, accounts }: Props) => {
+const TransactionTable = ({
+  transactions,
+  categories,
+  accounts,
+  rowSelection,
+  onRowSelectionChange,
+  multiDeleteOpen,
+  onMultiDeleteClose,
+}: Props) => {
   const { query } = useRouter();
   const { sorting, toggleSort } = useSortFromUrl(DefaultSort);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { filters } = useFiltersFromurl();
   const {
-    openFor,
-    open: deleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
+    openFor: singleDeleteOpenFor,
+    open: singleDeleteOpen,
+    onOpen: onSingleDeleteOpen,
+    onClose: onSingleDeleteClose,
   } = useDialogForId();
-  const { mutateAsync: deleteTransaction, isLoading: isDeleting } =
-    useDeleteTransaction();
-  const handleDelete = () =>
-    openFor ? deleteTransaction({ id: openFor }) : undefined;
 
   const {
     openFor: transactionId,
@@ -212,7 +220,7 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
             </IconButton>
             <IconButton
               aria-label="Delete"
-              onClick={() => onDeleteOpen(original.id)}
+              onClick={() => onSingleDeleteOpen(original.id)}
             >
               <DeleteIcon />
             </IconButton>
@@ -220,7 +228,7 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
         ),
       }),
     ],
-    [query, onDeleteOpen, onUpdateDialogOpen]
+    [query, onSingleDeleteOpen, onUpdateDialogOpen]
   );
 
   const table = useReactTable({
@@ -235,8 +243,19 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: onRowSelectionChange,
   });
+
+  const { mutateAsync: deleteTransactions, isLoading: isDeleting } =
+    useDeleteTransactions();
+  const handleSingleDelete = () =>
+    singleDeleteOpenFor
+      ? deleteTransactions({ ids: [singleDeleteOpenFor] })
+      : undefined;
+  const handleMultiDelete = () =>
+    deleteTransactions({
+      ids: table.getSelectedRowModel().flatRows.map((row) => row.original.id),
+    });
 
   return (
     <Paper>
@@ -298,14 +317,28 @@ const TransactionTable = ({ transactions, categories, accounts }: Props) => {
       <ConfirmationDialog
         id="delete-transaction"
         title="Delete transaction"
-        open={deleteOpen}
+        open={singleDeleteOpen}
         loading={isDeleting}
-        onClose={onDeleteClose}
-        onConfirm={handleDelete}
+        onClose={onSingleDeleteClose}
+        onConfirm={handleSingleDelete}
       >
         <Typography variant="body1">
           Are you sure you want to delete this transaction? The action cannot be
           undone.
+        </Typography>
+      </ConfirmationDialog>
+      <ConfirmationDialog
+        id="delete-transactions"
+        title="Delete transactions"
+        open={multiDeleteOpen}
+        loading={isDeleting}
+        onClose={onMultiDeleteClose}
+        onConfirm={handleMultiDelete}
+      >
+        <Typography variant="body1">
+          {`Are you sure you want to delete ${
+            Object.keys(rowSelection).length
+          } transactions? The action cannot be undone.`}
         </Typography>
       </ConfirmationDialog>
       {!!transaction && (

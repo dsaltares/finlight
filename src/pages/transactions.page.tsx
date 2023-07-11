@@ -2,7 +2,10 @@ import type { NextPage } from 'next';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
+import type { RowSelectionState } from '@tanstack/react-table';
+import { useState } from 'react';
 import client from '@lib/api';
 import WithAuthentication from '@components/WithAuthentication';
 import useDialog from '@lib/useDialog';
@@ -16,6 +19,12 @@ const TransactionsPage: NextPage = () => {
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
   } = useDialog();
+  const {
+    open: multiDeleteOpen,
+    onOpen: onMultiDeleteOpen,
+    onClose: onMultiDeleteClose,
+  } = useDialog();
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { data: transactions } = client.getTransactions.useQuery({});
   const { data: accounts } = client.getAccounts.useQuery();
   const { data: categories } = client.getCategories.useQuery();
@@ -29,6 +38,16 @@ const TransactionsPage: NextPage = () => {
           Transactions
         </Typography>
         <Stack direction="row" gap={1}>
+          {Object.keys(rowSelection).length > 0 && (
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={onMultiDeleteOpen}
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          )}
           <Button
             color="primary"
             variant="contained"
@@ -43,6 +62,10 @@ const TransactionsPage: NextPage = () => {
         transactions={transactions || []}
         accounts={accounts || []}
         categories={categories || []}
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+        multiDeleteOpen={multiDeleteOpen}
+        onMultiDeleteClose={onMultiDeleteClose}
       />
       <CreateUpdateTransactionDialog
         open={isCreateDialogOpen}
