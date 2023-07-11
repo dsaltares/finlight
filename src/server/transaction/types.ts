@@ -25,6 +25,15 @@ export const CreateTransactionInput = Transaction.pick({
   accountId: true,
 });
 export const CreateTransactionOutput = Transaction;
+export const CreateTransactionsInput = z.object({
+  accountId: z.string(),
+  transactions: Transaction.pick({
+    amount: true,
+    date: true,
+    description: true,
+  }).array(),
+});
+export const CreateTransactionsOutput = z.number();
 export const UpdateTransactionInput = z.object({
   id: z.string(),
   amount: z.number().optional(),
@@ -43,6 +52,8 @@ export type GetTransactionsInput = z.infer<typeof GetTransactionsInput>;
 export type GetTransactionsOutput = z.infer<typeof GetTransactionsOutput>;
 export type CreateTransactionInput = z.infer<typeof CreateTransactionInput>;
 export type CreateTransactionOutput = z.infer<typeof CreateTransactionOutput>;
+export type CreateTransactionsInput = z.infer<typeof CreateTransactionsInput>;
+export type CreateTransactionsOutput = z.infer<typeof CreateTransactionsOutput>;
 export type UpdateTransactionInput = z.infer<typeof UpdateTransactionInput>;
 export type UpdateTransactionOutput = z.infer<typeof UpdateTransactionOutput>;
 export type DeleteTransactionInput = z.infer<typeof DeleteTransactionInput>;

@@ -47,6 +47,7 @@ const AccountList = ({ accounts, presets }: Props) => {
         <AccountListItem
           key={account.id}
           account={account}
+          presets={presets}
           onUpdate={onUpdateDialogOpen}
           onDelete={onDeleteOpen}
         />

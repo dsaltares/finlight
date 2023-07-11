@@ -11,7 +11,6 @@ const Routes = {
   accounts: '/accounts',
   insights: '/insights',
   budget: '/budget',
-  settings: '/settings',
   categories: '/categories',
   csvImportPresets: '/csvImportPresets',
   privacyPolicy: '/privacy_policy.pdf',

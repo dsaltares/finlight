@@ -71,7 +71,9 @@ const CreateUpdateAccountDialog = ({
   const { presetOptions, csvImportPreset } = useMemo(() => {
     const presetOptions = presets.map(({ id, name }) => ({ id, label: name }));
     const csvImportPreset = account
-      ? presetOptions.find((option) => option.id === account.csvImportPresetId)
+      ? presetOptions.find(
+          (option) => option.id === account.csvImportPresetId
+        ) || null
       : null;
     return { presetOptions, csvImportPreset };
   }, [presets, account]);
