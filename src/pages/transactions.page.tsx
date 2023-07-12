@@ -8,6 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import type { RowSelectionState } from '@tanstack/react-table';
 import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
 import client from '@lib/api';
 import WithAuthentication from '@components/WithAuthentication';
 import useDialog from '@lib/useDialog';
@@ -39,7 +40,7 @@ const TransactionsPage: NextPage = () => {
     onClose: onMultiUpdateClose,
   } = useDialog();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const { hasFilters } = useFiltersFromurl();
+  const { filters } = useFiltersFromurl();
   const { data: transactions } = client.getTransactions.useQuery({});
   const { data: accounts } = client.getAccounts.useQuery();
   const { data: categories } = client.getCategories.useQuery();
@@ -68,12 +69,11 @@ const TransactionsPage: NextPage = () => {
               </IconButton>
             </>
           )}
-          <IconButton
-            color={hasFilters ? 'primary' : 'default'}
-            onClick={onFilterDialogOpen}
-          >
-            <FilterAltIcon />
-          </IconButton>
+          <Badge badgeContent={filters.length} color="primary">
+            <IconButton color="primary" onClick={onFilterDialogOpen}>
+              <FilterAltIcon />
+            </IconButton>
+          </Badge>
           <IconButton color="primary" onClick={onCreateDialogOpen}>
             <AddIcon />
           </IconButton>
