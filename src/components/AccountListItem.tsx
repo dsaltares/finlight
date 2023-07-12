@@ -56,6 +56,7 @@ const AccountListItem = ({ account, presets, onUpdate, onDelete }: Props) => {
         const amountIndex = preset.fields.indexOf('Amount');
         const depositIndex = preset.fields.indexOf('Deposit');
         const withdrawalIndex = preset.fields.indexOf('Withdrawal');
+        const feeIndex = preset.fields.indexOf('Fee');
 
         const transactions = records
           .slice(preset.rowsToSkipStart, records.length - preset.rowsToSkipEnd)
@@ -75,10 +76,13 @@ const AccountListItem = ({ account, presets, onUpdate, onDelete }: Props) => {
               amountStr = amountStr.replace('.', '').replace(',', '.');
             }
 
+            const amount = parseFloat(amountStr);
+            const fee = feeIndex > -1 ? parseFloat(record[feeIndex]) : 0;
+
             return {
               date: parseDate(record[dateIndex], preset.dateFormat, new Date()),
               description: record[descriptionIndex] || '',
-              amount: parseFloat(amountStr),
+              amount: amount - fee,
             };
           });
 
