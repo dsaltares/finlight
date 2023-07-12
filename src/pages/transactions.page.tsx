@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import EditIcon from '@mui/icons-material/Edit';
 import type { RowSelectionState } from '@tanstack/react-table';
 import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
@@ -32,6 +33,11 @@ const TransactionsPage: NextPage = () => {
     onOpen: onMultiDeleteOpen,
     onClose: onMultiDeleteClose,
   } = useDialog();
+  const {
+    open: multiUpdateOpen,
+    onOpen: onMultiUpdateOpen,
+    onClose: onMultiUpdateClose,
+  } = useDialog();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { hasFilters } = useFiltersFromurl();
   const { data: transactions } = client.getTransactions.useQuery({});
@@ -53,9 +59,14 @@ const TransactionsPage: NextPage = () => {
         </Typography>
         <Stack direction="row" gap={1}>
           {Object.keys(rowSelection).length > 0 && (
-            <IconButton color="error" onClick={onMultiDeleteOpen}>
-              <DeleteIcon />
-            </IconButton>
+            <>
+              <IconButton color="error" onClick={onMultiDeleteOpen}>
+                <DeleteIcon />
+              </IconButton>
+              <IconButton color="primary" onClick={onMultiUpdateOpen}>
+                <EditIcon />
+              </IconButton>
+            </>
           )}
           <IconButton
             color={hasFilters ? 'primary' : 'default'}
@@ -76,6 +87,8 @@ const TransactionsPage: NextPage = () => {
         onRowSelectionChange={setRowSelection}
         multiDeleteOpen={multiDeleteOpen}
         onMultiDeleteClose={onMultiDeleteClose}
+        multiUpdateOpen={multiUpdateOpen}
+        onMultiUpdateClose={onMultiUpdateClose}
       />
       <CreateUpdateTransactionDialog
         open={isCreateDialogOpen}
