@@ -19,7 +19,8 @@ export type Period =
   | 'last3Months'
   | 'currentYear'
   | 'lastYear'
-  | 'custom';
+  | 'custom'
+  | 'allTime';
 
 const PeriodLabels: Record<Period, string> = {
   last30Days: 'Last 30 days',
@@ -29,6 +30,7 @@ const PeriodLabels: Record<Period, string> = {
   last3Months: 'Last 3 months',
   currentYear: 'Current year',
   lastYear: 'Last year',
+  allTime: 'All time',
   custom: 'Custom',
 };
 
