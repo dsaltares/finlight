@@ -71,7 +71,7 @@ const toTransactionTableRow = (
   accountName: accountsById[transaction.accountId].name,
   currency: accountsById[transaction.accountId].currency,
   categoryName: transaction.categoryId
-    ? categoriesById[transaction.categoryId].name
+    ? categoriesById[transaction.categoryId]?.name || null
     : null,
 });
 
