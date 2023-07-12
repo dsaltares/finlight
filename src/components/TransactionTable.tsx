@@ -30,6 +30,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import Checkbox from '@mui/material/Checkbox';
+import { useTheme } from '@mui/material/styles';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import type { Account } from '@server/account/types';
@@ -101,6 +102,7 @@ const TransactionTable = ({
   multiUpdateOpen,
   onMultiUpdateClose,
 }: Props) => {
+  const theme = useTheme();
   const { query } = useRouter();
   const { sorting, toggleSort } = useSortFromUrl(DefaultSort);
   const { filters } = useFiltersFromurl();
@@ -215,6 +217,9 @@ const TransactionTable = ({
                 sx={{
                   backgroundColor: stringToColor(
                     info.row.original.categoryName
+                  ),
+                  color: theme.palette.getContrastText(
+                    stringToColor(info.row.original.categoryName)
                   ),
                 }}
                 label={info.row.original.categoryName}
