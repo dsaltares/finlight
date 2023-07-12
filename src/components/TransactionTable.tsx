@@ -3,6 +3,8 @@ import {
   type RowData,
   type RowSelectionState,
   type OnChangeFn,
+  type FilterFn,
+  type Row,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -38,7 +40,6 @@ import useDialogForId from '@lib/useDialogForId';
 import useDeleteTransactions from '@lib/transactions/useDeleteTransactions';
 import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
 import useDialogFromUrl from '@lib/useDialogFromUrl';
-import Routes from '@lib/routes';
 import ConfirmationDialog from './ConfirmationDialog';
 import CreateUpdateTransactionDialog from './CreateUpdateTransactionDialog';
 
@@ -46,6 +47,10 @@ declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     numeric: boolean;
+  }
+
+  interface FilterFns {
+    dateRangeFilter: FilterFn<TransactionTableRow>;
   }
 }
 
@@ -148,10 +153,12 @@ const TransactionTable = ({
           />
         ),
         enableSorting: false,
+        enableColumnFilter: false,
       }),
       columnHelper.accessor('date', {
         header: 'Date',
         cell: (info) => formatDate(info.getValue()),
+        filterFn: 'dateRangeFilter',
       }),
       columnHelper.accessor('accountId', {
         header: 'Account',
@@ -168,6 +175,7 @@ const TransactionTable = ({
           </Link>
         ),
         filterFn: 'equalsString',
+        enableColumnFilter: true,
       }),
       columnHelper.accessor('amount', {
         header: 'Amount',
@@ -180,15 +188,19 @@ const TransactionTable = ({
           </Typography>
         ),
         meta: { numeric: true },
+        enableColumnFilter: true,
       }),
       columnHelper.accessor('categoryId', {
         header: 'Category',
         cell: (info) =>
           info.row.original.categoryId && info.row.original.categoryName ? (
             <Link
-              href={Routes.transactionsForCategory(
-                info.row.original.categoryId
-              )}
+              href={{
+                query: {
+                  ...query,
+                  filterByCategoryId: info.row.original.categoryId,
+                },
+              }}
             >
               <Chip
                 sx={{
@@ -203,10 +215,12 @@ const TransactionTable = ({
           ) : (
             ''
           ),
+        enableColumnFilter: true,
       }),
       columnHelper.accessor('description', {
         header: 'Description',
         cell: (info) => info.getValue(),
+        enableColumnFilter: true,
       }),
       columnHelper.display({
         id: 'actions',
@@ -239,7 +253,24 @@ const TransactionTable = ({
       columnFilters: filters,
       rowSelection,
     },
+    filterFns: {
+      dateRangeFilter: (
+        row: Row<TransactionTableRow>,
+        _columnIds,
+        filterValue: string | undefined
+      ) => {
+        const [from, to] = filterValue ? filterValue.split(',') : [null, null];
+        if (from && row.original.date < from) {
+          return false;
+        }
+        if (to && row.original.date > to) {
+          return false;
+        }
+        return true;
+      },
+    },
     enableRowSelection: true,
+    enableColumnFilters: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -260,7 +291,7 @@ const TransactionTable = ({
   return (
     <Paper>
       <TableContainer>
-        <Table sx={{ minWidth: 650 }}>
+        <Table sx={{ minWidth: 650 }} size="small">
           <TableHead>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
