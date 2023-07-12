@@ -40,6 +40,7 @@ const TransactionsPage: NextPage = () => {
     onClose: onMultiUpdateClose,
   } = useDialog();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const hasRowsSelected = Object.keys(rowSelection).length > 0;
   const { filters } = useFiltersFromurl();
   const { data: transactions } = client.getTransactions.useQuery({});
   const { data: accounts } = client.getAccounts.useQuery();
@@ -59,16 +60,20 @@ const TransactionsPage: NextPage = () => {
           Transactions
         </Typography>
         <Stack direction="row" gap={1}>
-          {Object.keys(rowSelection).length > 0 && (
-            <>
-              <IconButton color="error" onClick={onMultiDeleteOpen}>
-                <DeleteIcon />
-              </IconButton>
-              <IconButton color="primary" onClick={onMultiUpdateOpen}>
-                <EditIcon />
-              </IconButton>
-            </>
-          )}
+          <IconButton
+            color="error"
+            onClick={onMultiDeleteOpen}
+            disabled={!hasRowsSelected}
+          >
+            <DeleteIcon />
+          </IconButton>
+          <IconButton
+            color="primary"
+            onClick={onMultiUpdateOpen}
+            disabled={!hasRowsSelected}
+          >
+            <EditIcon />
+          </IconButton>
           <Badge badgeContent={filters.length} color="primary">
             <IconButton color="primary" onClick={onFilterDialogOpen}>
               <FilterAltIcon />
