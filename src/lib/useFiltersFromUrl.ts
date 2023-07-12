@@ -16,20 +16,34 @@ const useFiltersFromurl = () => {
         }),
     [query]
   );
-  const setFilter = useCallback(
-    (id: string, value: string | undefined) => {
-      const newQuery = { ...query, id: value };
-      if (!value) {
-        delete newQuery.id;
-      }
-
-      void push({ query: newQuery }, undefined, { shallow: true });
+  const filtersByColumnId = useMemo(
+    () =>
+      filters.reduce<Record<string, string>>(
+        (acc, filter) => ({ ...acc, [filter.id]: filter.value }),
+        {}
+      ),
+    [filters]
+  );
+  const setFilters = useCallback(
+    (filters: Record<string, string | undefined>) => {
+      const newQuery = { ...query };
+      Object.keys(filters).forEach((id) => {
+        const field = `filterBy${id[0].toUpperCase()}${id.slice(1)}`;
+        newQuery[field] = filters[id];
+        if (!filters[id]) {
+          delete newQuery[field];
+        }
+        void push({ query: newQuery }, undefined, { shallow: true });
+      });
     },
     [push, query]
   );
+
   return {
     filters,
-    setFilter,
+    filtersByColumnId,
+    setFilters,
+    hasFilters: filters.length > 0,
   };
 };
 
