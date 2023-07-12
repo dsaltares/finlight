@@ -304,7 +304,7 @@ const TransactionTable = ({
     });
 
   return (
-    <Paper>
+    <Paper elevation={0} variant="outlined">
       <TableContainer>
         <Table sx={{ minWidth: 650 }} size="small">
           <TableHead>
