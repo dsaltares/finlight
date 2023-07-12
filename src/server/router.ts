@@ -15,6 +15,7 @@ import createTransactions from './transaction/createTransactions';
 import deleteTransactions from './transaction/deleteTransactions';
 import getTransactions from './transaction/getTransactions';
 import updateTransaction from './transaction/updateTransaction';
+import updateTransactions from './transaction/updateTransactions';
 import trpc from './trpc';
 
 const router = trpc.router({
@@ -30,6 +31,7 @@ const router = trpc.router({
   createTransaction,
   createTransactions,
   updateTransaction,
+  updateTransactions,
   deleteTransactions,
   getCSVImportPresets,
   createCSVImportPreset,

@@ -42,6 +42,14 @@ export const UpdateTransactionInput = z.object({
   categoryId: z.string().nullable().optional(),
 });
 export const UpdateTransactionOutput = Transaction;
+export const UpdateTransactionsInput = z.object({
+  ids: z.string().array(),
+  amount: z.number().optional(),
+  date: dateSchema.optional(),
+  description: z.string().optional(),
+  categoryId: z.string().nullable().optional(),
+});
+export const UpdateTransactionsOutput = z.void();
 export const DeleteTransactionsInput = z.object({
   ids: z.string().array(),
 });
@@ -56,5 +64,7 @@ export type CreateTransactionsInput = z.infer<typeof CreateTransactionsInput>;
 export type CreateTransactionsOutput = z.infer<typeof CreateTransactionsOutput>;
 export type UpdateTransactionInput = z.infer<typeof UpdateTransactionInput>;
 export type UpdateTransactionOutput = z.infer<typeof UpdateTransactionOutput>;
+export type UpdateTransactionsInput = z.infer<typeof UpdateTransactionsInput>;
+export type UpdateTransactionsOutput = z.infer<typeof UpdateTransactionsOutput>;
 export type DeleteTransactionsInput = z.infer<typeof DeleteTransactionsInput>;
 export type DeleteTransactionsOutput = z.infer<typeof DeleteTransactionsOutput>;

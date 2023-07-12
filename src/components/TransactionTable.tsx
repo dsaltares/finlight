@@ -34,14 +34,19 @@ import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
-import type { Transaction } from '@server/transaction/types';
+import type {
+  Transaction,
+  UpdateTransactionsInput,
+} from '@server/transaction/types';
 import { formatAmount, formatDate } from '@lib/format';
 import useDialogForId from '@lib/useDialogForId';
 import useDeleteTransactions from '@lib/transactions/useDeleteTransactions';
 import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
 import useDialogFromUrl from '@lib/useDialogFromUrl';
+import useUpdateTransactions from '@lib/transactions/useUpdateTransactions';
 import ConfirmationDialog from './ConfirmationDialog';
 import CreateUpdateTransactionDialog from './CreateUpdateTransactionDialog';
+import UpdateTransactionsDialog from './UpdateTransactionsDialog';
 
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,6 +86,8 @@ type Props = {
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
   multiDeleteOpen: boolean;
   onMultiDeleteClose: () => void;
+  multiUpdateOpen: boolean;
+  onMultiUpdateClose: () => void;
 };
 
 const TransactionTable = ({
@@ -91,23 +98,25 @@ const TransactionTable = ({
   onRowSelectionChange,
   multiDeleteOpen,
   onMultiDeleteClose,
+  multiUpdateOpen,
+  onMultiUpdateClose,
 }: Props) => {
   const { query } = useRouter();
   const { sorting, toggleSort } = useSortFromUrl(DefaultSort);
   const { filters } = useFiltersFromurl();
   const {
-    openFor: singleDeleteOpenFor,
-    open: singleDeleteOpen,
-    onOpen: onSingleDeleteOpen,
-    onClose: onSingleDeleteClose,
+    openFor: deleteOpenFor,
+    open: isDeleteDialogOpen,
+    onOpen: onDeleteDialogOpen,
+    onClose: onDeleteDialogClose,
   } = useDialogForId();
-
   const {
     openFor: transactionId,
     open: isUpdateDialogOpen,
     onOpen: onUpdateDialogOpen,
     onClose: onUpdateDialogClose,
   } = useDialogFromUrl('transactionId');
+
   const { mutateAsync: updateTransaction, isLoading: isUpdating } =
     useUpdateTransaction();
   const transaction = useMemo(
@@ -234,7 +243,7 @@ const TransactionTable = ({
             </IconButton>
             <IconButton
               aria-label="Delete"
-              onClick={() => onSingleDeleteOpen(original.id)}
+              onClick={() => onDeleteDialogOpen(original.id)}
             >
               <DeleteIcon />
             </IconButton>
@@ -242,7 +251,7 @@ const TransactionTable = ({
         ),
       }),
     ],
-    [query, onSingleDeleteOpen, onUpdateDialogOpen]
+    [query, onDeleteDialogOpen, onUpdateDialogOpen]
   );
 
   const table = useReactTable({
@@ -280,12 +289,18 @@ const TransactionTable = ({
   const { mutateAsync: deleteTransactions, isLoading: isDeleting } =
     useDeleteTransactions();
   const handleSingleDelete = () =>
-    singleDeleteOpenFor
-      ? deleteTransactions({ ids: [singleDeleteOpenFor] })
-      : undefined;
+    deleteOpenFor ? deleteTransactions({ ids: [deleteOpenFor] }) : undefined;
   const handleMultiDelete = () =>
     deleteTransactions({
       ids: table.getSelectedRowModel().flatRows.map((row) => row.original.id),
+    });
+  const { mutateAsync: updateTransactions, isLoading: isMultiUpdating } =
+    useUpdateTransactions();
+
+  const handleMultiUpdate = (data: Omit<UpdateTransactionsInput, 'ids'>) =>
+    updateTransactions({
+      ids: table.getSelectedRowModel().flatRows.map((row) => row.original.id),
+      ...data,
     });
 
   return (
@@ -348,9 +363,9 @@ const TransactionTable = ({
       <ConfirmationDialog
         id="delete-transaction"
         title="Delete transaction"
-        open={singleDeleteOpen}
+        open={isDeleteDialogOpen}
         loading={isDeleting}
-        onClose={onSingleDeleteClose}
+        onClose={onDeleteDialogClose}
         onConfirm={handleSingleDelete}
       >
         <Typography variant="body1">
@@ -381,6 +396,15 @@ const TransactionTable = ({
           categories={categories || []}
           onClose={onUpdateDialogClose}
           onUpdate={updateTransaction}
+        />
+      )}
+      {!!multiUpdateOpen && (
+        <UpdateTransactionsDialog
+          open={multiUpdateOpen}
+          loading={isMultiUpdating}
+          categories={categories || []}
+          onClose={onMultiUpdateClose}
+          onUpdate={handleMultiUpdate}
         />
       )}
     </Paper>
