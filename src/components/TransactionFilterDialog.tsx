@@ -14,6 +14,11 @@ import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
 import { isOptionEqualToValue } from '@lib/autoCompleteOptions';
+import PeriodSelect, {
+  getDateRangeForPeriod,
+  getPeriodForDateRange,
+  type Period,
+} from './PeriodSelect';
 
 type Props = {
   open: boolean;
@@ -69,6 +74,9 @@ const TransactionFilterDialog = ({
           .map((date) => (date ? new Date(date) : null))
       : [null, null]
   );
+  const [period, setPeriod] = useState<Period | ''>(
+    getPeriodForDateRange(dateRange)
+  );
   const [amountRange, setAmountRange] = useState(() =>
     filtersByColumnId.amount ? filtersByColumnId.amount.split(',') : ['', '']
   );
@@ -109,24 +117,43 @@ const TransactionFilterDialog = ({
     >
       <DialogTitle id={`${id}-title`}>Transaction filters</DialogTitle>
       <DialogContent>
-        <Stack paddingY={1} gap={1.5}>
-          <Stack direction="row" gap={0.5}>
-            <DatePicker
-              label="From"
-              value={dateRange[0]}
-              onChange={(date) => setDateRange([date, dateRange[1]])}
-              maxDate={dateRange[1]}
-              format="dd/MM/yyyy"
+        <Stack paddingY={1} gap={1.75}>
+          <Stack gap={1}>
+            <PeriodSelect
+              id="period-select"
+              label="Period"
+              value={period}
+              onChange={(period) => {
+                setPeriod(period);
+                setDateRange(getDateRangeForPeriod(period));
+              }}
             />
-            <DatePicker
-              label="Until"
-              value={dateRange[1]}
-              onChange={(date) => setDateRange([dateRange[0], date])}
-              minDate={dateRange[0]}
-              format="dd/MM/yyyy"
-            />
+            <Stack direction="row" gap={1}>
+              <DatePicker
+                label="From"
+                value={dateRange[0]}
+                onChange={(date) => {
+                  const newRange = [date, dateRange[1]];
+                  setDateRange(newRange);
+                  setPeriod(getPeriodForDateRange(newRange));
+                }}
+                maxDate={dateRange[1]}
+                format="dd/MM/yyyy"
+              />
+              <DatePicker
+                label="Until"
+                value={dateRange[1]}
+                onChange={(date) => {
+                  const newRange = [dateRange[0], date];
+                  setDateRange(newRange);
+                  setPeriod(getPeriodForDateRange(newRange));
+                }}
+                minDate={dateRange[0]}
+                format="dd/MM/yyyy"
+              />
+            </Stack>
           </Stack>
-          <Stack direction="row" gap={0.5}>
+          <Stack direction="row" gap={1}>
             <TextField
               fullWidth
               type="number"

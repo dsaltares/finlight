@@ -256,7 +256,7 @@ const TransactionTable = ({
         ),
       }),
     ],
-    [query, onDeleteDialogOpen, onUpdateDialogOpen]
+    [query, onDeleteDialogOpen, onUpdateDialogOpen, theme.palette]
   );
 
   const table = useReactTable({
