@@ -25,7 +25,7 @@ const AccountsPage: NextPage = () => {
     <Stack gap={2}>
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="h4" component="h1">
-          Categories
+          Accounts
         </Typography>
         <Stack direction="row" gap={1}>
           <Button

@@ -39,7 +39,7 @@ const TransactionFilterDialog = ({
 }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const { filtersByColumnId, setFilters } = useFiltersFromurl();
+  const { filtersByField, setFilters } = useFiltersFromurl();
   const accountOptions = useMemo(
     () =>
       accounts.map((account) => ({
@@ -58,23 +58,22 @@ const TransactionFilterDialog = ({
   );
   const [account, setAccount] = useState(
     () =>
-      accountOptions.find(
-        (option) => option.id === filtersByColumnId.accountId
-      ) || null
+      accountOptions.find((option) => option.id === filtersByField.accountId) ||
+      null
   );
   const [type, setType] = useState<TransactionType | ''>(() =>
-    filtersByColumnId.type ? (filtersByColumnId.type as TransactionType) : ''
+    filtersByField.type ? (filtersByField.type as TransactionType) : ''
   );
   const [category, setCategory] = useState(
     () =>
       categoryOptions.find(
-        (option) => option.id === filtersByColumnId.categoryId
+        (option) => option.id === filtersByField.categoryId
       ) || null
   );
-  const [description, setDescription] = useState(filtersByColumnId.description);
+  const [description, setDescription] = useState(filtersByField.description);
   const [dateRange, setDateRange] = useState(() =>
-    filtersByColumnId.date
-      ? filtersByColumnId.date
+    filtersByField.date
+      ? filtersByField.date
           .split(',')
           .map((date) => (date ? new Date(date) : null))
       : [null, null]
@@ -83,7 +82,7 @@ const TransactionFilterDialog = ({
     getPeriodForDateRange(dateRange)
   );
   const [amountRange, setAmountRange] = useState(() =>
-    filtersByColumnId.amount ? filtersByColumnId.amount.split(',') : ['', '']
+    filtersByField.amount ? filtersByField.amount.split(',') : ['', '']
   );
   const handleApplyFilters = () => {
     setFilters({
