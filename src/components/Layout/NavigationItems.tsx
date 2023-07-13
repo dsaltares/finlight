@@ -38,7 +38,6 @@ const items = [
     label: 'Insights',
     href: Routes.insights,
     icon: InsightsIcon,
-    disabled: true,
   },
   {
     label: 'Budget',

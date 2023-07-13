@@ -11,26 +11,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import stringToColor from 'string-to-color';
 import Checkbox from '@mui/material/Checkbox';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
 import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import PaymentIcon from '@mui/icons-material/Payment';
-import PaidIcon from '@mui/icons-material/Paid';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
-import { useTheme } from '@mui/material/styles';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
 import type { Transaction } from '@server/transaction/types';
 import { formatAmount, formatDate } from '@lib/format';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import CategoryChip from '@components/CategoryChip';
+import TransactionTypeChip from '@components/TransactionTypeChip';
+import AccountLink from '@components/AccountLink';
 
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,8 +76,6 @@ const useTransactionTable = ({
   onUpdateDialogOpen,
   onDeleteDialogOpen,
 }: Props) => {
-  const theme = useTheme();
-  const { query } = useRouter();
   const { sorting } = useSortFromUrl(DefaultSort);
   const { filters } = useFiltersFromurl();
   const tableTransactions = useMemo(() => {
@@ -133,16 +126,10 @@ const useTransactionTable = ({
       columnHelper.accessor('accountId', {
         header: 'Account',
         cell: (info) => (
-          <Link
-            href={{
-              query: {
-                ...query,
-                filterByAccountId: info.row.original.accountId,
-              },
-            }}
-          >
-            {info.row.original.accountName}
-          </Link>
+          <AccountLink
+            id={info.getValue()}
+            name={info.row.original.accountName}
+          />
         ),
         filterFn: 'equalsString',
         enableColumnFilter: true,
@@ -162,59 +149,17 @@ const useTransactionTable = ({
       }),
       columnHelper.accessor('type', {
         header: 'Type',
-        cell: (info) => {
-          const type = info.getValue();
-          const icon =
-            type === 'Expense' ? (
-              <PaymentIcon />
-            ) : type === 'Income' ? (
-              <PaidIcon />
-            ) : (
-              <SwapHorizIcon />
-            );
-          return (
-            <Link
-              href={{
-                query: {
-                  ...query,
-                  filterByType: type,
-                },
-              }}
-            >
-              <Chip icon={icon} label={type} variant="outlined" clickable />
-            </Link>
-          );
-        },
+        cell: (info) => <TransactionTypeChip type={info.getValue()} />,
         enableColumnFilter: true,
       }),
       columnHelper.accessor('categoryId', {
         header: 'Category',
-        cell: (info) =>
-          info.row.original.categoryId && info.row.original.categoryName ? (
-            <Link
-              href={{
-                query: {
-                  ...query,
-                  filterByCategoryId: info.row.original.categoryId,
-                },
-              }}
-            >
-              <Chip
-                sx={{
-                  backgroundColor: stringToColor(
-                    info.row.original.categoryName
-                  ),
-                  color: theme.palette.getContrastText(
-                    stringToColor(info.row.original.categoryName)
-                  ),
-                }}
-                label={info.row.original.categoryName}
-                clickable
-              />
-            </Link>
-          ) : (
-            ''
-          ),
+        cell: (info) => (
+          <CategoryChip
+            id={info.getValue()}
+            name={info.row.original.categoryName}
+          />
+        ),
         enableColumnFilter: true,
       }),
       columnHelper.accessor('description', {
@@ -242,7 +187,7 @@ const useTransactionTable = ({
         ),
       }),
     ],
-    [query, onDeleteDialogOpen, onUpdateDialogOpen, theme.palette]
+    [onDeleteDialogOpen, onUpdateDialogOpen]
   );
 
   return useReactTable({

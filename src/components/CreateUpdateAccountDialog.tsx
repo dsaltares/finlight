@@ -11,7 +11,6 @@ import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import { useCallback, useMemo } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
-import Avatar from '@mui/material/Avatar';
 import type {
   Account,
   CreateAccountInput,
@@ -19,12 +18,11 @@ import type {
 } from '@server/account/types';
 import {
   currencyOptionsById,
-  currencyOptions,
   isOptionEqualToValue,
   getOptionLabel,
 } from '@lib/autoCompleteOptions';
-import flags from '@lib/flags';
 import type { CSVImportPreset } from '@server/csvImportPreset/types';
+import CurrencyAutocomplete from './CurrencyAutocomplete';
 
 type BaseProps = {
   open: boolean;
@@ -78,7 +76,6 @@ const CreateUpdateAccountDialog = ({
     return { presetOptions, csvImportPreset };
   }, [presets, account]);
   const {
-    watch,
     control,
     register,
     handleSubmit,
@@ -114,7 +111,6 @@ const CreateUpdateAccountDialog = ({
     },
     [onCreate, onUpdate, onClose, account]
   );
-  const currencyWatch = watch('currency');
 
   return (
     <Dialog
@@ -146,47 +142,11 @@ const CreateUpdateAccountDialog = ({
             name="currency"
             rules={{ required: true }}
             render={({ field: { value, onChange, onBlur } }) => (
-              <Autocomplete
-                disableClearable
-                id="currency-autocomplete"
+              <CurrencyAutocomplete
                 value={value}
-                onChange={(_event, newValue) => onChange(newValue!)}
-                options={currencyOptions}
-                isOptionEqualToValue={isOptionEqualToValue}
-                getOptionLabel={getOptionLabel}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Currency"
-                    required
-                    error={!!errors.currency}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <Avatar
-                          src={flags[currencyWatch.id.toLowerCase()]}
-                          sx={{ width: 24, height: 24 }}
-                        >
-                          {currencyWatch.label}
-                        </Avatar>
-                      ),
-                    }}
-                  />
-                )}
-                renderOption={(props, option) => (
-                  <li {...props}>
-                    <Stack direction="row" alignItems="center" gap={1}>
-                      <Avatar
-                        src={flags[option.id.toLowerCase()]}
-                        sx={{ width: 24, height: 24 }}
-                      >
-                        {option.label}
-                      </Avatar>
-                      {option.label}
-                    </Stack>
-                  </li>
-                )}
+                onChange={onChange}
                 onBlur={onBlur}
+                error={!!errors.currency}
               />
             )}
           />

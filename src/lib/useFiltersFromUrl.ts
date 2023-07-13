@@ -16,9 +16,9 @@ const useFiltersFromurl = () => {
         }),
     [query]
   );
-  const filtersByColumnId = useMemo(
+  const filtersByField = useMemo(
     () =>
-      filters.reduce<Record<string, string>>(
+      filters.reduce<Record<string, string | undefined>>(
         (acc, filter) => ({ ...acc, [filter.id]: filter.value }),
         {}
       ),
@@ -41,7 +41,7 @@ const useFiltersFromurl = () => {
 
   return {
     filters,
-    filtersByColumnId,
+    filtersByField,
     setFilters,
     hasFilters: filters.length > 0,
   };
