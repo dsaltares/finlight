@@ -13,9 +13,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Autocomplete from '@mui/material/Autocomplete';
 import Checkbox from '@mui/material/Checkbox';
-import type { UpdateTransactionsInput } from '@server/transaction/types';
+import type {
+  TransactionType,
+  UpdateTransactionsInput,
+} from '@server/transaction/types';
 import type { Category } from '@server/category/types';
 import { isOptionEqualToValue } from '@lib/autoCompleteOptions';
+import TransactionTypeSelect from './TransactionTypeSelect';
 
 type Props = {
   open: boolean;
@@ -33,6 +37,7 @@ type TransactionFormValues = {
   amount: string;
   date: Date | null;
   description: string;
+  type: TransactionType | '';
   category: Option | null;
 };
 
@@ -65,6 +70,7 @@ const UpdateTransactionsDialog = ({
     defaultValues: {
       amount: '',
       date: null,
+      type: '',
       description: '',
       category: null,
     },
@@ -79,6 +85,7 @@ const UpdateTransactionsDialog = ({
         date: new Date(values.date!),
         categoryId: values.category?.id || null,
         amount: parseFloat(values.amount),
+        type: values.type as TransactionType,
       };
       const hasEnabledFields = Object.values(enabledFields).some(
         (field) => !!field
@@ -181,6 +188,28 @@ const UpdateTransactionsDialog = ({
               error={!!errors.description}
               disabled={!enabledFields['description']}
               {...register('description')}
+            />
+          </Stack>
+          <Stack direction="row" gap={0.5} alignItems="center">
+            <Checkbox
+              checked={!!enabledFields['type']}
+              onChange={(e) =>
+                setEnabledFields((enabled) => ({
+                  ...enabled,
+                  type: e.target.checked,
+                }))
+              }
+            />
+            <Controller
+              control={control}
+              name="type"
+              render={({ field: { value, onChange } }) => (
+                <TransactionTypeSelect
+                  value={value}
+                  onChange={onChange}
+                  disabled={!enabledFields['type']}
+                />
+              )}
             />
           </Stack>
           <Stack direction="row" gap={0.5} alignItems="center">

@@ -13,14 +13,16 @@ import { useCallback, useMemo } from 'react';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import startOfToday from 'date-fns/startOfToday';
 import Autocomplete from '@mui/material/Autocomplete';
-import type {
-  CreateTransactionInput,
-  Transaction,
-  UpdateTransactionInput,
+import {
+  type CreateTransactionInput,
+  type Transaction,
+  type TransactionType,
+  type UpdateTransactionInput,
 } from '@server/transaction/types';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
 import { isOptionEqualToValue } from '@lib/autoCompleteOptions';
+import TransactionTypeSelect from './TransactionTypeSelect';
 
 type BaseProps = {
   open: boolean;
@@ -52,6 +54,7 @@ type TransactionFormValues = {
   amount: string;
   date: Date | null;
   description: string;
+  type: TransactionType;
   category: Option | null;
   account: Option;
 };
@@ -91,6 +94,7 @@ const CreateUpdateTransactionDialog = ({
         date: transaction?.date ? new Date(transaction.date) : startOfToday(),
         description: transaction?.description || '',
         account,
+        type: transaction?.type || 'Expense',
         category,
       },
     };
@@ -106,21 +110,22 @@ const CreateUpdateTransactionDialog = ({
   });
   const onSubmit: SubmitHandler<TransactionFormValues> = useCallback(
     async (values) => {
+      const common = {
+        date: new Date(values.date!),
+        categoryId: values.category?.id || null,
+        amount: parseFloat(values.amount),
+      };
       if (transaction) {
         await onUpdate({
-          ...transaction,
+          id: transaction.id,
           ...values,
-          date: new Date(values.date!),
-          categoryId: values.category?.id || null,
-          amount: parseFloat(values.amount),
+          ...common,
         });
       } else {
         await onCreate({
           ...values,
-          date: new Date(values.date!),
-          categoryId: values.category?.id || null,
+          ...common,
           accountId: values.account?.id as string,
-          amount: parseFloat(values.amount),
         });
       }
       onClose();
@@ -197,6 +202,13 @@ const CreateUpdateTransactionDialog = ({
                 onBlur={onBlur}
                 disabled={!!transaction}
               />
+            )}
+          />
+          <Controller
+            control={control}
+            name="type"
+            render={({ field: { value, onChange } }) => (
+              <TransactionTypeSelect value={value} onChange={onChange} />
             )}
           />
           <Controller

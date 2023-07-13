@@ -7,7 +7,7 @@ export const createTransaction: Procedure<
   CreateTransactionInput,
   CreateTransactionOutput
 > = async ({
-  input: { amount, date, description, accountId, categoryId },
+  input: { amount, date, description, accountId, type, categoryId },
   ctx: { session },
 }) => {
   await prisma.bankAccount.findFirstOrThrow({
@@ -23,6 +23,7 @@ export const createTransaction: Procedure<
       date,
       description,
       accountId,
+      type,
       categoryId,
     },
   });

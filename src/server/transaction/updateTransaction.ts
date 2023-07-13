@@ -8,7 +8,7 @@ export const updateTransaction: Procedure<
   UpdateTransactionInput,
   UpdateTransactionOutput
 > = async ({
-  input: { id, amount, date, categoryId, description },
+  input: { id, amount, date, type, categoryId, description },
   ctx: { session },
 }) => {
   const transaction = await prisma.transaction.findFirstOrThrow({
@@ -25,7 +25,7 @@ export const updateTransaction: Procedure<
   }
   const updatedTransaction = await prisma.transaction.update({
     where: { id },
-    data: { amount, date, categoryId, description },
+    data: { amount, date, type, categoryId, description },
   });
   await updateAccountBalance(transaction.accountId);
   return updatedTransaction;

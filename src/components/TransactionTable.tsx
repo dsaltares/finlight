@@ -26,6 +26,9 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import PaymentIcon from '@mui/icons-material/Payment';
+import PaidIcon from '@mui/icons-material/Paid';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
@@ -199,6 +202,33 @@ const TransactionTable = ({
           </Typography>
         ),
         meta: { numeric: true },
+        enableColumnFilter: true,
+      }),
+      columnHelper.accessor('type', {
+        header: 'Type',
+        cell: (info) => {
+          const type = info.getValue();
+          const icon =
+            type === 'Expense' ? (
+              <PaymentIcon />
+            ) : type === 'Income' ? (
+              <PaidIcon />
+            ) : (
+              <SwapHorizIcon />
+            );
+          return (
+            <Link
+              href={{
+                query: {
+                  ...query,
+                  filterByType: type,
+                },
+              }}
+            >
+              <Chip icon={icon} label={type} variant="outlined" clickable />
+            </Link>
+          );
+        },
         enableColumnFilter: true,
       }),
       columnHelper.accessor('categoryId', {
