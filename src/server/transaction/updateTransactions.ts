@@ -8,7 +8,7 @@ export const updateTransactions: Procedure<
   UpdateTransactionsInput,
   UpdateTransactionsOutput
 > = async ({
-  input: { ids, amount, date, categoryId, description },
+  input: { ids, amount, date, type, categoryId, description },
   ctx: { session },
 }) => {
   const transactions = await prisma.transaction.findMany({
@@ -33,6 +33,7 @@ export const updateTransactions: Procedure<
     data: {
       amount,
       date,
+      type,
       categoryId,
       description,
       deletedAt: null,

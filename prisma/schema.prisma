@@ -107,15 +107,22 @@ model Category {
   @@unique([userId, name])
 }
 
+enum TransactionType {
+  Income
+  Expense
+  Transfer
+}
+
 model Transaction {
-  id          String    @id @default(cuid())
+  id          String          @id @default(cuid())
   amount      Float
-  date        DateTime  @default(now())
-  description String    @default("")
+  date        DateTime        @default(now())
+  description String          @default("")
   accountId   String
+  type        TransactionType @default(Expense)
   categoryId  String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   deletedAt   DateTime?
 
   account  BankAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)

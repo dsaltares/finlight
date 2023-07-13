@@ -14,11 +14,13 @@ import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
 import { isOptionEqualToValue } from '@lib/autoCompleteOptions';
+import type { TransactionType } from '@server/transaction/types';
 import PeriodSelect, {
   getDateRangeForPeriod,
   getPeriodForDateRange,
   type Period,
 } from './PeriodSelect';
+import TransactionTypeSelect from './TransactionTypeSelect';
 
 type Props = {
   open: boolean;
@@ -60,6 +62,9 @@ const TransactionFilterDialog = ({
         (option) => option.id === filtersByColumnId.accountId
       ) || null
   );
+  const [type, setType] = useState<TransactionType | ''>(() =>
+    filtersByColumnId.type ? (filtersByColumnId.type as TransactionType) : ''
+  );
   const [category, setCategory] = useState(
     () =>
       categoryOptions.find(
@@ -88,6 +93,7 @@ const TransactionFilterDialog = ({
       amount: amountRange.some((amount) => !!amount)
         ? amountRange.join(',')
         : undefined,
+      type: type || undefined,
       accountId: account?.id,
       categoryId: category?.id,
       description: description || undefined,
@@ -100,6 +106,7 @@ const TransactionFilterDialog = ({
       date: undefined,
       amount: undefined,
       accountId: undefined,
+      type: undefined,
       categoryId: undefined,
       description: undefined,
     });
@@ -183,6 +190,7 @@ const TransactionFilterDialog = ({
             isOptionEqualToValue={isOptionEqualToValue}
             renderInput={(params) => <TextField {...params} label="Account" />}
           />
+          <TransactionTypeSelect value={type} onChange={setType} clearable />
           <Autocomplete
             id="category-autocomplete"
             value={category}

@@ -2,11 +2,15 @@ import { z } from 'zod';
 
 export const dateSchema = z.union([z.string(), z.date()]);
 
+export const TransactionTypes = ['Income', 'Expense', 'Transfer'] as const;
+export const TransactionType = z.enum(TransactionTypes);
+
 export const Transaction = z.object({
   id: z.string(),
   amount: z.number(),
   date: dateSchema,
   description: z.string(),
+  type: TransactionType,
   categoryId: z.string().nullable(),
   accountId: z.string(),
   createdAt: dateSchema,
@@ -21,6 +25,7 @@ export const CreateTransactionInput = Transaction.pick({
   amount: true,
   date: true,
   description: true,
+  type: true,
   categoryId: true,
   accountId: true,
 });
@@ -39,6 +44,7 @@ export const UpdateTransactionInput = z.object({
   amount: z.number().optional(),
   date: dateSchema.optional(),
   description: z.string().optional(),
+  type: TransactionType.optional(),
   categoryId: z.string().nullable().optional(),
 });
 export const UpdateTransactionOutput = Transaction;
@@ -47,6 +53,7 @@ export const UpdateTransactionsInput = z.object({
   amount: z.number().optional(),
   date: dateSchema.optional(),
   description: z.string().optional(),
+  type: TransactionType.optional(),
   categoryId: z.string().nullable().optional(),
 });
 export const UpdateTransactionsOutput = z.void();
@@ -55,6 +62,7 @@ export const DeleteTransactionsInput = z.object({
 });
 export const DeleteTransactionsOutput = z.void();
 
+export type TransactionType = z.infer<typeof TransactionType>;
 export type Transaction = z.infer<typeof Transaction>;
 export type GetTransactionsInput = z.infer<typeof GetTransactionsInput>;
 export type GetTransactionsOutput = z.infer<typeof GetTransactionsOutput>;
