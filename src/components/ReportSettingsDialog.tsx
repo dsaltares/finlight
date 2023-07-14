@@ -89,6 +89,8 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
       aria-labelledby={`${id}-title`}
       fullScreen={fullScreen}
       keepMounted={false}
+      fullWidth
+      maxWidth="sm"
     >
       <DialogTitle id={`${id}-title`}>Report settings</DialogTitle>
       <DialogContent>
@@ -114,6 +116,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
                 }}
                 maxDate={dateRange[1]}
                 format="dd/MM/yyyy"
+                sx={{ width: '100%' }}
               />
               <DatePicker
                 label="Until"
@@ -125,6 +128,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
                 }}
                 minDate={dateRange[0]}
                 format="dd/MM/yyyy"
+                sx={{ width: '100%' }}
               />
             </Stack>
           </Stack>

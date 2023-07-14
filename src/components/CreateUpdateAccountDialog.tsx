@@ -120,6 +120,8 @@ const CreateUpdateAccountDialog = ({
       aria-labelledby={`${id}-title`}
       fullScreen={fullScreen}
       keepMounted={false}
+      fullWidth
+      maxWidth="sm"
     >
       <DialogTitle id={`${id}-title`}>
         {account ? 'Edit account' : 'Create account'}

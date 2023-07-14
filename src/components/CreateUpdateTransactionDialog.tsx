@@ -141,6 +141,8 @@ const CreateUpdateTransactionDialog = ({
       aria-labelledby={`${id}-title`}
       fullScreen={fullScreen}
       keepMounted={false}
+      fullWidth
+      maxWidth="sm"
     >
       <DialogTitle id={`${id}-title`}>
         {transaction ? 'Edit transaction' : 'Create transaction'}

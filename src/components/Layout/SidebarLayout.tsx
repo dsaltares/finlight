@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import { useRouter } from 'next/router';
 import Sidebar from './Sidebar';
 import { DrawerWidth } from './constants';
-import MobileHeader from './MobileHeader';
+import HeaderBar from './HeaderBar';
 
 const SidebarLayout = ({ children }: PropsWithChildren) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -24,7 +24,7 @@ const SidebarLayout = ({ children }: PropsWithChildren) => {
           width: `calc(100% - ${DrawerWidth}px)`,
         }}
       >
-        <MobileHeader onOpenSidebar={handleDrawerToggle} />
+        <HeaderBar onOpenSidebar={handleDrawerToggle} />
         <Stack component="main" flexGrow={1} p={3}>
           {children}
         </Stack>

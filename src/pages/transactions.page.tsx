@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,6 +16,7 @@ import TransactionTable from '@components/TransactionTable';
 import useCreateTransaction from '@lib/transactions/useCreateTransaction';
 import TransactionFilterDialog from '@components/TransactionFilterDialog';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import Fab from '@components/Fab';
 
 const TransactionsPage: NextPage = () => {
   const {
@@ -53,12 +53,9 @@ const TransactionsPage: NextPage = () => {
       <Stack
         direction="row"
         alignItems="center"
-        justifyContent="space-between"
+        justifyContent="flex-end"
         gap={1}
       >
-        <Typography variant="h4" component="h1">
-          Transactions
-        </Typography>
         <Stack direction="row" gap={1}>
           <IconButton
             color="error"
@@ -79,9 +76,6 @@ const TransactionsPage: NextPage = () => {
               <FilterAltIcon />
             </IconButton>
           </Badge>
-          <IconButton color="primary" onClick={onCreateDialogOpen}>
-            <AddIcon />
-          </IconButton>
         </Stack>
       </Stack>
       <TransactionTable
@@ -111,6 +105,9 @@ const TransactionsPage: NextPage = () => {
           categories={categories || []}
         />
       )}
+      <Fab aria-label="New transaction" onClick={onCreateDialogOpen}>
+        <AddIcon />
+      </Fab>
     </Stack>
   );
 };

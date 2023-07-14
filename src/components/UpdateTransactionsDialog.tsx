@@ -118,6 +118,8 @@ const UpdateTransactionsDialog = ({
       aria-labelledby={`${id}-title`}
       fullScreen={fullScreen}
       keepMounted={false}
+      fullWidth
+      maxWidth="sm"
     >
       <DialogTitle id={`${id}-title`}>Edit transactions</DialogTitle>
       <DialogContent>
@@ -168,6 +170,7 @@ const UpdateTransactionsDialog = ({
                   value={value}
                   onChange={(value) => onChange(value)}
                   disabled={!enabledFields['date']}
+                  sx={{ width: '100%' }}
                 />
               )}
             />
