@@ -10,7 +10,7 @@ import useCreateCSVImportPreset from '@lib/csvImportPresets/useCreateCSVImportPr
 import CSVImportPresetList from '@components/CSVImportPresetList';
 import CreateUpdateCSVImportPresetDialog from '@components/CreateUpdateCSVImportPresetDialog';
 
-const CSVImportPresetsPage: NextPage = () => {
+const ImportPresetsPage: NextPage = () => {
   const { data: presets } = client.getCSVImportPresets.useQuery();
   const {
     open: isCreateDialogOpen,
@@ -48,4 +48,4 @@ const CSVImportPresetsPage: NextPage = () => {
   );
 };
 
-export default WithAuthentication(CSVImportPresetsPage);
+export default WithAuthentication(ImportPresetsPage);

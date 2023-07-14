@@ -41,8 +41,8 @@ const ImportFields = ({ fields, onAppend, onRemove, onMove }: Props) => (
       {fields.length > 0 ? (
         <List>
           {fields.map((field, index, allFields) => (
-            <ListItem key={index}>
-              <ListItemText>{field}</ListItemText>
+            <ListItem key={index} sx={{ padding: '0rem 1rem' }}>
+              <ListItemText secondary={field} />
               <Stack direction="row">
                 {index > 0 && (
                   <IconButton>

@@ -174,7 +174,7 @@ const CreateUpdateAccountDialog = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="CSV import preset"
+                    label="Import preset"
                     error={!!errors.csvImportPreset}
                   />
                 )}

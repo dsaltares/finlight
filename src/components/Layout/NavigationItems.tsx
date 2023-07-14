@@ -31,7 +31,7 @@ const items = [
   },
   {
     label: 'Import Presets',
-    href: Routes.csvImportPresets,
+    href: Routes.importPresets,
     icon: FileUploadIcon,
   },
   {

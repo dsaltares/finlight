@@ -52,15 +52,15 @@ const CSVImportPresetList = ({ presets }: Props) => {
 
       <ConfirmationDialog
         id="delete-preset"
-        title="Delete CSV import preset"
+        title="Delete import preset"
         open={deleteOpen}
         loading={isDeleting}
         onClose={onDeleteClose}
         onConfirm={handleDelete}
       >
         <Typography variant="body1">
-          Are you sure you want to delete this CSV import preset? The action
-          cannot be undone.
+          Are you sure you want to delete this import preset? The action cannot
+          be undone.
         </Typography>
       </ConfirmationDialog>
 

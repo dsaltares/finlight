@@ -12,7 +12,7 @@ const Routes = {
   insights: '/insights',
   budget: '/budget',
   categories: '/categories',
-  csvImportPresets: '/csvImportPresets',
+  importPresets: '/importPresets',
   privacyPolicy: '/privacy_policy.pdf',
   termsAndConditions: '/terms_and_conditions.pdf',
   cookiePolicy: '/cookie_policy.pdf',

@@ -137,7 +137,7 @@ const CreateUpdateCSVImportPresetDialog = ({
       keepMounted={false}
     >
       <DialogTitle id={`${id}-title`}>
-        {preset ? 'Edit CSV import preset' : 'Create CSV import preset'}
+        {preset ? 'Edit import preset' : 'Create import preset'}
       </DialogTitle>
       <DialogContent>
         <Stack
@@ -153,7 +153,7 @@ const CreateUpdateCSVImportPresetDialog = ({
             {...register('name', { required: true })}
           />
           <Grid container spacing={1}>
-            <Grid xs={6}>
+            <Grid xs={6} md={3}>
               <TextField
                 required
                 fullWidth
@@ -162,7 +162,7 @@ const CreateUpdateCSVImportPresetDialog = ({
                 {...register('decimal', { required: true })}
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid xs={6} md={3}>
               <TextField
                 required
                 fullWidth
@@ -171,7 +171,7 @@ const CreateUpdateCSVImportPresetDialog = ({
                 {...register('delimiter', { required: true })}
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid xs={6} md={3}>
               <TextField
                 required
                 fullWidth
@@ -184,7 +184,7 @@ const CreateUpdateCSVImportPresetDialog = ({
                 {...register('rowsToSkipStart', { required: true })}
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid xs={6} md={3}>
               <TextField
                 required
                 fullWidth

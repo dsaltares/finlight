@@ -15,8 +15,8 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
-const CategoryListItem = ({ preset, onUpdate, onDelete }: Props) => (
-  <ListItem disableGutters>
+const CSVImportPresetListItem = ({ preset, onUpdate, onDelete }: Props) => (
+  <ListItem>
     <ListItemAvatar>
       <Avatar>
         <FileUploadIcon />
@@ -34,4 +34,4 @@ const CategoryListItem = ({ preset, onUpdate, onDelete }: Props) => (
   </ListItem>
 );
 
-export default CategoryListItem;
+export default CSVImportPresetListItem;
