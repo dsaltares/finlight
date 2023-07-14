@@ -1,4 +1,5 @@
 import stringToColor from 'string-to-color';
+import useIsMobile from '@lib/useIsMobile';
 
 const defaultFormat = (value: number | string) => `${value}`;
 
@@ -29,6 +30,7 @@ const PieLabel = ({
   midAngle,
   formatValue = defaultFormat,
 }: Props) => {
+  const isMobile = useIsMobile();
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const innerX = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -44,15 +46,17 @@ const PieLabel = ({
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
-      <text
-        x={x}
-        y={y}
-        fill={stringToColor(name)}
-        textAnchor={x > cx ? 'start' : 'end'}
-        dominantBaseline="central"
-      >
-        {`${name}: ${formatValue(value)}`}
-      </text>
+      {!isMobile && (
+        <text
+          x={x}
+          y={y}
+          fill={stringToColor(name)}
+          textAnchor={x > cx ? 'start' : 'end'}
+          dominantBaseline="central"
+        >
+          {`${name}: ${formatValue(value)}`}
+        </text>
+      )}
     </>
   );
 };

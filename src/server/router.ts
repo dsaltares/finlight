@@ -11,6 +11,7 @@ import deleteCSVImportPreset from './csvImportPreset/deleteCSVImportPreset';
 import getCSVImportPresets from './csvImportPreset/getCSVImportPresets';
 import updateCSVImportPreset from './csvImportPreset/updateCSVImportPreset';
 import getCategoryReport from './reports/getCategoryReport';
+import getIncomeVsExpensesReport from './reports/getIncomeVsExpensesReport';
 import createTransaction from './transaction/createTransaction';
 import createTransactions from './transaction/createTransactions';
 import deleteTransactions from './transaction/deleteTransactions';
@@ -39,6 +40,7 @@ const router = trpc.router({
   updateCSVImportPreset,
   deleteCSVImportPreset,
   getCategoryReport,
+  getIncomeVsExpensesReport,
 });
 
 export default router;

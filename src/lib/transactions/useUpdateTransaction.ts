@@ -12,6 +12,10 @@ const useUpdateTransaction = (options?: Options) => {
       Promise.all([
         options?.onSettled?.apply(this, args),
         queryClient.invalidateQueries(getQueryKey(client.getTransactions)),
+        queryClient.invalidateQueries(
+          getQueryKey(client.getIncomeVsExpensesReport)
+        ),
+        queryClient.invalidateQueries(getQueryKey(client.getCategoryReport)),
       ]),
   });
 };

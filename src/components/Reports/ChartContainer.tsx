@@ -7,16 +7,11 @@ import {
   useState,
 } from 'react';
 import { ResponsiveContainer } from 'recharts';
+import useIsMobile from '@lib/useIsMobile';
 
-type Props = {
-  height?: number;
-};
-
-const ChartContainer = ({
-  children,
-  height: minHeight = 300,
-}: PropsWithChildren<Props>) => {
+const ChartContainer = ({ children }: PropsWithChildren) => {
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const [width, setWidth] = useState(1);
   const [height, setHeight] = useState(1);
@@ -32,7 +27,12 @@ const ChartContainer = ({
   }, []);
 
   return (
-    <Stack ref={ref} width="100%" height="100%" minHeight={minHeight}>
+    <Stack
+      ref={ref}
+      width="100%"
+      height="100%"
+      minHeight={isMobile ? 300 : 500}
+    >
       <Stack width={width} height={height}>
         <ResponsiveContainer width="100%" height="100%">
           {children as any}
