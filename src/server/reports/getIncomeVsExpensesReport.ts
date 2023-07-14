@@ -41,7 +41,10 @@ export const getIncomeVsExpensesReport: Procedure<
   });
   const rates = await getRates(
     Array.from(
-      new Set(transactions.map((transaction) => transaction.account.currency))
+      new Set([
+        ...transactions.map((transaction) => transaction.account.currency),
+        currency,
+      ])
     )
   );
   const dateFormat = getFormatForGranularity(granularity);
