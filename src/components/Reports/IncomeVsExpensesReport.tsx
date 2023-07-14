@@ -1,6 +1,5 @@
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { useTheme } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -9,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 import ChartContainer from '@components/Reports/ChartContainer';
 import client from '@lib/api';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
@@ -20,6 +20,8 @@ const IncomeVsExpensesReport = () => {
   const theme = useTheme();
   const { filtersByField } = useFiltersFromurl();
   const { data } = client.getIncomeVsExpensesReport.useQuery({
+    from: filtersByField.date?.split(',')[0],
+    until: filtersByField.date?.split(',')[1],
     accounts: filtersByField.accounts?.split(','),
     currency: filtersByField.currency,
     granularity: filtersByField.timeGranularity as TimeGranularity,
@@ -29,29 +31,19 @@ const IncomeVsExpensesReport = () => {
   const content =
     data && data.length > 0 ? (
       <>
-        <Grid xs={12} md={8}>
-          <ChartContainer>
-            <BarChart
-              data={data}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="bucket" />
-              <YAxis />
-              <Tooltip
-                formatter={(value) => formatAmount(value as number, currency)}
-              />
-              <Bar dataKey="income" fill={theme.palette.success.light} />
-              <Bar dataKey="expenses" fill={theme.palette.error.light} />
-            </BarChart>
-          </ChartContainer>
-        </Grid>
-        <Grid xs={12} md={4}>
+        <ChartContainer>
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="bucket" />
+            <YAxis />
+            <Tooltip
+              formatter={(value) => formatAmount(value as number, currency)}
+            />
+            <Bar dataKey="income" fill={theme.palette.success.light} />
+            <Bar dataKey="expenses" fill={theme.palette.error.light} />
+          </BarChart>
+        </ChartContainer>
+        <Stack>
           <Paper variant="outlined">
             <TableContainer>
               <Table size="small">
@@ -88,16 +80,16 @@ const IncomeVsExpensesReport = () => {
               </Table>
             </TableContainer>
           </Paper>
-        </Grid>
+        </Stack>
       </>
     ) : (
       <NoTransactionsFound />
     );
 
   return (
-    <Grid container rowGap={2} columnSpacing={2} justifyContent="center">
+    <Stack gap={2} justifyContent="center">
       {content}
-    </Grid>
+    </Stack>
   );
 };
 

@@ -1,14 +1,12 @@
 import stringToColor from 'string-to-color';
+import { useTheme } from '@mui/material/styles';
 import useIsMobile from '@lib/useIsMobile';
-
-const defaultFormat = (value: number | string) => `${value}`;
 
 type Props = {
   x: number;
   y: number;
   cx: number;
   cy: number;
-  value: number | string;
   name: string;
   percent: number;
   innerRadius: number;
@@ -22,25 +20,25 @@ const PieLabel = ({
   y,
   cx,
   cy,
-  value,
   name,
   percent,
   innerRadius,
   outerRadius,
   midAngle,
-  formatValue = defaultFormat,
 }: Props) => {
   const isMobile = useIsMobile();
+  const theme = useTheme();
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const innerX = cx + radius * Math.cos(-midAngle * RADIAN);
   const innerY = cy + radius * Math.sin(-midAngle * RADIAN);
+  const color = stringToColor(name);
   return (
     <>
       <text
         x={innerX}
         y={innerY}
-        fill="white"
+        fill={theme.palette.getContrastText(color)}
         textAnchor={innerX > cx ? 'start' : 'end'}
         dominantBaseline="central"
       >
@@ -50,11 +48,11 @@ const PieLabel = ({
         <text
           x={x}
           y={y}
-          fill={stringToColor(name)}
+          fill={color}
           textAnchor={x > cx ? 'start' : 'end'}
           dominantBaseline="central"
         >
-          {`${name}: ${formatValue(value)}`}
+          {name}
         </text>
       )}
     </>

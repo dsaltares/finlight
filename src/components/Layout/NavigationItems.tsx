@@ -30,7 +30,7 @@ const items = [
     icon: LabelIcon,
   },
   {
-    label: 'CSV Import Presets',
+    label: 'Import Presets',
     href: Routes.csvImportPresets,
     icon: FileUploadIcon,
   },

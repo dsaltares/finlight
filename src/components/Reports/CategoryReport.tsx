@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Unstable_Grid2';
 import { Cell, Legend, Pie, PieChart } from 'recharts';
 import stringToColor from 'string-to-color';
 import Paper from '@mui/material/Paper';
@@ -39,15 +39,9 @@ const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
                   cx="50%"
                   cy="50%"
                   dataKey="value"
+                  outerRadius="60%"
                   labelLine={!isMobile}
-                  label={(props) => (
-                    <PieLabel
-                      {...props}
-                      formatValue={(value) =>
-                        formatAmount(value as number, currency)
-                      }
-                    />
-                  )}
+                  label={(props) => <PieLabel {...props} />}
                 >
                   {data.map((entry, index) => (
                     <Cell
