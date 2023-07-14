@@ -15,11 +15,12 @@ export const createTransactions: Procedure<
     },
   });
   const transactions = await prisma.transaction.createMany({
-    data: data.map(({ amount, date, description }) => ({
+    data: data.map(({ amount, date, description, categoryId }) => ({
       accountId,
       amount,
       date,
       description,
+      categoryId,
     })),
   });
   await updateAccountBalance(accountId);

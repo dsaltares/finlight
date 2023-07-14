@@ -5,7 +5,7 @@ import { CreateCategoryInput, CreateCategoryOutput } from './types';
 export const createCategory: Procedure<
   CreateCategoryInput,
   CreateCategoryOutput
-> = async ({ input: { name }, ctx: { session } }) => {
+> = async ({ input: { name, importPatterns }, ctx: { session } }) => {
   const category = await prisma.category.findFirst({
     where: {
       name,
@@ -28,6 +28,7 @@ export const createCategory: Procedure<
   return prisma.category.create({
     data: {
       name,
+      importPatterns,
       userId: session?.userId as string,
     },
   });
