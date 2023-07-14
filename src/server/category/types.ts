@@ -3,17 +3,20 @@ import { z } from 'zod';
 export const Category = z.object({
   id: z.string(),
   name: z.string(),
+  importPatterns: z.string().array(),
 });
 
 export const GetCategorysInput = z.void();
 export const GetCategorysOutput = z.array(Category);
 export const CreateCategoryInput = Category.pick({
   name: true,
+  importPatterns: true,
 });
 export const CreateCategoryOutput = Category;
 export const UpdateCategoryInput = z.object({
   id: z.string(),
   name: z.string().optional(),
+  importPatterns: z.string().array().optional(),
 });
 export const UpdateCategoryOutput = Category;
 export const DeleteCategoryInput = z.object({

@@ -29,7 +29,16 @@ const CategoryListItem = ({ category, onUpdate, onDelete }: Props) => (
           {category.name[0]}
         </Avatar>
       </ListItemAvatar>
-      <ListItemText primary={category.name} />
+      <ListItemText
+        primary={category.name}
+        secondary={
+          category.importPatterns.length > 1
+            ? `${category.importPatterns.length} import patterns`
+            : category.importPatterns.length === 1
+            ? '1 import pattern'
+            : undefined
+        }
+      />
       <Stack direction="row" gap={1}>
         <IconButton
           onClick={(e) => {

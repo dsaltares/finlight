@@ -5,7 +5,7 @@ import { UpdateCategoryInput, UpdateCategoryOutput } from './types';
 export const updateCategory: Procedure<
   UpdateCategoryInput,
   UpdateCategoryOutput
-> = async ({ input: { id, name }, ctx: { session } }) => {
+> = async ({ input: { id, name, importPatterns }, ctx: { session } }) => {
   await prisma.category.findFirstOrThrow({
     where: {
       id,
@@ -18,6 +18,7 @@ export const updateCategory: Procedure<
     },
     data: {
       name,
+      importPatterns,
       deletedAt: null,
     },
   });

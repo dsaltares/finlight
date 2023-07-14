@@ -36,6 +36,7 @@ export const CreateTransactionsInput = z.object({
     amount: true,
     date: true,
     description: true,
+    categoryId: true,
   }).array(),
 });
 export const CreateTransactionsOutput = z.number();
