@@ -9,13 +9,13 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
 import type { CategoryAggregate } from '@server/reports/types';
 import { formatAmount } from '@lib/format';
-import ChartContainer from '../ChartContainer';
 import CategoryChip from '../CategoryChip';
+import useIsMobile from '@lib/useIsMobile';
+import ChartContainer from './ChartContainer';
 import PieLabel from './PieLabel';
+import NoTransactionsFound from './NoTransactionsFound';
 
 type NumberType = 'positive' | 'negative' | 'neutral';
 
@@ -25,79 +25,79 @@ type Props = {
   currency?: string;
 };
 
-const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => (
-  <Grid container rowGap={2} columnSpacing={2} justifyContent="center">
-    {data.length > 0 ? (
-      <>
-        <Grid xs={12} md={8}>
-          <ChartContainer>
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                dataKey="value"
-                label={(props) => (
-                  <PieLabel
-                    {...props}
-                    formatValue={(value) =>
-                      formatAmount(value as number, currency)
-                    }
-                  />
-                )}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={stringToColor(entry.name)}
-                  />
-                ))}
-              </Pie>
-              <Legend />
-            </PieChart>
-          </ChartContainer>
-        </Grid>
-        <Grid xs={12} md={4}>
-          <Paper variant="outlined">
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Amount</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data?.map((datum) => (
-                    <TableRow key={datum.id}>
-                      <TableCell>
-                        <CategoryChip id={datum.id} name={datum.name} />
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          color={numberTypeToColor(numberType)}
-                          variant="inherit"
-                        >
-                          {formatAmount(datum.value, currency)}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
+const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
+  const isMobile = useIsMobile();
+  return (
+    <Grid container rowGap={2} columnSpacing={2} justifyContent="center">
+      {data.length > 0 ? (
+        <>
+          <Grid xs={12} md={8}>
+            <ChartContainer>
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  dataKey="value"
+                  labelLine={!isMobile}
+                  label={(props) => (
+                    <PieLabel
+                      {...props}
+                      formatValue={(value) =>
+                        formatAmount(value as number, currency)
+                      }
+                    />
+                  )}
+                >
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={stringToColor(entry.name)}
+                    />
                   ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Grid>
-      </>
-    ) : (
-      <Stack padding={3} gap={1} alignItems="center">
-        <SearchOffIcon fontSize="large" />
-        <Typography>No transactions found</Typography>
-      </Stack>
-    )}
-  </Grid>
-);
+                </Pie>
+                <Legend />
+              </PieChart>
+            </ChartContainer>
+          </Grid>
+          <Grid xs={12} md={4}>
+            <Paper variant="outlined">
+              <TableContainer>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Category</TableCell>
+                      <TableCell>Amount</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {data?.map((datum) => (
+                      <TableRow key={datum.id}>
+                        <TableCell>
+                          <CategoryChip id={datum.id} name={datum.name} />
+                        </TableCell>
+                        <TableCell>
+                          <Typography
+                            color={numberTypeToColor(numberType)}
+                            variant="inherit"
+                          >
+                            {formatAmount(datum.value, currency)}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Grid>
+        </>
+      ) : (
+        <NoTransactionsFound />
+      )}
+    </Grid>
+  );
+};
 
 const numberTypeToColor = (numberType: NumberType = 'neutral') => {
   switch (numberType) {

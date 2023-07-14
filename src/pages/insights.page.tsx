@@ -15,6 +15,7 @@ import CategorizedIncomeReport from '@components/Reports/CategorizedIncomeReport
 import useDialog from '@lib/useDialog';
 import ReportSettingsDialog from '@components/ReportSettingsDialog';
 import client from '@lib/api';
+import IncomeVsExpensesReport from '@components/Reports/IncomeVsExpensesReport';
 
 const Reports = {
   categorizedExpenses: {
@@ -24,6 +25,10 @@ const Reports = {
   categorizedIncome: {
     name: 'Where the money comes from',
     Component: CategorizedIncomeReport,
+  },
+  incomeVsExpenses: {
+    name: 'Income vs Expenses',
+    Component: IncomeVsExpensesReport,
   },
 };
 

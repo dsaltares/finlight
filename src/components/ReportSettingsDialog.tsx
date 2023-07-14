@@ -11,6 +11,7 @@ import { useState } from 'react';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import { currencyOptionsById } from '@lib/autoCompleteOptions';
+import type { TimeGranularity } from '@server/reports/types';
 import PeriodSelect, {
   type Period,
   getPeriodForDateRange,
@@ -18,6 +19,7 @@ import PeriodSelect, {
 } from './PeriodSelect';
 import AccountSelect from './AccountSelect';
 import CurrencyAutocomplete from './CurrencyAutocomplete';
+import TimeGranularitySelect from './TimeGranularitySelect';
 
 type Props = {
   open: boolean;
@@ -27,6 +29,7 @@ type Props = {
 
 const id = 'report-filter-dialog';
 const DefaultCurrency = 'EUR';
+const DefaultGranularity: TimeGranularity = 'Monthly';
 
 const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
   const theme = useTheme();
@@ -41,6 +44,9 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
   );
   const [period, setPeriod] = useState<Period | ''>(
     getPeriodForDateRange(dateRange)
+  );
+  const [timeGranularity, setTimeGranularity] = useState<TimeGranularity | ''>(
+    (filtersByField.timeGranularity as TimeGranularity) ?? ''
   );
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>(
     filtersByField.accounts ? filtersByField.accounts.split(',') : []
@@ -59,6 +65,8 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
           ? selectedAccounts.join(',')
           : undefined,
       currency: currency.id !== DefaultCurrency ? currency.id : undefined,
+      timeGranularity:
+        timeGranularity === DefaultGranularity ? undefined : timeGranularity,
     });
     onClose();
   };
@@ -68,6 +76,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
       date: undefined,
       accounts: undefined,
       currency: undefined,
+      timeGranularity: undefined,
     });
     onClose();
   };
@@ -119,6 +128,10 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
               />
             </Stack>
           </Stack>
+          <TimeGranularitySelect
+            value={timeGranularity}
+            onChange={setTimeGranularity}
+          />
           <AccountSelect
             accounts={accounts}
             selected={selectedAccounts}
