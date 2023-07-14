@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -57,9 +56,6 @@ const InsightsPage: NextPage = () => {
   const ReportComponent = Reports[report].Component;
   return (
     <Stack gap={2}>
-      <Typography variant="h4" component="h1">
-        Insights
-      </Typography>
       <Stack direction="row" gap={1} alignItems="center">
         <FormControl fullWidth>
           <InputLabel id="select-report-label">Report</InputLabel>
