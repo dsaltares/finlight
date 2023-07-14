@@ -6,9 +6,13 @@ import prisma from '@server/prisma';
 import {
   GetIncomeVsExpensesReportInput,
   GetIncomeVsExpensesReportOutput,
-  type TimeGranularity,
 } from './types';
-import { getRates, convertTransactionAmount } from './utils';
+import {
+  getRates,
+  convertTransactionAmount,
+  getFormatForGranularity,
+  getDisplayFormatForGranularity,
+} from './utils';
 
 export const getIncomeVsExpensesReport: Procedure<
   GetIncomeVsExpensesReportInput,
@@ -87,29 +91,3 @@ export default procedure
   .input(GetIncomeVsExpensesReportInput)
   .output(GetIncomeVsExpensesReportOutput)
   .query(getIncomeVsExpensesReport);
-
-const getFormatForGranularity = (granularity: TimeGranularity) => {
-  switch (granularity) {
-    case 'Monthly':
-      return 'yyyy-MM';
-    case 'Quarterly':
-      return 'yyyy-qqq';
-    case 'Yearly':
-      return 'yyyy';
-    default:
-      return 'yyyy-MM-dd';
-  }
-};
-
-const getDisplayFormatForGranularity = (granularity: TimeGranularity) => {
-  switch (granularity) {
-    case 'Monthly':
-      return 'MMM yyyy';
-    case 'Quarterly':
-      return 'qqq yyyy';
-    case 'Yearly':
-      return 'yyyy';
-    default:
-      return 'dd MMM yyyy';
-  }
-};

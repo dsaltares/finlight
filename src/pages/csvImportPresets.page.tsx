@@ -24,7 +24,7 @@ const CSVImportPresetsPage: NextPage = () => {
     <Stack gap={2}>
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="h4" component="h1">
-          CSV Import Presets
+          Import Presets
         </Typography>
         <Stack direction="row" gap={1}>
           <Button

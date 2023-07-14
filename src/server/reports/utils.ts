@@ -1,5 +1,6 @@
 import type { BankAccount, Category, Transaction } from '@prisma/client';
 import prisma from '@server/prisma';
+import type { TimeGranularity } from './types';
 
 export type RatesByCurrency = Record<string, number>;
 
@@ -51,4 +52,32 @@ export const convertTransactionAmount = (
   const baseToTarget = rates[targetCurrency] || 1;
   const baseToTransaction = rates[currency] || 1;
   return (amount * baseToTarget) / baseToTransaction;
+};
+
+export const getFormatForGranularity = (granularity: TimeGranularity) => {
+  switch (granularity) {
+    case 'Monthly':
+      return 'yyyy-MM';
+    case 'Quarterly':
+      return 'yyyy-qqq';
+    case 'Yearly':
+      return 'yyyy';
+    default:
+      return 'yyyy-MM-dd';
+  }
+};
+
+export const getDisplayFormatForGranularity = (
+  granularity: TimeGranularity
+) => {
+  switch (granularity) {
+    case 'Monthly':
+      return 'MMM yyyy';
+    case 'Quarterly':
+      return 'qqq yyyy';
+    case 'Yearly':
+      return 'yyyy';
+    default:
+      return 'dd MMM yyyy';
+  }
 };

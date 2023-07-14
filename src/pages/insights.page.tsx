@@ -16,6 +16,7 @@ import useDialog from '@lib/useDialog';
 import ReportSettingsDialog from '@components/ReportSettingsDialog';
 import client from '@lib/api';
 import IncomeVsExpensesReport from '@components/Reports/IncomeVsExpensesReport';
+import AccountPositionsReport from '@components/Reports/AccountPositionsReport';
 
 const Reports = {
   categorizedExpenses: {
@@ -29,6 +30,10 @@ const Reports = {
   incomeVsExpenses: {
     name: 'Income vs Expenses',
     Component: IncomeVsExpensesReport,
+  },
+  accountPositions: {
+    name: 'Account positions',
+    Component: AccountPositionsReport,
   },
 };
 
