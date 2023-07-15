@@ -12,6 +12,7 @@ import Head from 'next/head';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import Script from 'next/script';
 import Layout from '@components/Layout';
 import theme from '@lib/theme';
 import client from '@lib/api';
@@ -45,6 +46,17 @@ const App = ({
         </ThemeProvider>
       </SessionProvider>
     </LocalizationProvider>
+    <Script
+      id="cookie-banner"
+      src="https://cdn.websitepolicies.io/lib/cookieconsent/cookieconsent.min.js"
+      defer
+    />
+    <Script
+      id="cookie-banner-init"
+      dangerouslySetInnerHTML={{
+        __html: `window.addEventListener("load",function(){window.wpcb.init({"border":"thin","corners":"small","colors":{"popup":{"background":"#FFFFFF","text":"#000000","border":"#808080"},"button":{"background":"#1976D2","text":"#ffffff"}},"position":"bottom","content":{"href":"https://budget.saltares.com/cookie_policy.pdf","message":"We use cookies to ensure you get the best experience."}})});`,
+      }}
+    />
   </>
 );
 
