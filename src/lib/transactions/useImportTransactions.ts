@@ -2,6 +2,8 @@ import { type ChangeEventHandler, useCallback, useMemo, useRef } from 'react';
 import { parse } from 'csv-parse/sync';
 import parseDate from 'date-fns/parse';
 import { useRouter } from 'next/router';
+import { enqueueSnackbar } from 'notistack';
+import { TRPCClientError } from '@trpc/client';
 import Routes from '@lib/routes';
 import type { Account } from '@server/account/types';
 import useCreateTransactions from '@lib/transactions/useCreateTransactions';
@@ -9,8 +11,26 @@ import client from '../api';
 
 const useImportTransactions = (account: Account) => {
   const router = useRouter();
-  const { mutateAsync: createTransactions, isLoading } =
-    useCreateTransactions();
+  const { mutateAsync: createTransactions, isLoading } = useCreateTransactions({
+    onSuccess: (numTransactions: number) => {
+      enqueueSnackbar({
+        message: `Imported ${numTransactions} transactions.`,
+        variant: 'success',
+      });
+    },
+    onError: (e) => {
+      const isBadlyFormedRequest =
+        e instanceof TRPCClientError && e.data.cause === 'BAD_REQUEST';
+      enqueueSnackbar({
+        message: `Failed to import transactions.${
+          isBadlyFormedRequest
+            ? ' Either the import preset or the file are invalid.'
+            : ''
+        }`,
+        variant: 'error',
+      });
+    },
+  });
   const { data: presets } = client.getCSVImportPresets.useQuery();
   const { data: categories } = client.getCategories.useQuery();
   const preset = useMemo(
@@ -79,8 +99,11 @@ const useImportTransactions = (account: Account) => {
         });
         void router.push(Routes.transactionsForAccount(account.id));
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e);
+        enqueueSnackbar({
+          message:
+            'Failed to process file. Check the import preset and the file.',
+          variant: 'error',
+        });
       }
     },
     [preset, categories, createTransactions, account.id, router]

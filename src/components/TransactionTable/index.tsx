@@ -76,10 +76,12 @@ const TransactionTable = ({
     useDeleteTransactions();
   const handleSingleDelete = () =>
     deleteOpenFor ? deleteTransactions({ ids: [deleteOpenFor] }) : undefined;
-  const handleMultiDelete = () =>
-    deleteTransactions({
+  const handleMultiDelete = async () => {
+    await deleteTransactions({
       ids: table.getSelectedRowModel().flatRows.map((row) => row.original.id),
     });
+    onRowSelectionChange({});
+  };
   const { mutateAsync: updateTransactions, isLoading: isMultiUpdating } =
     useUpdateTransactions();
 

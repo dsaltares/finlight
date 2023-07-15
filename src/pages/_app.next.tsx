@@ -5,6 +5,7 @@ import '@fontsource/roboto-mono/700.css';
 import '../../styles/global.css';
 import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
+import { SnackbarProvider } from 'notistack';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { Session } from 'next-auth';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -36,6 +37,12 @@ const App = ({
       <link rel="icon" href="/favicon.ico" />
     </Head>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <SnackbarProvider
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        preventDuplicate
+        dense
+        autoHideDuration={1500}
+      />
       <SessionProvider session={session}>
         <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
         <CssBaseline />

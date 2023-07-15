@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import WithAuthentication from '@components/WithAuthentication';
 import client from '@lib/api';
 import useDialog from '@lib/useDialog';
-import useCreateAccount from '@lib/accounts/useCreateCategory';
+import useCreateAccount from '@lib/accounts/useCreateAccount';
 import AccountList from '@components/AccountList';
 import CreateUpdateAccountDialog from '@components/CreateUpdateAccountDialog';
 import Fab from '@components/Fab';
