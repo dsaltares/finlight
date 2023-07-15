@@ -29,7 +29,7 @@ const HeaderBar = ({ onOpenSidebar }: Props) => {
       <AppBar position="fixed" sx={{ top: 0, left: 0 }}>
         <Toolbar>
           {!isMobile && <Box width={DrawerWidth} />}
-          <Stack direction="row" gap={3}>
+          <Stack direction="row" gap={3} alignItems="center">
             {isMobile && (
               <IconButton
                 size="large"

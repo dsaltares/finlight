@@ -34,7 +34,10 @@ export const getCategoryReport: Procedure<
   });
   const rates = await getRates(
     Array.from(
-      new Set(transactions.map((transaction) => transaction.account.currency))
+      new Set([
+        ...transactions.map((transaction) => transaction.account.currency),
+        currency,
+      ])
     )
   );
   const transactionsByCategory = transactions.reduce<
