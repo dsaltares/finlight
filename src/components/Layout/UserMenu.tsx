@@ -11,39 +11,46 @@ import Link from 'next/link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+import { signOut } from 'next-auth/react';
 import Routes from '@lib/routes';
 import useAvatar from '@lib/useAvatar';
 import useMenu from '@lib/useMenu';
+import useDialog from '@lib/useDialog';
+import ConfirmationDialog from '@components/ConfirmationDialog';
 
 const buttonId = 'user-menu-button';
 const menuId = 'user-menu';
 
-const items = [
-  {
-    label: 'Privacy policy',
-    icon: LockIcon,
-    href: Routes.privacyPolicy,
-  },
-  {
-    label: 'Terms of service',
-    icon: GavelIcon,
-    href: Routes.termsAndConditions,
-  },
-  {
-    label: 'Cookie policy',
-    icon: CookieIcon,
-    href: Routes.cookiePolicy,
-  },
-  {
-    label: 'Sign out',
-    icon: LogoutIcon,
-    href: Routes.signOut,
-  },
-];
-
 const UserMenu = () => {
   const { anchorEl, open, onOpen, onClose } = useMenu();
   const { name, src, letter, color } = useAvatar();
+  const {
+    open: isSignOutDialogOpen,
+    onOpen: onSignOutDialogOpen,
+    onClose: onSignOutDialogClose,
+  } = useDialog();
+  const items = [
+    {
+      label: 'Privacy policy',
+      icon: LockIcon,
+      href: Routes.privacyPolicy,
+    },
+    {
+      label: 'Terms of service',
+      icon: GavelIcon,
+      href: Routes.termsAndConditions,
+    },
+    {
+      label: 'Cookie policy',
+      icon: CookieIcon,
+      href: Routes.cookiePolicy,
+    },
+    {
+      label: 'Sign out',
+      icon: LogoutIcon,
+      onClick: onSignOutDialogOpen,
+    },
+  ];
 
   return (
     <>
@@ -77,17 +84,38 @@ const UserMenu = () => {
           'aria-labelledby': buttonId,
         }}
       >
-        {items.map((item) => (
-          <MenuItem key={item.href} component={Link} href={item.href}>
+        {items.map((item) => {
+          const content = (
             <Stack component="li" direction="row" gap={0.5} alignItems="center">
               <ListItemIcon>
                 <item.icon />
               </ListItemIcon>
               <ListItemText>{item.label}</ListItemText>
             </Stack>
-          </MenuItem>
-        ))}
+          );
+          return item.href ? (
+            <MenuItem key={item.href} component={Link} href={item.href}>
+              {content}
+            </MenuItem>
+          ) : (
+            <MenuItem key={item.label} onClick={item.onClick}>
+              {content}
+            </MenuItem>
+          );
+        })}
       </Menu>
+      <ConfirmationDialog
+        id="sign-out-dialog"
+        title="Sign out"
+        open={isSignOutDialogOpen}
+        onClose={onSignOutDialogClose}
+        onConfirm={signOut}
+        loading={false}
+      >
+        <Typography variant="body1">
+          Are you sure you want to sign out?
+        </Typography>
+      </ConfirmationDialog>
     </>
   );
 };
