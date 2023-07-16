@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Unstable_Grid2';
-import { Cell, Legend, Pie, PieChart } from 'recharts';
+import { Cell, Pie, PieChart } from 'recharts';
 import stringToColor from 'string-to-color';
 import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
@@ -44,7 +44,6 @@ const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
                 <Cell key={`cell-${index}`} fill={stringToColor(entry.name)} />
               ))}
             </Pie>
-            <Legend />
           </PieChart>
         </ChartContainer>
       </Grid>
