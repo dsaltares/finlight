@@ -63,6 +63,7 @@ const dateFormats = [
   'dd-MMM-yy',
   'yyyy-MM-dd',
   'yyyy/MM/dd',
+  'yyyy-MM-dd HH:mm:ss',
 ];
 
 const CreateUpdateCSVImportPresetDialog = ({
