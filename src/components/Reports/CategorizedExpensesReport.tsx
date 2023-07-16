@@ -8,8 +8,8 @@ const CategorizedExpensesReport = () => {
   const { filtersByField } = useFiltersFromurl();
   const { data, isLoading } = client.getCategoryReport.useQuery({
     type: 'Expense',
-    from: filtersByField.date?.split(',')[0],
-    until: filtersByField.date?.split(',')[1],
+    from: filtersByField.from,
+    until: filtersByField.until,
     accounts: filtersByField.accounts?.split(','),
     currency: filtersByField.currency,
   });
