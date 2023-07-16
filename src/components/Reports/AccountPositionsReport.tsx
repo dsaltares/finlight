@@ -34,8 +34,8 @@ const AccountPositionsReport = () => {
   const theme = useTheme();
   const { filtersByField } = useFiltersFromurl();
   const { data, isLoading } = client.getAccountPositionsReport.useQuery({
-    from: filtersByField.date?.split(',')[0],
-    until: filtersByField.date?.split(',')[1],
+    from: filtersByField.from,
+    until: filtersByField.until,
     accounts: filtersByField.accounts?.split(','),
     currency: filtersByField.currency,
     granularity: filtersByField.timeGranularity as TimeGranularity,

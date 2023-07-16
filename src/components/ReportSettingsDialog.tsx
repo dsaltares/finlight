@@ -35,15 +35,18 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const { filtersByField, setFilters } = useFiltersFromurl();
-  const [dateRange, setDateRange] = useState(() =>
-    filtersByField.date
-      ? filtersByField.date
-          .split(',')
-          .map((date) => (date ? new Date(date) : null))
-      : [null, null]
+  const [from, setFrom] = useState(
+    typeof filtersByField.from === 'string'
+      ? new Date(filtersByField.from)
+      : null
+  );
+  const [until, setUntil] = useState(
+    typeof filtersByField.until === 'string'
+      ? new Date(filtersByField.until)
+      : null
   );
   const [period, setPeriod] = useState<Period | ''>(
-    getPeriodForDateRange(dateRange)
+    getPeriodForDateRange([from, until])
   );
   const [timeGranularity, setTimeGranularity] = useState<TimeGranularity | ''>(
     (filtersByField.timeGranularity as TimeGranularity) ?? ''
@@ -57,9 +60,8 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
 
   const handleApplyFilters = () => {
     setFilters({
-      date: dateRange.some((date) => !!date)
-        ? dateRange.map((date) => (date ? date.toISOString() : '')).join(',')
-        : undefined,
+      from: from?.toISOString(),
+      until: until?.toISOString(),
       accounts:
         selectedAccounts.length > 0 && selectedAccounts.length < accounts.length
           ? selectedAccounts.join(',')
@@ -73,7 +75,8 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
 
   const handleClearFilters = () => {
     setFilters({
-      date: undefined,
+      from: undefined,
+      until: undefined,
       accounts: undefined,
       currency: undefined,
       timeGranularity: undefined,
@@ -101,32 +104,32 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
               label="Period"
               value={period}
               onChange={(period) => {
+                const [newFrom, newUntil] = getDateRangeForPeriod(period);
                 setPeriod(period);
-                setDateRange(getDateRangeForPeriod(period));
+                setFrom(newFrom);
+                setUntil(newUntil);
               }}
             />
             <Stack direction="row" gap={1}>
               <DatePicker
                 label="From"
-                value={dateRange[0]}
+                value={from}
                 onChange={(date) => {
-                  const newRange = [date, dateRange[1]];
-                  setDateRange(newRange);
-                  setPeriod(getPeriodForDateRange(newRange));
+                  setFrom(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
                 }}
-                maxDate={dateRange[1]}
+                maxDate={until}
                 format="dd/MM/yyyy"
                 sx={{ width: '100%' }}
               />
               <DatePicker
                 label="Until"
-                value={dateRange[1]}
+                value={until}
                 onChange={(date) => {
-                  const newRange = [dateRange[0], date];
-                  setDateRange(newRange);
-                  setPeriod(getPeriodForDateRange(newRange));
+                  setUntil(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
                 }}
-                minDate={dateRange[0]}
+                minDate={from}
                 format="dd/MM/yyyy"
                 sx={{ width: '100%' }}
               />
