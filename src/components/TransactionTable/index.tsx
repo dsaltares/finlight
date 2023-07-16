@@ -138,7 +138,7 @@ const TransactionTable = ({
         {...props}
         // sx={{ minWidth: 650 }}
         size="small"
-        sx={{ borderCollapse: 'separate', tableLayout: 'fixed', minWidth: 650 }}
+        sx={{ borderCollapse: 'separate', tableLayout: 'fixed', minWidth: 900 }}
       />
     ),
     TableHead,
