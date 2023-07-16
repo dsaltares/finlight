@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import {
   type RowSelectionState,
   type OnChangeFn,
@@ -113,78 +113,48 @@ const TransactionTable = ({
     onDeleteDialogOpen,
   });
 
-  function rowContent(_index: number, row: Row<TransactionTableRow>) {
-    return (
+  const fixedHeaderContent = useCallback(
+    () => (
       <>
-        {row.getVisibleCells().map((cell) => (
-          <TableCell
-            key={cell.id}
-            align={cell.column.columnDef.meta?.numeric ? 'right' : 'left'}
-          >
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
-      </>
-    );
-  }
-
-  const VirtuosoTableComponents: TableComponents<Row<TransactionTableRow>> = {
-    // eslint-disable-next-line react/display-name
-    Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-      <TableContainer component={Paper} {...props} ref={ref} />
-    )),
-    Table: (props) => (
-      <Table
-        {...props}
-        // sx={{ minWidth: 650 }}
-        size="small"
-        sx={{ borderCollapse: 'separate', tableLayout: 'fixed', minWidth: 900 }}
-      />
-    ),
-    TableHead,
-    TableRow: ({ item: _item, ...props }) => <TableRow {...props} hover />,
-    // eslint-disable-next-line react/display-name
-    TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-      <TableBody {...props} ref={ref} />
-    )),
-  };
-
-  const fixedHeaderContent = () => (
-    <>
-      {table.getHeaderGroups().map((headerGroup) => (
-        <TableRow key={headerGroup.id}>
-          {headerGroup.headers.map((header) => (
-            <TableCell
-              key={header.id}
-              sortDirection={header.column.getIsSorted()}
-              align={
-                header.getContext().column.columnDef.meta?.numeric
-                  ? 'right'
-                  : 'left'
-              }
-              sx={{
-                backgroundColor: 'background.paper',
-              }}
-            >
-              {header.column.columnDef.enableSorting !== false ? (
-                <TableSortLabel
-                  active={!!header.column.getIsSorted()}
-                  direction={header.column.getIsSorted() || undefined}
-                  onClick={() => toggleSort(header.column.id)}
-                >
-                  {flexRender(
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <TableCell
+                key={header.id}
+                sortDirection={header.column.getIsSorted()}
+                align={
+                  header.getContext().column.columnDef.meta?.numeric
+                    ? 'right'
+                    : 'left'
+                }
+                sx={{
+                  backgroundColor: 'background.paper',
+                }}
+              >
+                {header.column.columnDef.enableSorting !== false ? (
+                  <TableSortLabel
+                    active={!!header.column.getIsSorted()}
+                    direction={header.column.getIsSorted() || undefined}
+                    onClick={() => toggleSort(header.column.id)}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </TableSortLabel>
+                ) : (
+                  flexRender(
                     header.column.columnDef.header,
                     header.getContext()
-                  )}
-                </TableSortLabel>
-              ) : (
-                flexRender(header.column.columnDef.header, header.getContext())
-              )}
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </>
+                  )
+                )}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </>
+    ),
+    [table, toggleSort]
   );
 
   return (
@@ -247,3 +217,37 @@ const TransactionTable = ({
 };
 
 export default TransactionTable;
+
+const VirtuosoTableComponents: TableComponents<Row<TransactionTableRow>> = {
+  // eslint-disable-next-line react/display-name
+  Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+    <TableContainer component={Paper} {...props} ref={ref} />
+  )),
+  Table: (props) => (
+    <Table
+      {...props}
+      // sx={{ minWidth: 650 }}
+      size="small"
+      sx={{ borderCollapse: 'separate', tableLayout: 'fixed', minWidth: 900 }}
+    />
+  ),
+  TableHead,
+  TableRow: ({ item: _item, ...props }) => <TableRow {...props} hover />,
+  // eslint-disable-next-line react/display-name
+  TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+    <TableBody {...props} ref={ref} />
+  )),
+};
+
+const rowContent = (_index: number, row: Row<TransactionTableRow>) => (
+  <>
+    {row.getVisibleCells().map((cell) => (
+      <TableCell
+        key={cell.id}
+        align={cell.column.columnDef.meta?.numeric ? 'right' : 'left'}
+      >
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </TableCell>
+    ))}
+  </>
+);
