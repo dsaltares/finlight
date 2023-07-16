@@ -8,6 +8,10 @@ import Routes from '@lib/routes';
 import type { Account } from '@server/account/types';
 import useCreateTransactions from '@lib/transactions/useCreateTransactions';
 import client from '../api';
+import type {
+  CSVImportField,
+  CSVImportPreset,
+} from '@server/csvImportPreset/types';
 
 const useImportTransactions = (account: Account) => {
   const router = useRouter();
@@ -50,6 +54,7 @@ const useImportTransactions = (account: Account) => {
         const joinedCSV = splitCSV
           .slice(preset.rowsToSkipStart, splitCSV.length - preset.rowsToSkipEnd)
           .join('\n');
+        console.log(joinedCSV);
         const records = parse(joinedCSV, {
           skip_empty_lines: false,
           delimiter: preset.delimiter || ',',
@@ -57,35 +62,19 @@ const useImportTransactions = (account: Account) => {
 
         const dateIndex = preset.fields.indexOf('Date');
         const descriptionIndex = preset.fields.indexOf('Description');
-        const amountIndex = preset.fields.indexOf('Amount');
-        const depositIndex = preset.fields.indexOf('Deposit');
-        const withdrawalIndex = preset.fields.indexOf('Withdrawal');
-        const feeIndex = preset.fields.indexOf('Fee');
 
         const transactions = records.map((record) => {
-          let amountStr =
-            amountIndex > -1
-              ? record[amountIndex]
-              : depositIndex > -1 && record[depositIndex]
-              ? record[depositIndex]
-              : withdrawalIndex > -1 && record[withdrawalIndex]
-              ? `-${record[withdrawalIndex]}`
-              : '0';
-
-          if (preset.decimal === '.') {
-            amountStr = amountStr.replace(',', '');
-          } else if (preset.decimal === ',') {
-            amountStr = amountStr.replace('.', '').replace(',', '.');
-          }
-
-          const amount = parseFloat(amountStr);
-          const fee = feeIndex > -1 ? parseFloat(record[feeIndex]) : 0;
           const description = record[descriptionIndex] || '';
+          const amount = parseNumericField(record, preset, 'Amount');
+          const fee = parseNumericField(record, preset, 'Fee');
+          const deposit = parseNumericField(record, preset, 'Deposit');
+          const withdrawal = parseNumericField(record, preset, 'Withdrawal');
+          const actualAmount = deposit || -Math.abs(withdrawal) || amount;
 
           return {
             date: parseDate(record[dateIndex], preset.dateFormat, new Date()),
             description,
-            amount: amount - fee,
+            amount: actualAmount - fee,
             categoryId:
               categories?.find((category) =>
                 category.importPatterns.some((pattern) =>
@@ -101,11 +90,8 @@ const useImportTransactions = (account: Account) => {
         });
         void router.push(Routes.transactionsForAccount(account.id));
       } catch (e) {
-        enqueueSnackbar({
-          message:
-            'Failed to process file. Check the import preset and the file.',
-          variant: 'error',
-        });
+        // eslint-disable-next-line no-console
+        console.error(e);
       }
     },
     [preset, categories, createTransactions, account.id, router]
@@ -135,3 +121,18 @@ const useImportTransactions = (account: Account) => {
 };
 
 export default useImportTransactions;
+
+const parseNumericField = (
+  record: string[],
+  preset: CSVImportPreset,
+  fieldName: CSVImportField
+) => {
+  const fieldIndex = preset.fields.indexOf(fieldName);
+  let amountStr = fieldIndex > -1 ? record[fieldIndex] : '0';
+  if (preset.decimal === '.') {
+    amountStr = amountStr.replace(',', '');
+  } else if (preset.decimal === ',') {
+    amountStr = amountStr.replace('.', '').replace(',', '.');
+  }
+  return parseFloat(amountStr);
+};

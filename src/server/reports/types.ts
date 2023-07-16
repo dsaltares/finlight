@@ -18,6 +18,7 @@ export const IncomeVsExpensesBucket = z.object({
   bucket: z.string(),
   income: z.number(),
   expenses: z.number(),
+  difference: z.number(),
 });
 export const AccountPositionsBucket = z.object({
   bucket: z.string(),

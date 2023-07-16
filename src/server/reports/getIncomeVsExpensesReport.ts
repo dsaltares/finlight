@@ -55,37 +55,40 @@ export const getIncomeVsExpensesReport: Procedure<
     .sort()
     .map((bucketKey) => {
       const bucket = buckets[bucketKey];
+      const income = bucket
+        .filter((transaction) => transaction.type === 'Income')
+        .reduce(
+          (acc, transaction) =>
+            acc +
+            convertTransactionAmount(
+              transaction.amount,
+              transaction.account.currency,
+              currency,
+              rates
+            ),
+          0
+        );
+      const expenses = bucket
+        .filter((transaction) => transaction.type === 'Expense')
+        .reduce(
+          (acc, transaction) =>
+            acc -
+            convertTransactionAmount(
+              transaction.amount,
+              transaction.account.currency,
+              currency,
+              rates
+            ),
+          0
+        );
       return {
         bucket: format(
           parse(bucketKey, dateFormat, new Date()),
           getDisplayFormatForGranularity(granularity)
         ),
-        income: bucket
-          .filter((transaction) => transaction.type === 'Income')
-          .reduce(
-            (acc, transaction) =>
-              acc +
-              convertTransactionAmount(
-                transaction.amount,
-                transaction.account.currency,
-                currency,
-                rates
-              ),
-            0
-          ),
-        expenses: bucket
-          .filter((transaction) => transaction.type === 'Expense')
-          .reduce(
-            (acc, transaction) =>
-              acc -
-              convertTransactionAmount(
-                transaction.amount,
-                transaction.account.currency,
-                currency,
-                rates
-              ),
-            0
-          ),
+        income,
+        expenses,
+        difference: income - expenses,
       };
     });
 };

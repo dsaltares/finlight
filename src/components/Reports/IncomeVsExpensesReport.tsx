@@ -59,6 +59,7 @@ const IncomeVsExpensesReport = () => {
                   <TableCell>Date</TableCell>
                   <TableCell>Income</TableCell>
                   <TableCell>Expenses</TableCell>
+                  <TableCell>Difference</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -66,19 +67,23 @@ const IncomeVsExpensesReport = () => {
                   <TableRow key={datum.bucket}>
                     <TableCell>{datum.bucket}</TableCell>
                     <TableCell>
-                      <Typography
-                        color={theme.palette.success.main}
-                        variant="inherit"
-                      >
+                      <Typography color={'success.main'} variant="inherit">
                         {formatAmount(datum.income, currency)}
                       </Typography>
                     </TableCell>
                     <TableCell>
+                      <Typography color={'error.main'} variant="inherit">
+                        {formatAmount(datum.expenses, currency)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
                       <Typography
-                        color={theme.palette.error.main}
+                        color={
+                          datum.difference > 0 ? 'success.main' : 'error.main'
+                        }
                         variant="inherit"
                       >
-                        {formatAmount(datum.expenses, currency)}
+                        {formatAmount(datum.difference, currency)}
                       </Typography>
                     </TableCell>
                   </TableRow>
