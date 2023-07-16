@@ -66,7 +66,7 @@ const UserMenu = () => {
         color="inherit"
         variant="text"
       >
-        <Stack direction="row" gap={1} alignItems="center">
+        <Stack direction="row" gap={3} alignItems="center">
           <Avatar sx={{ backgroundColor: color }} src={src}>
             {letter}
           </Avatar>
@@ -86,7 +86,7 @@ const UserMenu = () => {
       >
         {items.map((item) => {
           const content = (
-            <Stack component="li" direction="row" gap={0.5} alignItems="center">
+            <Stack direction="row" gap={0.5} alignItems="center">
               <ListItemIcon>
                 <item.icon />
               </ListItemIcon>
