@@ -56,6 +56,8 @@ export const convertTransactionAmount = (
 
 export const getFormatForGranularity = (granularity: TimeGranularity) => {
   switch (granularity) {
+    case 'Daily':
+      return 'yyyy-MM-dd';
     case 'Monthly':
       return 'yyyy-MM';
     case 'Quarterly':
@@ -71,6 +73,8 @@ export const getDisplayFormatForGranularity = (
   granularity: TimeGranularity
 ) => {
   switch (granularity) {
+    case 'Daily':
+      return 'dd MMM yyyy';
     case 'Monthly':
       return 'MMM yyyy';
     case 'Quarterly':
