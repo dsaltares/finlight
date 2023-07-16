@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import EditIcon from '@mui/icons-material/Edit';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import type { RowSelectionState } from '@tanstack/react-table';
 import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
@@ -17,6 +18,8 @@ import useCreateTransaction from '@lib/transactions/useCreateTransaction';
 import TransactionFilterDialog from '@components/TransactionFilterDialog';
 import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import Fab from '@components/Fab';
+import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
+import EmptyState from '@components/EmptyState';
 
 const TransactionsPage: NextPage = () => {
   const {
@@ -42,14 +45,42 @@ const TransactionsPage: NextPage = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasRowsSelected = Object.keys(rowSelection).length > 0;
   const { filters } = useFiltersFromurl();
-  const { data: transactions } = client.getTransactions.useQuery({});
-  const { data: accounts } = client.getAccounts.useQuery();
-  const { data: categories } = client.getCategories.useQuery();
+  const { data: transactions, isLoading: isLoadingTransactions } =
+    client.getTransactions.useQuery({});
+  const { data: accounts, isLoading: isLoadingAccounts } =
+    client.getAccounts.useQuery();
+  const { data: categories, isLoading: isLoadingCategories } =
+    client.getCategories.useQuery();
   const { mutateAsync: createTransaction, isLoading: isCreating } =
     useCreateTransaction();
 
+  const isLoading =
+    isLoadingTransactions || isLoadingAccounts || isLoadingCategories;
+  let content = null;
+  if (isLoading) {
+    content = <FullScreenSpinner />;
+  } else if (!transactions || transactions.length === 0) {
+    content = (
+      <EmptyState Icon={ReceiptLongIcon}>No transactions found.</EmptyState>
+    );
+  } else {
+    content = (
+      <TransactionTable
+        transactions={transactions}
+        accounts={accounts || []}
+        categories={categories || []}
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+        multiDeleteOpen={multiDeleteOpen}
+        onMultiDeleteClose={onMultiDeleteClose}
+        multiUpdateOpen={multiUpdateOpen}
+        onMultiUpdateClose={onMultiUpdateClose}
+      />
+    );
+  }
+
   return (
-    <Stack gap={2}>
+    <Stack gap={2} height="100%">
       <Stack
         direction="row"
         alignItems="center"
@@ -78,17 +109,7 @@ const TransactionsPage: NextPage = () => {
           </Badge>
         </Stack>
       </Stack>
-      <TransactionTable
-        transactions={transactions || []}
-        accounts={accounts || []}
-        categories={categories || []}
-        rowSelection={rowSelection}
-        onRowSelectionChange={setRowSelection}
-        multiDeleteOpen={multiDeleteOpen}
-        onMultiDeleteClose={onMultiDeleteClose}
-        multiUpdateOpen={multiUpdateOpen}
-        onMultiUpdateClose={onMultiUpdateClose}
-      />
+      {content}
       <CreateUpdateTransactionDialog
         open={isCreateDialogOpen}
         loading={isCreating}

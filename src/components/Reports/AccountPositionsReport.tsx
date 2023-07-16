@@ -27,12 +27,13 @@ import { formatAmount } from '@lib/format';
 import type { TimeGranularity } from '@server/reports/types';
 import type { Account } from '@server/account/types';
 import Routes from '@lib/routes';
+import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import NoTransactionsFound from './NoTransactionsFound';
 
 const AccountPositionsReport = () => {
   const theme = useTheme();
   const { filtersByField } = useFiltersFromurl();
-  const { data } = client.getAccountPositionsReport.useQuery({
+  const { data, isLoading } = client.getAccountPositionsReport.useQuery({
     from: filtersByField.date?.split(',')[0],
     until: filtersByField.date?.split(',')[1],
     accounts: filtersByField.accounts?.split(','),
@@ -49,107 +50,105 @@ const AccountPositionsReport = () => {
     [accounts]
   );
 
+  if (isLoading) {
+    return <FullScreenSpinner />;
+  } else if (!data || data.length === 0) {
+    return <NoTransactionsFound />;
+  }
+
   const accountNames =
     data && data.length > 0 ? Object.keys(data[0].positions) : [];
   const currency = filtersByField.currency || 'EUR';
-  const content =
-    data && data.length > 0 ? (
-      <>
-        <ChartContainer>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="bucket" />
-            <YAxis />
-            <Legend />
-            <Tooltip
-              formatter={(value) => formatAmount(value as number, currency)}
-            />
-            {accountNames.map((name) => (
-              <Line
-                key={name}
-                dataKey={(datum) => datum.positions[name]}
-                name={name}
-                stroke={stringToColor(name)}
-              />
-            ))}
+
+  return (
+    <Stack gap={2} justifyContent="center">
+      <ChartContainer>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="bucket" />
+          <YAxis />
+          <Legend />
+          <Tooltip
+            formatter={(value) => formatAmount(value as number, currency)}
+          />
+          {accountNames.map((name) => (
             <Line
-              key="Total"
-              dataKey="total"
-              name="Total"
-              stroke={stringToColor('Total')}
+              key={name}
+              dataKey={(datum) => datum.positions[name]}
+              name={name}
+              stroke={stringToColor(name)}
             />
-          </LineChart>
-        </ChartContainer>
-        <Stack>
-          <Paper variant="outlined">
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
+          ))}
+          <Line
+            key="Total"
+            dataKey="total"
+            name="Total"
+            stroke={stringToColor('Total')}
+          />
+        </LineChart>
+      </ChartContainer>
+      <Stack>
+        <Paper variant="outlined">
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  {accountNames.map((name) => (
+                    <TableCell key={name}>
+                      <Link
+                        href={
+                          accountsByName[name]?.id
+                            ? Routes.transactionsForAccount(
+                                accountsByName[name]?.id as string
+                              )
+                            : Routes.transactions
+                        }
+                      >
+                        {name}
+                      </Link>
+                    </TableCell>
+                  ))}
+                  <TableCell>Total</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((datum) => (
+                  <TableRow key={datum.bucket}>
+                    <TableCell>{datum.bucket}</TableCell>
                     {accountNames.map((name) => (
                       <TableCell key={name}>
-                        <Link
-                          href={
-                            accountsByName[name]?.id
-                              ? Routes.transactionsForAccount(
-                                  accountsByName[name]?.id as string
-                                )
-                              : Routes.transactions
-                          }
-                        >
-                          {name}
-                        </Link>
-                      </TableCell>
-                    ))}
-                    <TableCell>Total</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.map((datum) => (
-                    <TableRow key={datum.bucket}>
-                      <TableCell>{datum.bucket}</TableCell>
-                      {accountNames.map((name) => (
-                        <TableCell key={name}>
-                          <Typography
-                            color={
-                              datum.positions[name] > 0
-                                ? theme.palette.success.main
-                                : theme.palette.error.main
-                            }
-                            variant="inherit"
-                          >
-                            {formatAmount(datum.positions[name], currency)}
-                          </Typography>
-                        </TableCell>
-                      ))}
-                      <TableCell>
                         <Typography
                           color={
-                            datum.total > 0
+                            datum.positions[name] > 0
                               ? theme.palette.success.main
                               : theme.palette.error.main
                           }
                           variant="inherit"
                         >
-                          {formatAmount(datum.total, currency)}
+                          {formatAmount(datum.positions[name], currency)}
                         </Typography>
                       </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Stack>
-      </>
-    ) : (
-      <NoTransactionsFound />
-    );
-
-  return (
-    <Stack gap={2} justifyContent="center">
-      {content}
+                    ))}
+                    <TableCell>
+                      <Typography
+                        color={
+                          datum.total > 0
+                            ? theme.palette.success.main
+                            : theme.palette.error.main
+                        }
+                        variant="inherit"
+                      >
+                        {formatAmount(datum.total, currency)}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Stack>
     </Stack>
   );
 };
