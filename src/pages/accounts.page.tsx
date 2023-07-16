@@ -41,13 +41,15 @@ const AccountsPage: NextPage = () => {
   return (
     <>
       {content}
-      <CreateUpdateAccountDialog
-        presets={presets || []}
-        open={isCreateDialogOpen}
-        loading={isCreating}
-        onClose={onCreateDialogClose}
-        onCreate={createAccount}
-      />
+      {isCreateDialogOpen && (
+        <CreateUpdateAccountDialog
+          presets={presets || []}
+          open={isCreateDialogOpen}
+          loading={isCreating}
+          onClose={onCreateDialogClose}
+          onCreate={createAccount}
+        />
+      )}
       <Fab aria-label="New account" onClick={onCreateDialogOpen}>
         <AddIcon />
       </Fab>
