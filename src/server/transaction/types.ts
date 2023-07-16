@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const dateSchema = z.union([z.string(), z.date()]);
+export const Date = z.union([z.string(), z.date()]);
 
 export const TransactionTypes = ['Income', 'Expense', 'Transfer'] as const;
 export const TransactionType = z.enum(TransactionTypes);
@@ -8,17 +8,24 @@ export const TransactionType = z.enum(TransactionTypes);
 export const Transaction = z.object({
   id: z.string(),
   amount: z.number(),
-  date: dateSchema,
+  date: Date,
   description: z.string(),
   type: TransactionType,
   categoryId: z.string().nullable(),
   accountId: z.string(),
-  createdAt: dateSchema,
-  updatedAt: dateSchema,
+  createdAt: Date,
+  updatedAt: Date,
 });
 
 export const GetTransactionsInput = z.object({
+  from: Date.optional(),
+  until: Date.optional(),
+  minAmount: z.number().optional(),
+  maxAmount: z.number().optional(),
   accountId: z.string().optional(),
+  type: TransactionType.optional(),
+  categoryId: z.string().optional(),
+  description: z.string().optional(),
 });
 export const GetTransactionsOutput = z.array(Transaction);
 export const CreateTransactionInput = Transaction.pick({
@@ -43,7 +50,7 @@ export const CreateTransactionsOutput = z.number();
 export const UpdateTransactionInput = z.object({
   id: z.string(),
   amount: z.number().optional(),
-  date: dateSchema.optional(),
+  date: Date.optional(),
   description: z.string().optional(),
   type: TransactionType.optional(),
   categoryId: z.string().nullable().optional(),
@@ -52,7 +59,7 @@ export const UpdateTransactionOutput = Transaction;
 export const UpdateTransactionsInput = z.object({
   ids: z.string().array(),
   amount: z.number().optional(),
-  date: dateSchema.optional(),
+  date: Date.optional(),
   description: z.string().optional(),
   type: TransactionType.optional(),
   categoryId: z.string().nullable().optional(),

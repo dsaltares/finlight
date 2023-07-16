@@ -63,7 +63,11 @@ export const getDateRangeForPeriod = (period: Period | '') => {
   }
 };
 
-export const getPeriodForDateRange = ([from, to]: (Date | null)[]) => {
+export const getPeriodForDateRange = ([from, to]: (
+  | Date
+  | null
+  | undefined
+)[]) => {
   if (!!from || !!to) {
     return 'custom';
   }

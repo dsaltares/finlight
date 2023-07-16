@@ -3,8 +3,6 @@ import {
   type RowData,
   type RowSelectionState,
   type OnChangeFn,
-  type FilterFn,
-  type Row,
   createColumnHelper,
   getCoreRowModel,
   getFilteredRowModel,
@@ -22,7 +20,6 @@ import type { Category } from '@server/category/types';
 import type { Transaction } from '@server/transaction/types';
 import { formatAmount, formatDate } from '@lib/format';
 import useSortFromUrl from '@lib/useSortFromUrl';
-import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import CategoryChip from '@components/CategoryChip';
 import TransactionTypeChip from '@components/TransactionTypeChip';
 import AccountLink from '@components/AccountLink';
@@ -31,10 +28,6 @@ declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     numeric: boolean;
-  }
-
-  interface FilterFns {
-    dateRangeFilter: FilterFn<TransactionTableRow>;
   }
 }
 
@@ -77,7 +70,6 @@ const useTransactionTable = ({
   onDeleteDialogOpen,
 }: Props) => {
   const { sorting } = useSortFromUrl(DefaultSort);
-  const { filters } = useFiltersFromurl();
   const tableTransactions = useMemo(() => {
     const accountsById = (accounts || []).reduce(
       (acc, account) => ({
@@ -116,12 +108,10 @@ const useTransactionTable = ({
           />
         ),
         enableSorting: false,
-        enableColumnFilter: false,
       }),
       columnHelper.accessor('date', {
         header: 'Date',
         cell: (info) => formatDate(info.getValue()),
-        filterFn: 'dateRangeFilter',
       }),
       columnHelper.accessor('accountId', {
         header: 'Account',
@@ -131,8 +121,6 @@ const useTransactionTable = ({
             name={info.row.original.accountName}
           />
         ),
-        filterFn: 'equalsString',
-        enableColumnFilter: true,
       }),
       columnHelper.accessor('amount', {
         header: 'Amount',
@@ -145,12 +133,10 @@ const useTransactionTable = ({
           </Typography>
         ),
         meta: { numeric: true },
-        enableColumnFilter: true,
       }),
       columnHelper.accessor('type', {
         header: 'Type',
         cell: (info) => <TransactionTypeChip type={info.getValue()} />,
-        enableColumnFilter: true,
       }),
       columnHelper.accessor('categoryId', {
         header: 'Category',
@@ -160,12 +146,10 @@ const useTransactionTable = ({
             name={info.row.original.categoryName}
           />
         ),
-        enableColumnFilter: true,
       }),
       columnHelper.accessor('description', {
         header: 'Description',
         cell: (info) => info.getValue(),
-        enableColumnFilter: true,
       }),
       columnHelper.display({
         id: 'actions',
@@ -195,27 +179,9 @@ const useTransactionTable = ({
     columns,
     state: {
       sorting,
-      columnFilters: filters,
       rowSelection,
     },
-    filterFns: {
-      dateRangeFilter: (
-        row: Row<TransactionTableRow>,
-        _columnIds,
-        filterValue: string | undefined
-      ) => {
-        const [from, to] = filterValue ? filterValue.split(',') : [null, null];
-        if (from && row.original.date < from) {
-          return false;
-        }
-        if (to && row.original.date > to) {
-          return false;
-        }
-        return true;
-      },
-    },
     enableRowSelection: true,
-    enableColumnFilters: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

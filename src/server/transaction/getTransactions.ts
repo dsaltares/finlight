@@ -1,4 +1,3 @@
-import { TRPCError } from '@trpc/server';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { GetTransactionsInput, GetTransactionsOutput } from './types';
@@ -6,21 +5,44 @@ import { GetTransactionsInput, GetTransactionsOutput } from './types';
 export const getTransactions: Procedure<
   GetTransactionsInput,
   GetTransactionsOutput
-> = async ({ input: { accountId }, ctx: { session } }) => {
-  const accounts = await prisma.bankAccount.findMany({
-    where: { userId: session?.userId as string, deletedAt: null },
-  });
-  const accountIds = accounts.map((account) => account.id);
-  if (accountId && !accountIds.includes(accountId)) {
-    throw new TRPCError({ code: 'NOT_FOUND' });
-  }
-  return prisma.transaction.findMany({
+> = async ({
+  input: {
+    from,
+    until,
+    minAmount,
+    maxAmount,
+    accountId,
+    type,
+    categoryId,
+    description,
+  },
+  ctx: { session },
+}) =>
+  prisma.transaction.findMany({
     where: {
-      accountId: accountId ? accountId : { in: accountIds },
+      account: {
+        userId: session?.userId as string,
+      },
+      date: {
+        gte: from,
+        lte: until,
+      },
+      amount: {
+        gte: minAmount,
+        lte: maxAmount,
+      },
+      accountId,
+      type,
+      categoryId,
+      description: description
+        ? {
+            contains: description,
+            mode: 'insensitive',
+          }
+        : undefined,
       deletedAt: null,
     },
   });
-};
 
 export default procedure
   .input(GetTransactionsInput)

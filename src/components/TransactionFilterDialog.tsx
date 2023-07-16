@@ -71,27 +71,27 @@ const TransactionFilterDialog = ({
       ) || null
   );
   const [description, setDescription] = useState(filtersByField.description);
-  const [dateRange, setDateRange] = useState(() =>
-    filtersByField.date
-      ? filtersByField.date
-          .split(',')
-          .map((date) => (date ? new Date(date) : null))
-      : [null, null]
+  const [from, setFrom] = useState(
+    typeof filtersByField.from === 'string'
+      ? new Date(filtersByField.from)
+      : null
+  );
+  const [until, setUntil] = useState(
+    typeof filtersByField.until === 'string'
+      ? new Date(filtersByField.until)
+      : null
   );
   const [period, setPeriod] = useState<Period | ''>(
-    getPeriodForDateRange(dateRange)
+    getPeriodForDateRange([from, until])
   );
-  const [amountRange, setAmountRange] = useState(() =>
-    filtersByField.amount ? filtersByField.amount.split(',') : ['', '']
-  );
+  const [minAmount, setMinAmount] = useState(filtersByField.minAmount);
+  const [maxAmount, setMaxAmount] = useState(filtersByField.maxAmount);
   const handleApplyFilters = () => {
     setFilters({
-      date: dateRange.some((date) => !!date)
-        ? dateRange.map((date) => (date ? date.toISOString() : '')).join(',')
-        : undefined,
-      amount: amountRange.some((amount) => !!amount)
-        ? amountRange.join(',')
-        : undefined,
+      from: from?.toISOString(),
+      until: until?.toISOString(),
+      minAmount,
+      maxAmount,
       type: type || undefined,
       accountId: account?.id,
       categoryId: category?.id,
@@ -102,8 +102,10 @@ const TransactionFilterDialog = ({
 
   const handleClearFilters = () => {
     setFilters({
-      date: undefined,
-      amount: undefined,
+      from: undefined,
+      until: undefined,
+      minAmount: undefined,
+      maxAmount: undefined,
       accountId: undefined,
       type: undefined,
       categoryId: undefined,
@@ -130,31 +132,31 @@ const TransactionFilterDialog = ({
               label="Period"
               value={period}
               onChange={(period) => {
+                const [newFrom, newUntil] = getDateRangeForPeriod(period);
                 setPeriod(period);
-                setDateRange(getDateRangeForPeriod(period));
+                setFrom(newFrom);
+                setUntil(newUntil);
               }}
             />
             <Stack direction="row" gap={1}>
               <DatePicker
                 label="From"
-                value={dateRange[0]}
+                value={from}
                 onChange={(date) => {
-                  const newRange = [date, dateRange[1]];
-                  setDateRange(newRange);
-                  setPeriod(getPeriodForDateRange(newRange));
+                  setFrom(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
                 }}
-                maxDate={dateRange[1]}
+                maxDate={until}
                 format="dd/MM/yyyy"
               />
               <DatePicker
                 label="Until"
-                value={dateRange[1]}
+                value={until}
                 onChange={(date) => {
-                  const newRange = [dateRange[0], date];
-                  setDateRange(newRange);
-                  setPeriod(getPeriodForDateRange(newRange));
+                  setUntil(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
                 }}
-                minDate={dateRange[0]}
+                minDate={from}
                 format="dd/MM/yyyy"
               />
             </Stack>
@@ -164,8 +166,8 @@ const TransactionFilterDialog = ({
               fullWidth
               type="number"
               label="Min amount"
-              value={amountRange[0]}
-              onChange={(e) => setAmountRange([e.target.value, amountRange[1]])}
+              value={minAmount}
+              onChange={(e) => setMinAmount(e.target.value)}
               inputProps={{
                 step: 0.01,
               }}
@@ -174,8 +176,8 @@ const TransactionFilterDialog = ({
               fullWidth
               type="number"
               label="Max amount"
-              value={amountRange[1]}
-              onChange={(e) => setAmountRange([amountRange[0], e.target.value])}
+              value={maxAmount}
+              onChange={(e) => setMaxAmount(e.target.value)}
               inputProps={{
                 step: 0.01,
               }}

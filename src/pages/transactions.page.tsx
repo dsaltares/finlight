@@ -20,6 +20,7 @@ import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import Fab from '@components/Fab';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import EmptyState from '@components/EmptyState';
+import type { TransactionType } from '@server/transaction/types';
 
 const TransactionsPage: NextPage = () => {
   const {
@@ -44,9 +45,22 @@ const TransactionsPage: NextPage = () => {
   } = useDialog();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasRowsSelected = Object.keys(rowSelection).length > 0;
-  const { filters } = useFiltersFromurl();
+  const { filtersByField } = useFiltersFromurl();
   const { data: transactions, isLoading: isLoadingTransactions } =
-    client.getTransactions.useQuery({});
+    client.getTransactions.useQuery({
+      from: filtersByField.from,
+      until: filtersByField.until,
+      minAmount: filtersByField.minAmount
+        ? parseFloat(filtersByField.minAmount)
+        : undefined,
+      maxAmount: filtersByField.maxAmount
+        ? parseFloat(filtersByField.maxAmount)
+        : undefined,
+      accountId: filtersByField.accountId,
+      type: filtersByField.type as TransactionType | undefined,
+      categoryId: filtersByField.categoryId,
+      description: filtersByField.description,
+    });
   const { data: accounts, isLoading: isLoadingAccounts } =
     client.getAccounts.useQuery();
   const { data: categories, isLoading: isLoadingCategories } =
@@ -102,7 +116,10 @@ const TransactionsPage: NextPage = () => {
           >
             <EditIcon />
           </IconButton>
-          <Badge badgeContent={filters.length} color="primary">
+          <Badge
+            badgeContent={Object.keys(filtersByField).length}
+            color="primary"
+          >
             <IconButton color="primary" onClick={onFilterDialogOpen}>
               <FilterAltIcon />
             </IconButton>
