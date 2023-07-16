@@ -51,6 +51,13 @@ export const getAccountPositionsReport: Procedure<
     }),
     {}
   );
+  const accountsByName = accounts.reduce<Record<string, BankAccount>>(
+    (acc, account) => ({
+      ...acc,
+      [account.name]: account,
+    }),
+    {}
+  );
   const rates = await getRates(
     Array.from(
       new Set([
@@ -83,14 +90,7 @@ export const getAccountPositionsReport: Procedure<
         );
         const account = accountsById[accountId];
         const balance = accountTransactions.reduce(
-          (sum, transaction) =>
-            sum +
-            convertTransactionAmount(
-              transaction.amount,
-              account.currency,
-              currency,
-              rates
-            ),
+          (sum, transaction) => sum + transaction.amount,
           prevPositions[accountId]
         );
         return {
@@ -106,24 +106,46 @@ export const getAccountPositionsReport: Procedure<
         getDisplayFormatForGranularity(granularity)
       ),
       positions,
-      total: Object.values(positions).reduce(
-        (acc, position) => acc + position,
-        0
-      ),
+      total: 0,
     });
   }
 
   const formatedFrom = from && format(new Date(from), dateFormat);
   const formatedUntil = until && format(new Date(until), dateFormat);
-  return data.filter((datum, index) => {
-    if (formatedFrom && bucketKeys[index] < formatedFrom) {
-      return false;
-    }
-    if (formatedUntil && bucketKeys[index] > formatedUntil) {
-      return false;
-    }
-    return true;
-  });
+  return data
+    .filter((_datum, index) => {
+      if (formatedFrom && bucketKeys[index] < formatedFrom) {
+        return false;
+      }
+      if (formatedUntil && bucketKeys[index] > formatedUntil) {
+        return false;
+      }
+      return true;
+    })
+    .map((datum) => {
+      const positions = Object.entries(datum.positions).reduce<
+        Record<string, number>
+      >(
+        (acc, [name, balance]) => ({
+          ...acc,
+          [name]: convertTransactionAmount(
+            balance,
+            accountsByName[name].currency,
+            currency,
+            rates
+          ),
+        }),
+        {}
+      );
+      return {
+        ...datum,
+        positions,
+        total: Object.values(positions).reduce(
+          (acc, position) => acc + position,
+          0
+        ),
+      };
+    });
 };
 
 export default procedure
