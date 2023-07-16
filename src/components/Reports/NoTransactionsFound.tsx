@@ -1,12 +1,7 @@
-import Stack from '@mui/material/Stack';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
-import Typography from '@mui/material/Typography';
+import EmptyState from '@components/EmptyState';
 
 const NoTransactionsFound = () => (
-  <Stack padding={3} gap={1} alignItems="center">
-    <SearchOffIcon fontSize="large" />
-    <Typography>No transactions found</Typography>
-  </Stack>
+  <EmptyState Icon={SearchOffIcon}>No transactions found</EmptyState>
 );
-
 export default NoTransactionsFound;

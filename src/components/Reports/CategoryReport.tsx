@@ -15,7 +15,6 @@ import CategoryChip from '../CategoryChip';
 import useIsMobile from '@lib/useIsMobile';
 import ChartContainer from './ChartContainer';
 import PieLabel from './PieLabel';
-import NoTransactionsFound from './NoTransactionsFound';
 
 type NumberType = 'positive' | 'negative' | 'neutral';
 
@@ -29,66 +28,57 @@ const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
   const isMobile = useIsMobile();
   return (
     <Grid container rowGap={2} columnSpacing={2} justifyContent="center">
-      {data.length > 0 ? (
-        <>
-          <Grid xs={12} md={8}>
-            <ChartContainer>
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  dataKey="value"
-                  outerRadius="60%"
-                  labelLine={!isMobile}
-                  label={(props) => <PieLabel {...props} />}
-                >
-                  {data.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={stringToColor(entry.name)}
-                    />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </ChartContainer>
-          </Grid>
-          <Grid xs={12} md={4}>
-            <Paper variant="outlined">
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Category</TableCell>
-                      <TableCell>Amount</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {data?.map((datum) => (
-                      <TableRow key={datum.id}>
-                        <TableCell>
-                          <CategoryChip id={datum.id} name={datum.name} />
-                        </TableCell>
-                        <TableCell>
-                          <Typography
-                            color={numberTypeToColor(numberType)}
-                            variant="inherit"
-                          >
-                            {formatAmount(datum.value, currency)}
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
-        </>
-      ) : (
-        <NoTransactionsFound />
-      )}
+      <Grid xs={12} md={8}>
+        <ChartContainer>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              dataKey="value"
+              outerRadius="60%"
+              labelLine={!isMobile}
+              label={(props) => <PieLabel {...props} />}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={stringToColor(entry.name)} />
+              ))}
+            </Pie>
+            <Legend />
+          </PieChart>
+        </ChartContainer>
+      </Grid>
+      <Grid xs={12} md={4}>
+        <Paper variant="outlined">
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Category</TableCell>
+                  <TableCell>Amount</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data?.map((datum) => (
+                  <TableRow key={datum.id}>
+                    <TableCell>
+                      <CategoryChip id={datum.id} name={datum.name} />
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        color={numberTypeToColor(numberType)}
+                        variant="inherit"
+                      >
+                        {formatAmount(datum.value, currency)}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Grid>
     </Grid>
   );
 };

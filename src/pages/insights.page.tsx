@@ -55,7 +55,7 @@ const InsightsPage: NextPage = () => {
       : 'categorizedExpenses';
   const ReportComponent = Reports[report].Component;
   return (
-    <Stack gap={2}>
+    <Stack gap={2} height="100%">
       <Stack direction="row" gap={1} alignItems="center">
         <FormControl fullWidth>
           <InputLabel id="select-report-label">Report</InputLabel>
