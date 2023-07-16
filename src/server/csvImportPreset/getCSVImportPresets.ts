@@ -11,6 +11,9 @@ export const getCSVImportPresets: Procedure<
       userId: session?.userId as string,
       deletedAt: null,
     },
+    orderBy: {
+      createdAt: 'asc',
+    },
   });
 
 export default procedure
