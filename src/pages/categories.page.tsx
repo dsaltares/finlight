@@ -37,12 +37,14 @@ const CategoriesPage: NextPage = () => {
   return (
     <>
       {content}
-      <CreateUpdateCategoryDialog
-        open={isCreateDialogOpen}
-        loading={isCreating}
-        onClose={onCreateDialogClose}
-        onCreate={createCategory}
-      />
+      {isCreateDialogOpen && (
+        <CreateUpdateCategoryDialog
+          open={isCreateDialogOpen}
+          loading={isCreating}
+          onClose={onCreateDialogClose}
+          onCreate={createCategory}
+        />
+      )}
       <Fab aria-label="New category" onClick={onCreateDialogOpen}>
         <AddIcon />
       </Fab>

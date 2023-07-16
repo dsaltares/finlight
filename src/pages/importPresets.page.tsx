@@ -37,12 +37,14 @@ const ImportPresetsPage: NextPage = () => {
   return (
     <>
       {content}
-      <CreateUpdateCSVImportPresetDialog
-        open={isCreateDialogOpen}
-        loading={isCreating}
-        onClose={onCreateDialogClose}
-        onCreate={createCSVImportPreset}
-      />
+      {isCreateDialogOpen && (
+        <CreateUpdateCSVImportPresetDialog
+          open={isCreateDialogOpen}
+          loading={isCreating}
+          onClose={onCreateDialogClose}
+          onCreate={createCSVImportPreset}
+        />
+      )}
       <Fab aria-label="New preset" onClick={onCreateDialogOpen}>
         <AddIcon />
       </Fab>
