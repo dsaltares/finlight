@@ -46,7 +46,7 @@ const toTransactionTableRow = (
     : null,
 });
 
-type TransactionTableRow = ReturnType<typeof toTransactionTableRow>;
+export type TransactionTableRow = ReturnType<typeof toTransactionTableRow>;
 
 const columnHelper = createColumnHelper<TransactionTableRow>();
 
