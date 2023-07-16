@@ -54,7 +54,6 @@ const useImportTransactions = (account: Account) => {
         const joinedCSV = splitCSV
           .slice(preset.rowsToSkipStart, splitCSV.length - preset.rowsToSkipEnd)
           .join('\n');
-        console.log(joinedCSV);
         const records = parse(joinedCSV, {
           skip_empty_lines: false,
           delimiter: preset.delimiter || ',',

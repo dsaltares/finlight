@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import {
   type RowSelectionState,
   type OnChangeFn,
+  type Row,
   flexRender,
 } from '@tanstack/react-table';
 import Typography from '@mui/material/Typography';
@@ -13,6 +14,8 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import TableBody from '@mui/material/TableBody';
+import { TableVirtuoso, type TableComponents } from 'react-virtuoso';
+import React from 'react';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
@@ -28,7 +31,10 @@ import useUpdateTransactions from '@lib/transactions/useUpdateTransactions';
 import ConfirmationDialog from '../ConfirmationDialog';
 import CreateUpdateTransactionDialog from '../CreateUpdateTransactionDialog';
 import UpdateTransactionsDialog from '../UpdateTransactionsDialog';
-import useTransactionTable, { DefaultSort } from './useTransactionTable';
+import useTransactionTable, {
+  DefaultSort,
+  type TransactionTableRow,
+} from './useTransactionTable';
 
 type Props = {
   transactions: Transaction[];
@@ -107,63 +113,88 @@ const TransactionTable = ({
     onDeleteDialogOpen,
   });
 
+  function rowContent(_index: number, row: Row<TransactionTableRow>) {
+    return (
+      <>
+        {row.getVisibleCells().map((cell) => (
+          <TableCell
+            key={cell.id}
+            align={cell.column.columnDef.meta?.numeric ? 'right' : 'left'}
+          >
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </>
+    );
+  }
+
+  const VirtuosoTableComponents: TableComponents<Row<TransactionTableRow>> = {
+    // eslint-disable-next-line react/display-name
+    Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+      <TableContainer component={Paper} {...props} ref={ref} />
+    )),
+    Table: (props) => (
+      <Table
+        {...props}
+        // sx={{ minWidth: 650 }}
+        size="small"
+        sx={{ borderCollapse: 'separate', tableLayout: 'fixed', minWidth: 650 }}
+      />
+    ),
+    TableHead,
+    TableRow: ({ item: _item, ...props }) => <TableRow {...props} hover />,
+    // eslint-disable-next-line react/display-name
+    TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+      <TableBody {...props} ref={ref} />
+    )),
+  };
+
+  const fixedHeaderContent = () => (
+    <>
+      {table.getHeaderGroups().map((headerGroup) => (
+        <TableRow key={headerGroup.id}>
+          {headerGroup.headers.map((header) => (
+            <TableCell
+              key={header.id}
+              sortDirection={header.column.getIsSorted()}
+              align={
+                header.getContext().column.columnDef.meta?.numeric
+                  ? 'right'
+                  : 'left'
+              }
+              sx={{
+                backgroundColor: 'background.paper',
+              }}
+            >
+              {header.column.columnDef.enableSorting !== false ? (
+                <TableSortLabel
+                  active={!!header.column.getIsSorted()}
+                  direction={header.column.getIsSorted() || undefined}
+                  onClick={() => toggleSort(header.column.id)}
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                </TableSortLabel>
+              ) : (
+                flexRender(header.column.columnDef.header, header.getContext())
+              )}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
+  );
+
   return (
-    <Paper elevation={0} variant="outlined">
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} size="small">
-          <TableHead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableCell
-                    key={header.id}
-                    sortDirection={header.column.getIsSorted()}
-                    align={
-                      header.getContext().column.columnDef.meta?.numeric
-                        ? 'right'
-                        : 'left'
-                    }
-                  >
-                    {header.column.columnDef.enableSorting !== false ? (
-                      <TableSortLabel
-                        active={!!header.column.getIsSorted()}
-                        direction={header.column.getIsSorted() || undefined}
-                        onClick={() => toggleSort(header.column.id)}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </TableSortLabel>
-                    ) : (
-                      flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableHead>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} hover>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    align={
-                      cell.column.columnDef.meta?.numeric ? 'right' : 'left'
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <Paper elevation={0} variant="outlined" sx={{ height: '100%' }}>
+      <TableVirtuoso
+        data={table.getRowModel().rows}
+        components={VirtuosoTableComponents}
+        fixedHeaderContent={fixedHeaderContent}
+        itemContent={rowContent}
+      />
       <ConfirmationDialog
         id="delete-transaction"
         title="Delete transaction"
