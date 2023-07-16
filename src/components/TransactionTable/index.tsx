@@ -85,11 +85,15 @@ const TransactionTable = ({
   const { mutateAsync: updateTransactions, isLoading: isMultiUpdating } =
     useUpdateTransactions();
 
-  const handleMultiUpdate = (data: Omit<UpdateTransactionsInput, 'ids'>) =>
-    updateTransactions({
+  const handleMultiUpdate = async (
+    data: Omit<UpdateTransactionsInput, 'ids'>
+  ) => {
+    await updateTransactions({
       ids: table.getSelectedRowModel().flatRows.map((row) => row.original.id),
       ...data,
     });
+    onRowSelectionChange({});
+  };
 
   const { toggleSort } = useSortFromUrl(DefaultSort);
 
