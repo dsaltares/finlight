@@ -57,8 +57,15 @@ const ImportPreview = ({ watch }: Props) => {
       };
     }
     try {
-      const records = parse(csv, {
-        skip_empty_lines: false,
+      const splitCSV = csv.split('\n');
+      const joinedCSV = splitCSV
+        .slice(
+          parseInt(rowsToSkipStart, 10),
+          splitCSV.length - parseInt(rowsToSkipEnd, 10)
+        )
+        .join('\n');
+      const records = parse(joinedCSV, {
+        skip_empty_lines: true,
         delimiter: delimiter || ',',
       }) as string[][];
       const numCSVColumns = records[0].length || 0;
@@ -70,12 +77,11 @@ const ImportPreview = ({ watch }: Props) => {
           : ([] as string[]);
       return {
         headers: ['#', ...fields.map((field) => field.value), ...extraHeaders],
-        rows: records.slice(
-          parseInt(rowsToSkipStart, 10),
-          records.length - parseInt(rowsToSkipEnd, 10)
-        ),
+        rows: records,
       };
-    } catch (_e) {
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
       return {
         headers: [],
         rows: [],

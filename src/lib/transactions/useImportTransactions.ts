@@ -46,7 +46,11 @@ const useImportTransactions = (account: Account) => {
       }
 
       try {
-        const records = parse(csv, {
+        const splitCSV = csv.split('\n');
+        const joinedCSV = splitCSV
+          .slice(preset.rowsToSkipStart, splitCSV.length - preset.rowsToSkipEnd)
+          .join('\n');
+        const records = parse(joinedCSV, {
           skip_empty_lines: false,
           delimiter: preset.delimiter || ',',
         }) as string[][];
@@ -58,40 +62,38 @@ const useImportTransactions = (account: Account) => {
         const withdrawalIndex = preset.fields.indexOf('Withdrawal');
         const feeIndex = preset.fields.indexOf('Fee');
 
-        const transactions = records
-          .slice(preset.rowsToSkipStart, records.length - preset.rowsToSkipEnd)
-          .map((record) => {
-            let amountStr =
-              amountIndex > -1
-                ? record[amountIndex]
-                : depositIndex > -1 && record[depositIndex]
-                ? record[depositIndex]
-                : withdrawalIndex > -1 && record[withdrawalIndex]
-                ? `-${record[withdrawalIndex]}`
-                : '0';
+        const transactions = records.map((record) => {
+          let amountStr =
+            amountIndex > -1
+              ? record[amountIndex]
+              : depositIndex > -1 && record[depositIndex]
+              ? record[depositIndex]
+              : withdrawalIndex > -1 && record[withdrawalIndex]
+              ? `-${record[withdrawalIndex]}`
+              : '0';
 
-            if (preset.decimal === '.') {
-              amountStr = amountStr.replace(',', '');
-            } else if (preset.decimal === ',') {
-              amountStr = amountStr.replace('.', '').replace(',', '.');
-            }
+          if (preset.decimal === '.') {
+            amountStr = amountStr.replace(',', '');
+          } else if (preset.decimal === ',') {
+            amountStr = amountStr.replace('.', '').replace(',', '.');
+          }
 
-            const amount = parseFloat(amountStr);
-            const fee = feeIndex > -1 ? parseFloat(record[feeIndex]) : 0;
-            const description = record[descriptionIndex] || '';
+          const amount = parseFloat(amountStr);
+          const fee = feeIndex > -1 ? parseFloat(record[feeIndex]) : 0;
+          const description = record[descriptionIndex] || '';
 
-            return {
-              date: parseDate(record[dateIndex], preset.dateFormat, new Date()),
-              description,
-              amount: amount - fee,
-              categoryId:
-                categories?.find((category) =>
-                  category.importPatterns.some((pattern) =>
-                    description.toLowerCase().includes(pattern.toLowerCase())
-                  )
-                )?.id || null,
-            };
-          });
+          return {
+            date: parseDate(record[dateIndex], preset.dateFormat, new Date()),
+            description,
+            amount: amount - fee,
+            categoryId:
+              categories?.find((category) =>
+                category.importPatterns.some((pattern) =>
+                  description.toLowerCase().includes(pattern.toLowerCase())
+                )
+              )?.id || null,
+          };
+        });
 
         await createTransactions({
           accountId: account.id,
