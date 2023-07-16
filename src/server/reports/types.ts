@@ -2,7 +2,12 @@ import { z } from 'zod';
 import { TransactionType } from '@server/transaction/types';
 
 export const Date = z.union([z.string(), z.date()]);
-export const TimeGranularities = ['Monthly', 'Quarterly', 'Yearly'] as const;
+export const TimeGranularities = [
+  'Daily',
+  'Monthly',
+  'Quarterly',
+  'Yearly',
+] as const;
 export const TimeGranularity = z.enum(TimeGranularities);
 export const CategoryAggregate = z.object({
   id: z.string(),
