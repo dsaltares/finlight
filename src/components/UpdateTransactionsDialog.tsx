@@ -121,150 +121,152 @@ const UpdateTransactionsDialog = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle id={`${id}-title`}>Edit transactions</DialogTitle>
-      <DialogContent>
-        <Stack
-          paddingY={1}
-          gap={1.5}
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <Stack direction="row" gap={0.5} alignItems="center">
-            <Checkbox
-              checked={!!enabledFields['amount']}
-              onChange={(e) =>
-                setEnabledFields((enabled) => ({
-                  ...enabled,
-                  amount: e.target.checked,
-                }))
-              }
-            />
-            <TextField
-              fullWidth
-              type="number"
-              label="Amount"
-              error={!!errors.amount}
-              inputProps={{
-                step: 0.01,
-              }}
-              disabled={!enabledFields['amount']}
-              {...register('amount')}
-            />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle id={`${id}-title`}>Edit transactions</DialogTitle>
+        <DialogContent>
+          <Stack
+            paddingY={1}
+            gap={1.5}
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <Stack direction="row" gap={0.5} alignItems="center">
+              <Checkbox
+                checked={!!enabledFields['amount']}
+                onChange={(e) =>
+                  setEnabledFields((enabled) => ({
+                    ...enabled,
+                    amount: e.target.checked,
+                  }))
+                }
+              />
+              <TextField
+                fullWidth
+                type="number"
+                label="Amount"
+                error={!!errors.amount}
+                inputProps={{
+                  step: 0.01,
+                }}
+                disabled={!enabledFields['amount']}
+                {...register('amount')}
+              />
+            </Stack>
+            <Stack direction="row" gap={0.5} alignItems="center">
+              <Checkbox
+                checked={!!enabledFields['date']}
+                onChange={(e) =>
+                  setEnabledFields((enabled) => ({
+                    ...enabled,
+                    date: e.target.checked,
+                  }))
+                }
+              />
+              <Controller
+                control={control}
+                name="date"
+                render={({ field: { value, onChange } }) => (
+                  <DatePicker
+                    label="Date"
+                    value={value}
+                    onChange={(value) => onChange(value)}
+                    disabled={!enabledFields['date']}
+                    sx={{ width: '100%' }}
+                  />
+                )}
+              />
+            </Stack>
+            <Stack direction="row" gap={0.5} alignItems="center">
+              <Checkbox
+                checked={!!enabledFields['description']}
+                onChange={(e) =>
+                  setEnabledFields((enabled) => ({
+                    ...enabled,
+                    description: e.target.checked,
+                  }))
+                }
+              />
+              <TextField
+                fullWidth
+                label="Description"
+                error={!!errors.description}
+                disabled={!enabledFields['description']}
+                {...register('description')}
+              />
+            </Stack>
+            <Stack direction="row" gap={0.5} alignItems="center">
+              <Checkbox
+                checked={!!enabledFields['type']}
+                onChange={(e) =>
+                  setEnabledFields((enabled) => ({
+                    ...enabled,
+                    type: e.target.checked,
+                  }))
+                }
+              />
+              <Controller
+                control={control}
+                name="type"
+                render={({ field: { value, onChange } }) => (
+                  <TransactionTypeSelect
+                    value={value}
+                    onChange={onChange}
+                    disabled={!enabledFields['type']}
+                  />
+                )}
+              />
+            </Stack>
+            <Stack direction="row" gap={0.5} alignItems="center">
+              <Checkbox
+                checked={!!enabledFields['categoryId']}
+                onChange={(e) =>
+                  setEnabledFields((enabled) => ({
+                    ...enabled,
+                    categoryId: e.target.checked,
+                  }))
+                }
+              />
+              <Controller
+                control={control}
+                name="category"
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <Autocomplete
+                    fullWidth
+                    id="category-autocomplete"
+                    value={value}
+                    onChange={(_event, newValue) => onChange(newValue!)}
+                    options={categoryOptions}
+                    isOptionEqualToValue={isOptionEqualToValue}
+                    disabled={!enabledFields['categoryId']}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Category"
+                        error={!!errors.category}
+                      />
+                    )}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            </Stack>
           </Stack>
-          <Stack direction="row" gap={0.5} alignItems="center">
-            <Checkbox
-              checked={!!enabledFields['date']}
-              onChange={(e) =>
-                setEnabledFields((enabled) => ({
-                  ...enabled,
-                  date: e.target.checked,
-                }))
-              }
-            />
-            <Controller
-              control={control}
-              name="date"
-              render={({ field: { value, onChange } }) => (
-                <DatePicker
-                  label="Date"
-                  value={value}
-                  onChange={(value) => onChange(value)}
-                  disabled={!enabledFields['date']}
-                  sx={{ width: '100%' }}
-                />
-              )}
-            />
-          </Stack>
-          <Stack direction="row" gap={0.5} alignItems="center">
-            <Checkbox
-              checked={!!enabledFields['description']}
-              onChange={(e) =>
-                setEnabledFields((enabled) => ({
-                  ...enabled,
-                  description: e.target.checked,
-                }))
-              }
-            />
-            <TextField
-              fullWidth
-              label="Description"
-              error={!!errors.description}
-              disabled={!enabledFields['description']}
-              {...register('description')}
-            />
-          </Stack>
-          <Stack direction="row" gap={0.5} alignItems="center">
-            <Checkbox
-              checked={!!enabledFields['type']}
-              onChange={(e) =>
-                setEnabledFields((enabled) => ({
-                  ...enabled,
-                  type: e.target.checked,
-                }))
-              }
-            />
-            <Controller
-              control={control}
-              name="type"
-              render={({ field: { value, onChange } }) => (
-                <TransactionTypeSelect
-                  value={value}
-                  onChange={onChange}
-                  disabled={!enabledFields['type']}
-                />
-              )}
-            />
-          </Stack>
-          <Stack direction="row" gap={0.5} alignItems="center">
-            <Checkbox
-              checked={!!enabledFields['categoryId']}
-              onChange={(e) =>
-                setEnabledFields((enabled) => ({
-                  ...enabled,
-                  categoryId: e.target.checked,
-                }))
-              }
-            />
-            <Controller
-              control={control}
-              name="category"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <Autocomplete
-                  fullWidth
-                  id="category-autocomplete"
-                  value={value}
-                  onChange={(_event, newValue) => onChange(newValue!)}
-                  options={categoryOptions}
-                  isOptionEqualToValue={isOptionEqualToValue}
-                  disabled={!enabledFields['categoryId']}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Category"
-                      error={!!errors.category}
-                    />
-                  )}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-          </Stack>
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
-          Cancel
-        </Button>
-        <LoadingButton
-          variant="contained"
-          color="primary"
-          loading={loading}
-          disabled={!isValid}
-          onClick={handleSubmit(onSubmit)}
-        >
-          Save
-        </LoadingButton>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={loading}
+            disabled={!isValid}
+          >
+            Save
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

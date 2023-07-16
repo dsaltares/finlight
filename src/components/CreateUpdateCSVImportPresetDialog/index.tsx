@@ -137,111 +137,113 @@ const CreateUpdateCSVImportPresetDialog = ({
       fullScreen
       keepMounted={false}
     >
-      <DialogTitle id={`${id}-title`}>
-        {preset ? 'Edit import preset' : 'Create import preset'}
-      </DialogTitle>
-      <DialogContent>
-        <Stack
-          paddingY={1}
-          gap={1.5}
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <TextField
-            required
-            label="Name"
-            error={!!errors.name}
-            {...register('name', { required: true })}
-          />
-          <Grid container spacing={1}>
-            <Grid xs={6} md={3}>
-              <TextField
-                required
-                fullWidth
-                label="Decimal character"
-                error={!!errors.decimal}
-                {...register('decimal', { required: true })}
-              />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle id={`${id}-title`}>
+          {preset ? 'Edit import preset' : 'Create import preset'}
+        </DialogTitle>
+        <DialogContent>
+          <Stack
+            paddingY={1}
+            gap={1.5}
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <TextField
+              required
+              label="Name"
+              error={!!errors.name}
+              {...register('name', { required: true })}
+            />
+            <Grid container spacing={1}>
+              <Grid xs={6} md={3}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Decimal character"
+                  error={!!errors.decimal}
+                  {...register('decimal', { required: true })}
+                />
+              </Grid>
+              <Grid xs={6} md={3}>
+                <TextField
+                  required
+                  fullWidth
+                  label="CSV delimiter"
+                  error={!!errors.delimiter}
+                  {...register('delimiter', { required: true })}
+                />
+              </Grid>
+              <Grid xs={6} md={3}>
+                <TextField
+                  required
+                  fullWidth
+                  type="number"
+                  label="Skip rows start"
+                  error={!!errors.rowsToSkipStart}
+                  inputProps={{
+                    step: 1,
+                  }}
+                  {...register('rowsToSkipStart', { required: true })}
+                />
+              </Grid>
+              <Grid xs={6} md={3}>
+                <TextField
+                  required
+                  fullWidth
+                  type="number"
+                  label="Skip rows end"
+                  error={!!errors.rowsToSkipEnd}
+                  inputProps={{
+                    step: 1,
+                  }}
+                  {...register('rowsToSkipEnd', { required: true })}
+                />
+              </Grid>
             </Grid>
-            <Grid xs={6} md={3}>
-              <TextField
-                required
-                fullWidth
-                label="CSV delimiter"
-                error={!!errors.delimiter}
-                {...register('delimiter', { required: true })}
-              />
-            </Grid>
-            <Grid xs={6} md={3}>
-              <TextField
-                required
-                fullWidth
-                type="number"
-                label="Skip rows start"
-                error={!!errors.rowsToSkipStart}
-                inputProps={{
-                  step: 1,
-                }}
-                {...register('rowsToSkipStart', { required: true })}
-              />
-            </Grid>
-            <Grid xs={6} md={3}>
-              <TextField
-                required
-                fullWidth
-                type="number"
-                label="Skip rows end"
-                error={!!errors.rowsToSkipEnd}
-                inputProps={{
-                  step: 1,
-                }}
-                {...register('rowsToSkipEnd', { required: true })}
-              />
-            </Grid>
-          </Grid>
-          <Controller
-            control={control}
-            name="dateFormat"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <Autocomplete
-                id="dateFormat-autocomplete"
-                value={value}
-                onChange={(_event, newValue) => onChange(newValue!)}
-                options={dateFormats}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Date format"
-                    error={!!errors.dateFormat}
-                  />
-                )}
-                onBlur={onBlur}
-              />
-            )}
-          />
-          <ImportFields
-            fields={fields.map((field) => field.value)}
-            onAppend={(value) => appendItem({ id: value, value })}
-            onRemove={removeItem}
-            onMove={moveItem}
-          />
-          <ImportPreview watch={watch} />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
-          Cancel
-        </Button>
-        <LoadingButton
-          variant="contained"
-          color="primary"
-          loading={loading}
-          disabled={!isValid}
-          onClick={handleSubmit(onSubmit)}
-        >
-          Save
-        </LoadingButton>
-      </DialogActions>
+            <Controller
+              control={control}
+              name="dateFormat"
+              render={({ field: { value, onChange, onBlur } }) => (
+                <Autocomplete
+                  id="dateFormat-autocomplete"
+                  value={value}
+                  onChange={(_event, newValue) => onChange(newValue!)}
+                  options={dateFormats}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Date format"
+                      error={!!errors.dateFormat}
+                    />
+                  )}
+                  onBlur={onBlur}
+                />
+              )}
+            />
+            <ImportFields
+              fields={fields.map((field) => field.value)}
+              onAppend={(value) => appendItem({ id: value, value })}
+              onRemove={removeItem}
+              onMove={moveItem}
+            />
+            <ImportPreview watch={watch} />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={loading}
+            disabled={!isValid}
+          >
+            Save
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };
