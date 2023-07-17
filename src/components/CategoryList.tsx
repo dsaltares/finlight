@@ -1,10 +1,14 @@
+import Fuse from 'fuse.js';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import type { Category } from '@server/category/types';
 import useDialogForId from '@lib/useDialogForId';
 import useDeleteCategory from '@lib/categories/useDeleteCategory';
 import useUpdateCategory from '@lib/categories/useUpdateCategory';
+import useFiltersFromurl from '@lib/useFiltersFromUrl';
 import ConfirmationDialog from './ConfirmationDialog';
 import CreateUpdateCategoryDialog from './CreateUpdateCategoryDialog';
 import CategoryListItem from './CategoryListItem';
@@ -38,17 +42,36 @@ const CategoryList = ({ categories }: Props) => {
   const { mutateAsync: updateCategory, isLoading: isUpdating } =
     useUpdateCategory();
 
-  return (
-    <List>
-      {categories.map((category) => (
-        <CategoryListItem
-          key={category.id}
-          category={category}
-          onUpdate={onUpdateDialogOpen}
-          onDelete={onDeleteOpen}
-        />
-      ))}
+  const { filtersByField, setFilters } = useFiltersFromurl();
+  const fuse = useMemo(
+    () => new Fuse(categories, { keys: ['name'] }),
+    [categories]
+  );
+  const filteredCategories = useMemo(
+    () =>
+      filtersByField.category
+        ? fuse.search(filtersByField.category).map((result) => result.item)
+        : categories,
+    [categories, fuse, filtersByField.category]
+  );
 
+  return (
+    <Stack gap={1}>
+      <TextField
+        placeholder="Search..."
+        value={filtersByField.category || ''}
+        onChange={(e) => setFilters({ category: e.target.value })}
+      />
+      <List>
+        {filteredCategories.map((category) => (
+          <CategoryListItem
+            key={category.id}
+            category={category}
+            onUpdate={onUpdateDialogOpen}
+            onDelete={onDeleteOpen}
+          />
+        ))}
+      </List>
       <ConfirmationDialog
         id="delete-category"
         title="Delete category"
@@ -72,7 +95,7 @@ const CategoryList = ({ categories }: Props) => {
           onUpdate={updateCategory}
         />
       )}
-    </List>
+    </Stack>
   );
 };
 
