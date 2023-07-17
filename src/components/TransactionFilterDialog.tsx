@@ -10,7 +10,7 @@ import { useMemo, useState } from 'react';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
 import { isOptionEqualToValue } from '@lib/autoCompleteOptions';
@@ -39,7 +39,7 @@ const TransactionFilterDialog = ({
 }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const { filtersByField, setFilters } = useFiltersFromurl();
+  const { filtersByField, setFilters } = useFiltersFromUrl();
   const accountOptions = useMemo(
     () =>
       accounts.map((account) => ({

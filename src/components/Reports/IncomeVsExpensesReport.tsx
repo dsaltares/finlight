@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import ChartContainer from '@components/Reports/ChartContainer';
 import client from '@lib/api';
-import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import { formatAmount } from '@lib/format';
 import type { TimeGranularity } from '@server/reports/types';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
@@ -19,7 +19,7 @@ import NoTransactionsFound from './NoTransactionsFound';
 
 const IncomeVsExpensesReport = () => {
   const theme = useTheme();
-  const { filtersByField } = useFiltersFromurl();
+  const { filtersByField } = useFiltersFromUrl();
   const { data, isLoading } = client.getIncomeVsExpensesReport.useQuery({
     from: filtersByField.from,
     until: filtersByField.until,

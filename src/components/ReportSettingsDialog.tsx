@@ -8,7 +8,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
-import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import { currencyOptionsById } from '@lib/autoCompleteOptions';
 import type { TimeGranularity } from '@server/reports/types';
@@ -34,7 +34,7 @@ const DefaultGranularity: TimeGranularity = 'Monthly';
 const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const { filtersByField, setFilters } = useFiltersFromurl();
+  const { filtersByField, setFilters } = useFiltersFromUrl();
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
       ? new Date(filtersByField.from)

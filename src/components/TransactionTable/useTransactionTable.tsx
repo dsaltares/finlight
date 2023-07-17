@@ -23,6 +23,7 @@ import useSortFromUrl from '@lib/useSortFromUrl';
 import CategoryChip from '@components/CategoryChip';
 import TransactionTypeChip from '@components/TransactionTypeChip';
 import AccountLink from '@components/AccountLink';
+import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 
 declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -70,6 +71,7 @@ const useTransactionTable = ({
   onDeleteDialogOpen,
 }: Props) => {
   const { sorting } = useSortFromUrl(DefaultSort);
+  const { filtersByField } = useFiltersFromUrl();
   const tableTransactions = useMemo(() => {
     const accountsById = (accounts || []).reduce(
       (acc, account) => ({
@@ -150,6 +152,7 @@ const useTransactionTable = ({
       columnHelper.accessor('description', {
         header: 'Description',
         cell: (info) => info.getValue(),
+        enableGlobalFilter: true,
       }),
       columnHelper.display({
         id: 'actions',
@@ -180,6 +183,7 @@ const useTransactionTable = ({
     state: {
       sorting,
       rowSelection,
+      globalFilter: filtersByField.transactionsGlobally,
     },
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),

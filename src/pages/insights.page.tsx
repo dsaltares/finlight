@@ -8,7 +8,7 @@ import TuneIcon from '@mui/icons-material/Tune';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
 import WithAuthentication from '@components/WithAuthentication';
-import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import CategorizedExpensesReport from '@components/Reports/CategorizedExpensesReport';
 import CategorizedIncomeReport from '@components/Reports/CategorizedIncomeReport';
 import useDialog from '@lib/useDialog';
@@ -44,7 +44,7 @@ const InsightsPage: NextPage = () => {
     onOpen: onSettingsDialogOpen,
     onClose: onSettingsDialogClose,
   } = useDialog('reportSettings');
-  const { filtersByField, setFilters } = useFiltersFromurl();
+  const { filtersByField, setFilters } = useFiltersFromUrl();
   const { data } = client.getAccounts.useQuery();
   const numFilters = Object.keys(filtersByField).filter(
     (field) => field !== 'report'
