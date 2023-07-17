@@ -28,7 +28,7 @@ const UserMenu = () => {
     open: isSignOutDialogOpen,
     onOpen: onSignOutDialogOpen,
     onClose: onSignOutDialogClose,
-  } = useDialog();
+  } = useDialog('signOut');
   const items = [
     {
       label: 'Privacy policy',

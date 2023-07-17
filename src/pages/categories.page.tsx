@@ -17,7 +17,7 @@ const CategoriesPage: NextPage = () => {
     open: isCreateDialogOpen,
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
-  } = useDialog();
+  } = useDialog('createCategory');
   const { mutateAsync: createCategory, isLoading: isCreating } =
     useCreateCategory();
 

@@ -123,83 +123,80 @@ const CreateUpdateAccountDialog = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle id={`${id}-title`}>
-        {account ? 'Edit account' : 'Create account'}
-      </DialogTitle>
-      <DialogContent>
-        <Stack
-          paddingY={1}
-          gap={1.5}
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <TextField
-            required
-            label="Name"
-            error={!!errors.name}
-            {...register('name', { required: true })}
-          />
-          <Controller
-            control={control}
-            name="currency"
-            rules={{ required: true }}
-            render={({ field: { value, onChange, onBlur } }) => (
-              <CurrencyAutocomplete
-                value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-                error={!!errors.currency}
-              />
-            )}
-          />
-          <TextField
-            required
-            type="number"
-            label="Initial balance"
-            error={!!errors.initialBalance}
-            inputProps={{
-              step: 0.01,
-            }}
-            {...register('initialBalance', { required: true })}
-          />
-          <Controller
-            control={control}
-            name="csvImportPreset"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <Autocomplete
-                id="csv-import-preset-autocomplete"
-                value={value}
-                onChange={(_event, newValue) => onChange(newValue!)}
-                options={presetOptions}
-                isOptionEqualToValue={isOptionEqualToValue}
-                getOptionLabel={getOptionLabel}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Import preset"
-                    error={!!errors.csvImportPreset}
-                  />
-                )}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
-          Cancel
-        </Button>
-        <LoadingButton
-          variant="contained"
-          color="primary"
-          loading={loading}
-          disabled={!isValid}
-          onClick={handleSubmit(onSubmit)}
-        >
-          Save
-        </LoadingButton>
-      </DialogActions>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle id={`${id}-title`}>
+          {account ? 'Edit account' : 'Create account'}
+        </DialogTitle>
+        <DialogContent>
+          <Stack paddingY={1} gap={1.5}>
+            <TextField
+              required
+              label="Name"
+              error={!!errors.name}
+              {...register('name', { required: true })}
+            />
+            <Controller
+              control={control}
+              name="currency"
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <CurrencyAutocomplete
+                  value={value}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  error={!!errors.currency}
+                />
+              )}
+            />
+            <TextField
+              required
+              type="number"
+              label="Initial balance"
+              error={!!errors.initialBalance}
+              inputProps={{
+                step: 0.01,
+              }}
+              {...register('initialBalance', { required: true })}
+            />
+            <Controller
+              control={control}
+              name="csvImportPreset"
+              render={({ field: { value, onChange, onBlur } }) => (
+                <Autocomplete
+                  id="csv-import-preset-autocomplete"
+                  value={value}
+                  onChange={(_event, newValue) => onChange(newValue!)}
+                  options={presetOptions}
+                  isOptionEqualToValue={isOptionEqualToValue}
+                  getOptionLabel={getOptionLabel}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Import preset"
+                      error={!!errors.csvImportPreset}
+                    />
+                  )}
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={loading}
+            disabled={!isValid}
+          >
+            Save
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

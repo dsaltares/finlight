@@ -1,15 +1,25 @@
-import { useCallback, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback } from 'react';
 
-const useDialogId = () => {
-  const [openFor, setOpenFor] = useState<string | undefined>();
-  const onOpen = useCallback((id: string) => setOpenFor(id), [setOpenFor]);
-  const onClose = useCallback(() => setOpenFor(undefined), [setOpenFor]);
-  return {
-    open: !!openFor,
-    openFor,
-    onOpen,
-    onClose,
-  };
+const useDialogForId = (queryParam: string) => {
+  const { query, push } = useRouter();
+  const openFor = query[queryParam] as string | undefined;
+  const onOpen = useCallback(
+    (id: string) => {
+      void push({ query: { ...query, [queryParam]: id } }, undefined, {
+        shallow: true,
+      });
+    },
+    [query, push, queryParam]
+  );
+  const onClose = useCallback(() => {
+    const newQuery = { ...query };
+    delete newQuery[queryParam];
+    void push({ query: newQuery }, undefined, {
+      shallow: true,
+    });
+  }, [query, push, queryParam]);
+  return { openFor, open: !!openFor, onOpen, onClose };
 };
 
-export default useDialogId;
+export default useDialogForId;

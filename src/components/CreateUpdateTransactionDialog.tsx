@@ -144,112 +144,109 @@ const CreateUpdateTransactionDialog = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle id={`${id}-title`}>
-        {transaction ? 'Edit transaction' : 'Create transaction'}
-      </DialogTitle>
-      <DialogContent>
-        <Stack
-          paddingY={1}
-          gap={1.5}
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <TextField
-            required
-            type="number"
-            label="Amount"
-            error={!!errors.amount}
-            inputProps={{
-              step: 0.01,
-            }}
-            {...register('amount', { required: true })}
-          />
-          <Controller
-            control={control}
-            name="date"
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <DatePicker
-                label="Date"
-                value={value}
-                onChange={(value) => onChange(value)}
-              />
-            )}
-          />
-          <TextField
-            label="Description"
-            error={!!errors.description}
-            {...register('description')}
-          />
-          <Controller
-            control={control}
-            name="account"
-            rules={{ required: true }}
-            render={({ field: { value, onChange, onBlur } }) => (
-              <Autocomplete
-                disableClearable
-                id="account-autocomplete"
-                value={value}
-                onChange={(_event, newValue) => onChange(newValue!)}
-                options={accountOptions}
-                isOptionEqualToValue={isOptionEqualToValue}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Account"
-                    required
-                    error={!!errors.account}
-                  />
-                )}
-                onBlur={onBlur}
-                disabled={!!transaction}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { value, onChange } }) => (
-              <TransactionTypeSelect value={value} onChange={onChange} />
-            )}
-          />
-          <Controller
-            control={control}
-            name="category"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <Autocomplete
-                id="category-autocomplete"
-                value={value}
-                onChange={(_event, newValue) => onChange(newValue!)}
-                options={categoryOptions}
-                isOptionEqualToValue={isOptionEqualToValue}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Category"
-                    error={!!errors.category}
-                  />
-                )}
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
-          Cancel
-        </Button>
-        <LoadingButton
-          variant="contained"
-          color="primary"
-          loading={loading}
-          disabled={!isValid}
-          onClick={handleSubmit(onSubmit)}
-        >
-          Save
-        </LoadingButton>
-      </DialogActions>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle id={`${id}-title`}>
+          {transaction ? 'Edit transaction' : 'Create transaction'}
+        </DialogTitle>
+        <DialogContent>
+          <Stack paddingY={1} gap={1.5} component="form">
+            <TextField
+              required
+              type="number"
+              label="Amount"
+              error={!!errors.amount}
+              inputProps={{
+                step: 0.01,
+              }}
+              {...register('amount', { required: true })}
+            />
+            <Controller
+              control={control}
+              name="date"
+              rules={{ required: true }}
+              render={({ field: { value, onChange } }) => (
+                <DatePicker
+                  label="Date"
+                  value={value}
+                  onChange={(value) => onChange(value)}
+                />
+              )}
+            />
+            <TextField
+              label="Description"
+              error={!!errors.description}
+              {...register('description')}
+            />
+            <Controller
+              control={control}
+              name="account"
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <Autocomplete
+                  disableClearable
+                  id="account-autocomplete"
+                  value={value}
+                  onChange={(_event, newValue) => onChange(newValue!)}
+                  options={accountOptions}
+                  isOptionEqualToValue={isOptionEqualToValue}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Account"
+                      required
+                      error={!!errors.account}
+                    />
+                  )}
+                  onBlur={onBlur}
+                  disabled={!!transaction}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="type"
+              render={({ field: { value, onChange } }) => (
+                <TransactionTypeSelect value={value} onChange={onChange} />
+              )}
+            />
+            <Controller
+              control={control}
+              name="category"
+              render={({ field: { value, onChange, onBlur } }) => (
+                <Autocomplete
+                  id="category-autocomplete"
+                  value={value}
+                  onChange={(_event, newValue) => onChange(newValue!)}
+                  options={categoryOptions}
+                  isOptionEqualToValue={isOptionEqualToValue}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Category"
+                      error={!!errors.category}
+                    />
+                  )}
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={loading}
+            disabled={!isValid}
+          >
+            Save
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

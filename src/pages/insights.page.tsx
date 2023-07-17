@@ -43,7 +43,7 @@ const InsightsPage: NextPage = () => {
     open: isSettingsDialogOpen,
     onOpen: onSettingsDialogOpen,
     onClose: onSettingsDialogClose,
-  } = useDialog();
+  } = useDialog('reportSettings');
   const { filtersByField, setFilters } = useFiltersFromurl();
   const { data: accounts } = client.getAccounts.useQuery();
   const numFilters = Object.keys(filtersByField).filter(

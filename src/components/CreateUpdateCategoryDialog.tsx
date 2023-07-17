@@ -93,75 +93,72 @@ const CreateUpdateCategoryDialog = ({
       fullWidth
       maxWidth="md"
     >
-      <DialogTitle id={`${id}-title`}>
-        {category ? 'Edit category' : 'Create category'}
-      </DialogTitle>
-      <DialogContent>
-        <Stack
-          paddingY={1}
-          gap={1.5}
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <TextField
-            required
-            label="Name"
-            error={!!errors.name}
-            {...register('name', { required: true })}
-          />
-          <Controller
-            control={control}
-            name="importPatterns"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <Autocomplete
-                id="import-patterns-autocomplete"
-                freeSolo
-                multiple
-                options={[]}
-                value={value}
-                onChange={(_event, value) => {
-                  onChange(value || []);
-                }}
-                getOptionLabel={(option) => option.toString()}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Import patterns"
-                    placeholder="Patterns to automatically categorize transactions on import."
-                    error={!!errors.importPatterns}
-                  />
-                )}
-                renderTags={(patterns, getTagProps) =>
-                  patterns.map((pattern, index) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <Chip
-                      variant="outlined"
-                      label={pattern}
-                      size="small"
-                      {...getTagProps({ index })}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle id={`${id}-title`}>
+          {category ? 'Edit category' : 'Create category'}
+        </DialogTitle>
+        <DialogContent>
+          <Stack paddingY={1} gap={1.5}>
+            <TextField
+              required
+              label="Name"
+              error={!!errors.name}
+              {...register('name', { required: true })}
+            />
+            <Controller
+              control={control}
+              name="importPatterns"
+              render={({ field: { value, onChange, onBlur } }) => (
+                <Autocomplete
+                  id="import-patterns-autocomplete"
+                  freeSolo
+                  multiple
+                  options={[]}
+                  value={value}
+                  onChange={(_event, value) => {
+                    onChange(value || []);
+                  }}
+                  getOptionLabel={(option) => option.toString()}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Import patterns"
+                      placeholder="Patterns to automatically categorize transactions on import."
+                      error={!!errors.importPatterns}
                     />
-                  ))
-                }
-                onBlur={onBlur}
-              />
-            )}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
-          Cancel
-        </Button>
-        <LoadingButton
-          variant="contained"
-          color="primary"
-          loading={loading}
-          disabled={!isValid}
-          onClick={handleSubmit(onSubmit)}
-        >
-          Save
-        </LoadingButton>
-      </DialogActions>
+                  )}
+                  renderTags={(patterns, getTagProps) =>
+                    patterns.map((pattern, index) => (
+                      // eslint-disable-next-line react/jsx-key
+                      <Chip
+                        variant="outlined"
+                        label={pattern}
+                        size="small"
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  onBlur={onBlur}
+                />
+              )}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={loading}
+            disabled={!isValid}
+          >
+            Save
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };
