@@ -30,6 +30,7 @@ import useUpdateTransactions from '@lib/transactions/useUpdateTransactions';
 import ConfirmationDialog from '../ConfirmationDialog';
 import CreateUpdateTransactionDialog from '../CreateUpdateTransactionDialog';
 import UpdateTransactionsDialog from '../UpdateTransactionsDialog';
+import theme from '@lib/theme';
 import useTransactionTable, {
   DefaultSort,
   type TransactionTableRow,
@@ -117,7 +118,7 @@ const TransactionTable = ({
       <>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
+            {headerGroup.headers.map((header, index) => (
               <TableCell
                 key={header.id}
                 sortDirection={header.column.getIsSorted()}
@@ -128,7 +129,9 @@ const TransactionTable = ({
                 }
                 sx={{
                   backgroundColor: 'background.paper',
+                  ...CellPadding,
                 }}
+                width={index === 0 ? 50 : undefined}
               >
                 {header.column.columnDef.enableSorting !== false ? (
                   <TableSortLabel
@@ -225,7 +228,6 @@ const VirtuosoTableComponents: TableComponents<Row<TransactionTableRow>> = {
   Table: (props) => (
     <Table
       {...props}
-      // sx={{ minWidth: 650 }}
       size="small"
       sx={{ borderCollapse: 'separate', tableLayout: 'fixed', minWidth: 900 }}
     />
@@ -244,9 +246,15 @@ const rowContent = (_index: number, row: Row<TransactionTableRow>) => (
       <TableCell
         key={cell.id}
         align={cell.column.columnDef.meta?.numeric ? 'right' : 'left'}
+        sx={CellPadding}
       >
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </TableCell>
     ))}
   </>
 );
+
+const CellPadding = {
+  paddingX: theme.spacing(0.5),
+  paddingY: theme.spacing(0.25),
+};
