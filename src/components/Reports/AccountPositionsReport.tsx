@@ -43,7 +43,7 @@ const AccountPositionsReport = () => {
   const { data: accounts } = client.getAccounts.useQuery();
   const accountsByName = useMemo(
     () =>
-      accounts?.reduce<Record<string, Account | undefined>>(
+      accounts?.accounts.reduce<Record<string, Account | undefined>>(
         (acc, account) => ({ ...acc, [account.name]: account }),
         {}
       ) || {},

@@ -11,7 +11,7 @@ import {
 } from './types';
 import {
   getRates,
-  convertTransactionAmount,
+  convertAmount,
   getFormatForGranularity,
   getDisplayFormatForGranularity,
 } from './utils';
@@ -128,7 +128,7 @@ export const getAccountPositionsReport: Procedure<
       >(
         (acc, [name, balance]) => ({
           ...acc,
-          [name]: convertTransactionAmount(
+          [name]: convertAmount(
             balance,
             accountsByName[name].currency,
             currency,

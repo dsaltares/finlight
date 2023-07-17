@@ -16,6 +16,7 @@ import type { Account } from '@server/account/types';
 import flags from '@lib/flags';
 import { formatAmount } from '@lib/format';
 import useImportTransactions from '@lib/transactions/useImportTransactions';
+import Typography from '@mui/material/Typography';
 
 type Props = {
   account: Account;
@@ -48,7 +49,14 @@ const AccountListItem = ({ account, onUpdate, onDelete }: Props) => {
         </ListItemAvatar>
         <ListItemText
           primary={account.name}
-          secondary={formatAmount(account.balance, account.currency)}
+          secondary={
+            <Typography
+              variant="body2"
+              color={account.balance > 0 ? 'success.main' : 'error.main'}
+            >
+              {formatAmount(account.balance, account.currency)}
+            </Typography>
+          }
         />
         <Stack direction="row" gap={1}>
           {canImport && (

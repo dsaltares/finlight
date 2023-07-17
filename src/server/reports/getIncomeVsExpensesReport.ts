@@ -9,7 +9,7 @@ import {
 } from './types';
 import {
   getRates,
-  convertTransactionAmount,
+  convertAmount,
   getFormatForGranularity,
   getDisplayFormatForGranularity,
 } from './utils';
@@ -60,7 +60,7 @@ export const getIncomeVsExpensesReport: Procedure<
         .reduce(
           (acc, transaction) =>
             acc +
-            convertTransactionAmount(
+            convertAmount(
               transaction.amount,
               transaction.account.currency,
               currency,
@@ -73,7 +73,7 @@ export const getIncomeVsExpensesReport: Procedure<
         .reduce(
           (acc, transaction) =>
             acc -
-            convertTransactionAmount(
+            convertAmount(
               transaction.amount,
               transaction.account.currency,
               currency,

@@ -10,10 +10,13 @@ export const updateAccountBalance = async (accountId: string) => {
   return prisma.bankAccount.update({
     where: { id: accountId },
     data: {
-      balance: transactions.reduce(
-        (sum, transaction) => sum + transaction.amount,
-        account.initialBalance
-      ),
+      balance:
+        Math.round(
+          transactions.reduce(
+            (sum, transaction) => sum + transaction.amount,
+            account.initialBalance
+          ) * 100
+        ) / 100,
     },
   });
 };

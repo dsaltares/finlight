@@ -40,7 +40,7 @@ export type TransactionResult = Transaction & {
   category: Category | null;
 };
 
-export const convertTransactionAmount = (
+export const convertAmount = (
   amount: number,
   currency: string,
   targetCurrency: string,
@@ -51,7 +51,7 @@ export const convertTransactionAmount = (
   // baseToTransaction: EUR -> RON
   const baseToTarget = rates[targetCurrency] || 1;
   const baseToTransaction = rates[currency] || 1;
-  return (amount * baseToTarget) / baseToTransaction;
+  return Math.round(((amount * baseToTarget) / baseToTransaction) * 100) / 100;
 };
 
 export const getFormatForGranularity = (granularity: TimeGranularity) => {

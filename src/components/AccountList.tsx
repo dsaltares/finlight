@@ -41,7 +41,7 @@ const AccountList = ({ accounts, presets }: Props) => {
     useUpdateAccount();
 
   return (
-    <List>
+    <List disablePadding>
       {accounts.map((account) => (
         <AccountListItem
           key={account.id}
