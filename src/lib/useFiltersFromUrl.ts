@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
 
-const useFiltersFromurl = () => {
+const useFiltersFromUrl = () => {
   const { query, push } = useRouter();
   const filters = useMemo(
     () =>
@@ -47,4 +47,4 @@ const useFiltersFromurl = () => {
   };
 };
 
-export default useFiltersFromurl;
+export default useFiltersFromUrl;

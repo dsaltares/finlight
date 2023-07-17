@@ -9,6 +9,7 @@ import type { RowSelectionState } from '@tanstack/react-table';
 import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
+import TextField from '@mui/material/TextField';
 import client from '@lib/api';
 import WithAuthentication from '@components/WithAuthentication';
 import useDialog from '@lib/useDialog';
@@ -16,7 +17,7 @@ import CreateUpdateTransactionDialog from '@components/CreateUpdateTransactionDi
 import TransactionTable from '@components/TransactionTable';
 import useCreateTransaction from '@lib/transactions/useCreateTransaction';
 import TransactionFilterDialog from '@components/TransactionFilterDialog';
-import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import Fab from '@components/Fab';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import EmptyState from '@components/EmptyState';
@@ -45,7 +46,7 @@ const TransactionsPage: NextPage = () => {
   } = useDialog('updateTransactions');
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasRowsSelected = Object.keys(rowSelection).length > 0;
-  const { filtersByField } = useFiltersFromurl();
+  const { filtersByField, setFilters } = useFiltersFromUrl();
   const { data: transactions, isLoading: isLoadingTransactions } =
     client.getTransactions.useQuery({
       from: filtersByField.from,
@@ -97,9 +98,16 @@ const TransactionsPage: NextPage = () => {
       <Stack
         direction="row"
         alignItems="center"
-        justifyContent="flex-end"
-        gap={1}
+        justifyContent="space-between"
+        gap={2}
       >
+        <TextField
+          fullWidth
+          placeholder="Search..."
+          size="small"
+          value={filtersByField.transactionsGlobally || ''}
+          onChange={(e) => setFilters({ transactionsGlobally: e.target.value })}
+        />
         <Stack direction="row" gap={1}>
           <IconButton
             color="error"

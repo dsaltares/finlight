@@ -22,7 +22,7 @@ import stringToColor from 'string-to-color';
 import Link from 'next/link';
 import ChartContainer from '@components/Reports/ChartContainer';
 import client from '@lib/api';
-import useFiltersFromurl from '@lib/useFiltersFromUrl';
+import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import { formatAmount } from '@lib/format';
 import type { TimeGranularity } from '@server/reports/types';
 import type { Account } from '@server/account/types';
@@ -32,7 +32,7 @@ import NoTransactionsFound from './NoTransactionsFound';
 
 const AccountPositionsReport = () => {
   const theme = useTheme();
-  const { filtersByField } = useFiltersFromurl();
+  const { filtersByField } = useFiltersFromUrl();
   const { data, isLoading } = client.getAccountPositionsReport.useQuery({
     from: filtersByField.from,
     until: filtersByField.until,
