@@ -32,7 +32,6 @@ const SidebarLayout = ({ children }: PropsWithChildren) => {
           flexGrow={1}
           paddingY={isMobile ? 2 : 3}
           paddingX={isMobile ? 1 : 3}
-          paddingBottom={10}
         >
           {children}
         </Stack>
