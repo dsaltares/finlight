@@ -9,4 +9,6 @@ export const formatAmount = (amount: number, currency: string | undefined) =>
     : new Intl.NumberFormat('en-UK', {
         style: 'currency',
         currency: currency || 'EUR',
-      }).format(amount);
+      })
+        .format(parseFloat(amount.toString().replace('-0', '0')))
+        .replace('-0', '0');

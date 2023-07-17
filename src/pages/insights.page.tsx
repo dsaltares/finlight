@@ -45,7 +45,7 @@ const InsightsPage: NextPage = () => {
     onClose: onSettingsDialogClose,
   } = useDialog('reportSettings');
   const { filtersByField, setFilters } = useFiltersFromurl();
-  const { data: accounts } = client.getAccounts.useQuery();
+  const { data } = client.getAccounts.useQuery();
   const numFilters = Object.keys(filtersByField).filter(
     (field) => field !== 'report'
   ).length;
@@ -86,7 +86,7 @@ const InsightsPage: NextPage = () => {
         <ReportSettingsDialog
           open={isSettingsDialogOpen}
           onClose={onSettingsDialogClose}
-          accounts={accounts || []}
+          accounts={data?.accounts || []}
         />
       )}
     </Stack>

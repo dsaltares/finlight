@@ -61,8 +61,7 @@ const TransactionsPage: NextPage = () => {
       categoryId: filtersByField.categoryId,
       description: filtersByField.description,
     });
-  const { data: accounts, isLoading: isLoadingAccounts } =
-    client.getAccounts.useQuery();
+  const { data, isLoading: isLoadingAccounts } = client.getAccounts.useQuery();
   const { data: categories, isLoading: isLoadingCategories } =
     client.getCategories.useQuery();
   const { mutateAsync: createTransaction, isLoading: isCreating } =
@@ -81,7 +80,7 @@ const TransactionsPage: NextPage = () => {
     content = (
       <TransactionTable
         transactions={transactions}
-        accounts={accounts || []}
+        accounts={data?.accounts || []}
         categories={categories || []}
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
@@ -130,7 +129,7 @@ const TransactionsPage: NextPage = () => {
       <CreateUpdateTransactionDialog
         open={isCreateDialogOpen}
         loading={isCreating}
-        accounts={accounts || []}
+        accounts={data?.accounts || []}
         categories={categories || []}
         onClose={onCreateDialogClose}
         onCreate={createTransaction}
@@ -139,7 +138,7 @@ const TransactionsPage: NextPage = () => {
         <TransactionFilterDialog
           open={isFilterDialogOpen}
           onClose={onFilterDialogClose}
-          accounts={accounts || []}
+          accounts={data?.accounts || []}
           categories={categories || []}
         />
       )}

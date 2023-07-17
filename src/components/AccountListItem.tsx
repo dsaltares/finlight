@@ -11,6 +11,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import Link from 'next/link';
 import stringToColor from 'string-to-color';
 import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import Routes from '@lib/routes';
 import type { Account } from '@server/account/types';
 import flags from '@lib/flags';
@@ -48,7 +49,14 @@ const AccountListItem = ({ account, onUpdate, onDelete }: Props) => {
         </ListItemAvatar>
         <ListItemText
           primary={account.name}
-          secondary={formatAmount(account.balance, account.currency)}
+          secondary={
+            <Typography
+              variant="body2"
+              color={account.balance > 0 ? 'success.main' : 'error.main'}
+            >
+              {formatAmount(account.balance, account.currency)}
+            </Typography>
+          }
         />
         <Stack direction="row" gap={1}>
           {canImport && (

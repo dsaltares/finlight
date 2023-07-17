@@ -1,11 +1,7 @@
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { GetCategoryReportInput, GetCategoryReportOutput } from './types';
-import {
-  type TransactionResult,
-  getRates,
-  convertTransactionAmount,
-} from './utils';
+import { type TransactionResult, getRates, convertAmount } from './utils';
 
 export const getCategoryReport: Procedure<
   GetCategoryReportInput,
@@ -58,7 +54,7 @@ export const getCategoryReport: Procedure<
         transactions.reduce(
           (acc, transaction) =>
             acc +
-            convertTransactionAmount(
+            convertAmount(
               transaction.amount,
               transaction.account.currency,
               currency,

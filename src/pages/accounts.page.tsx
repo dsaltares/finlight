@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import AddIcon from '@mui/icons-material/Add';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import Stack from '@mui/material/Stack';
 import WithAuthentication from '@components/WithAuthentication';
 import client from '@lib/api';
 import useDialog from '@lib/useDialog';
@@ -10,10 +11,10 @@ import CreateUpdateAccountDialog from '@components/CreateUpdateAccountDialog';
 import Fab from '@components/Fab';
 import EmptyState from '@components/EmptyState';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
+import BalanceCard from '@components/BalanceCard';
 
 const AccountsPage: NextPage = () => {
-  const { data: accounts, isLoading: isLoadingAccounts } =
-    client.getAccounts.useQuery();
+  const { data, isLoading: isLoadingAccounts } = client.getAccounts.useQuery();
   const { data: presets, isLoading: isLoadingPresets } =
     client.getCSVImportPresets.useQuery();
   const {
@@ -28,14 +29,24 @@ const AccountsPage: NextPage = () => {
   let content = null;
   if (isLoading) {
     content = <FullScreenSpinner />;
-  } else if (!accounts || accounts.length === 0) {
+  } else if (!data || data.accounts.length === 0) {
     content = (
       <EmptyState
         Icon={AccountBalanceIcon}
       >{`You don't have any accounts yet.`}</EmptyState>
     );
   } else {
-    content = <AccountList accounts={accounts} presets={presets || []} />;
+    content = (
+      <Stack gap={2}>
+        <Stack direction="row" justifyContent="flex-start">
+          <BalanceCard
+            balance={data.total.value}
+            currency={data.total.currency}
+          />
+        </Stack>
+        <AccountList accounts={data.accounts} presets={presets || []} />
+      </Stack>
+    );
   }
 
   return (
