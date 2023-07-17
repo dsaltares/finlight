@@ -7,7 +7,7 @@ import Routes from '@lib/routes';
 const Home: NextPage = () => {
   const { replace } = useRouter();
   useEffect(() => {
-    void replace(Routes.transactions);
+    void replace(Routes.accounts);
   }, [replace]);
 
   return <></>;
