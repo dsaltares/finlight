@@ -6,6 +6,9 @@ describe('getAccounts', () => {
       ctx: { session: null },
       input: undefined,
     });
-    expect(accounts).toEqual([]);
+    expect(accounts).toEqual({
+      accounts: [],
+      total: { value: 0, currency: 'EUR' },
+    });
   });
 });

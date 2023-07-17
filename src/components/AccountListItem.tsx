@@ -11,12 +11,12 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import Link from 'next/link';
 import stringToColor from 'string-to-color';
 import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import Routes from '@lib/routes';
 import type { Account } from '@server/account/types';
 import flags from '@lib/flags';
 import { formatAmount } from '@lib/format';
 import useImportTransactions from '@lib/transactions/useImportTransactions';
-import Typography from '@mui/material/Typography';
 
 type Props = {
   account: Account;
