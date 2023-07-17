@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { useCallback } from 'react';
 
 const useDialog = (queryParam: string) => {
@@ -10,12 +10,15 @@ const useDialog = (queryParam: string) => {
     });
   }, [query, push, queryParam]);
   const onClose = useCallback(() => {
-    const newQuery = { ...query };
-    delete newQuery[queryParam];
-    void push({ query: newQuery }, undefined, {
-      shallow: true,
+    // Some dialogs set query params, so we need to wait a bit before closing
+    setTimeout(() => {
+      const newQuery = { ...Router.query };
+      delete newQuery[queryParam];
+      void Router.push({ query: newQuery }, undefined, {
+        shallow: true,
+      });
     });
-  }, [query, push, queryParam]);
+  }, [queryParam]);
   return { open: !!open, onOpen, onClose };
 };
 

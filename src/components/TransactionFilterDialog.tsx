@@ -123,107 +123,106 @@ const TransactionFilterDialog = ({
       fullScreen={fullScreen}
       keepMounted={false}
     >
-      <form onSubmit={handleApplyFilters}>
-        <DialogTitle id={`${id}-title`}>Transaction filters</DialogTitle>
-        <DialogContent>
-          <Stack paddingY={1} gap={1.75}>
-            <Stack gap={1}>
-              <PeriodSelect
-                id="period-select"
-                label="Period"
-                value={period}
-                onChange={(period) => {
-                  const [newFrom, newUntil] = getDateRangeForPeriod(period);
-                  setPeriod(period);
-                  setFrom(newFrom);
-                  setUntil(newUntil);
-                }}
-              />
-              <Stack direction="row" gap={1}>
-                <DatePicker
-                  label="From"
-                  value={from}
-                  onChange={(date) => {
-                    setFrom(date);
-                    setPeriod(getPeriodForDateRange([from, until]));
-                  }}
-                  maxDate={until}
-                  format="dd/MM/yyyy"
-                />
-                <DatePicker
-                  label="Until"
-                  value={until}
-                  onChange={(date) => {
-                    setUntil(date);
-                    setPeriod(getPeriodForDateRange([from, until]));
-                  }}
-                  minDate={from}
-                  format="dd/MM/yyyy"
-                />
-              </Stack>
-            </Stack>
-            <Stack direction="row" gap={1}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Min amount"
-                value={minAmount}
-                onChange={(e) => setMinAmount(e.target.value)}
-                inputProps={{
-                  step: 0.01,
-                }}
-              />
-              <TextField
-                fullWidth
-                type="number"
-                label="Max amount"
-                value={maxAmount}
-                onChange={(e) => setMaxAmount(e.target.value)}
-                inputProps={{
-                  step: 0.01,
-                }}
-              />
-            </Stack>
-            <Autocomplete
-              id="account-autocomplete"
-              value={account}
-              onChange={(_event, newValue) => setAccount(newValue)}
-              options={accountOptions}
-              isOptionEqualToValue={isOptionEqualToValue}
-              renderInput={(params) => (
-                <TextField {...params} label="Account" />
-              )}
+      <DialogTitle id={`${id}-title`}>Transaction filters</DialogTitle>
+      <DialogContent>
+        <Stack paddingY={1} gap={1.75}>
+          <Stack gap={1}>
+            <PeriodSelect
+              id="period-select"
+              label="Period"
+              value={period}
+              onChange={(period) => {
+                const [newFrom, newUntil] = getDateRangeForPeriod(period);
+                setPeriod(period);
+                setFrom(newFrom);
+                setUntil(newUntil);
+              }}
             />
-            <TransactionTypeSelect value={type} onChange={setType} clearable />
-            <Autocomplete
-              id="category-autocomplete"
-              value={category}
-              onChange={(_event, newValue) => setCategory(newValue)}
-              options={categoryOptions}
-              isOptionEqualToValue={isOptionEqualToValue}
-              renderInput={(params) => (
-                <TextField {...params} label="Category" />
-              )}
+            <Stack direction="row" gap={1}>
+              <DatePicker
+                label="From"
+                value={from}
+                onChange={(date) => {
+                  setFrom(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
+                }}
+                maxDate={until}
+                format="dd/MM/yyyy"
+              />
+              <DatePicker
+                label="Until"
+                value={until}
+                onChange={(date) => {
+                  setUntil(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
+                }}
+                minDate={from}
+                format="dd/MM/yyyy"
+              />
+            </Stack>
+          </Stack>
+          <Stack direction="row" gap={1}>
+            <TextField
+              fullWidth
+              type="number"
+              label="Min amount"
+              value={minAmount}
+              onChange={(e) => setMinAmount(e.target.value)}
+              inputProps={{
+                step: 0.01,
+              }}
             />
             <TextField
-              label="Description"
-              defaultValue={description}
-              onChange={(event) => setDescription(event.target.value)}
+              fullWidth
+              type="number"
+              label="Max amount"
+              value={maxAmount}
+              onChange={(e) => setMaxAmount(e.target.value)}
+              inputProps={{
+                step: 0.01,
+              }}
             />
           </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="outlined" color="error" onClick={handleClearFilters}>
-            Clear
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            Apply
-          </Button>
-        </DialogActions>
-      </form>
+          <Autocomplete
+            id="account-autocomplete"
+            value={account}
+            onChange={(_event, newValue) => setAccount(newValue)}
+            options={accountOptions}
+            isOptionEqualToValue={isOptionEqualToValue}
+            renderInput={(params) => <TextField {...params} label="Account" />}
+          />
+          <TransactionTypeSelect value={type} onChange={setType} clearable />
+          <Autocomplete
+            id="category-autocomplete"
+            value={category}
+            onChange={(_event, newValue) => setCategory(newValue)}
+            options={categoryOptions}
+            isOptionEqualToValue={isOptionEqualToValue}
+            renderInput={(params) => <TextField {...params} label="Category" />}
+          />
+          <TextField
+            label="Description"
+            defaultValue={description}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="outlined" color="error" onClick={handleClearFilters}>
+          Clear
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={handleApplyFilters}
+        >
+          Apply
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

@@ -95,71 +95,74 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
       fullWidth
       maxWidth="sm"
     >
-      <form onSubmit={handleApplyFilters}>
-        <DialogTitle id={`${id}-title`}>Report settings</DialogTitle>
-        <DialogContent>
-          <Stack paddingY={1} gap={1.75}>
-            <Stack gap={1}>
-              <PeriodSelect
-                id="period-select"
-                label="Period"
-                value={period}
-                onChange={(period) => {
-                  const [newFrom, newUntil] = getDateRangeForPeriod(period);
-                  setPeriod(period);
-                  setFrom(newFrom);
-                  setUntil(newUntil);
+      <DialogTitle id={`${id}-title`}>Report settings</DialogTitle>
+      <DialogContent>
+        <Stack paddingY={1} gap={1.75}>
+          <Stack gap={1}>
+            <PeriodSelect
+              id="period-select"
+              label="Period"
+              value={period}
+              onChange={(period) => {
+                const [newFrom, newUntil] = getDateRangeForPeriod(period);
+                setPeriod(period);
+                setFrom(newFrom);
+                setUntil(newUntil);
+              }}
+            />
+            <Stack direction="row" gap={1}>
+              <DatePicker
+                label="From"
+                value={from}
+                onChange={(date) => {
+                  setFrom(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
                 }}
+                maxDate={until}
+                format="dd/MM/yyyy"
+                sx={{ width: '100%' }}
               />
-              <Stack direction="row" gap={1}>
-                <DatePicker
-                  label="From"
-                  value={from}
-                  onChange={(date) => {
-                    setFrom(date);
-                    setPeriod(getPeriodForDateRange([from, until]));
-                  }}
-                  maxDate={until}
-                  format="dd/MM/yyyy"
-                  sx={{ width: '100%' }}
-                />
-                <DatePicker
-                  label="Until"
-                  value={until}
-                  onChange={(date) => {
-                    setUntil(date);
-                    setPeriod(getPeriodForDateRange([from, until]));
-                  }}
-                  minDate={from}
-                  format="dd/MM/yyyy"
-                  sx={{ width: '100%' }}
-                />
-              </Stack>
+              <DatePicker
+                label="Until"
+                value={until}
+                onChange={(date) => {
+                  setUntil(date);
+                  setPeriod(getPeriodForDateRange([from, until]));
+                }}
+                minDate={from}
+                format="dd/MM/yyyy"
+                sx={{ width: '100%' }}
+              />
             </Stack>
-            <TimeGranularitySelect
-              value={timeGranularity}
-              onChange={setTimeGranularity}
-            />
-            <AccountSelect
-              accounts={accounts}
-              selected={selectedAccounts}
-              onChange={setSelectedAccounts}
-            />
-            <CurrencyAutocomplete value={currency} onChange={setCurrency} />
           </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="outlined" color="error" onClick={handleClearFilters}>
-            Clear
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            Apply
-          </Button>
-        </DialogActions>
-      </form>
+          <TimeGranularitySelect
+            value={timeGranularity}
+            onChange={setTimeGranularity}
+          />
+          <AccountSelect
+            accounts={accounts}
+            selected={selectedAccounts}
+            onChange={setSelectedAccounts}
+          />
+          <CurrencyAutocomplete value={currency} onChange={setCurrency} />
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="outlined" color="error" onClick={handleClearFilters}>
+          Clear
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={handleApplyFilters}
+        >
+          Apply
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
