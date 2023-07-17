@@ -27,22 +27,22 @@ const TransactionsPage: NextPage = () => {
     open: isCreateDialogOpen,
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
-  } = useDialog();
+  } = useDialog('createTransaction');
   const {
     open: isFilterDialogOpen,
     onOpen: onFilterDialogOpen,
     onClose: onFilterDialogClose,
-  } = useDialog();
+  } = useDialog('filterTransactions');
   const {
     open: multiDeleteOpen,
     onOpen: onMultiDeleteOpen,
     onClose: onMultiDeleteClose,
-  } = useDialog();
+  } = useDialog('deleteTransactions');
   const {
     open: multiUpdateOpen,
     onOpen: onMultiUpdateOpen,
     onClose: onMultiUpdateClose,
-  } = useDialog();
+  } = useDialog('updateTransactions');
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const hasRowsSelected = Object.keys(rowSelection).length > 0;
   const { filtersByField } = useFiltersFromurl();

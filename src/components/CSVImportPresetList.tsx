@@ -2,7 +2,6 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
 import useDialogForId from '@lib/useDialogForId';
-import useDialogFromUrl from '@lib/useDialogFromUrl';
 import type { CSVImportPreset } from '@server/csvImportPreset/types';
 import useDeleteCSVImportPreset from '@lib/csvImportPresets/useDeleteCSVImportPreset';
 import useUpdateCSVImportPreset from '@lib/csvImportPresets/useUpdateCSVImportPreset';
@@ -20,7 +19,7 @@ const CSVImportPresetList = ({ presets }: Props) => {
     open: deleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
-  } = useDialogForId();
+  } = useDialogForId('deletePreset');
   const { mutateAsync: deletePreset, isLoading: isDeleting } =
     useDeleteCSVImportPreset();
   const handleDelete = () =>
@@ -31,7 +30,7 @@ const CSVImportPresetList = ({ presets }: Props) => {
     open: isUpdateDialogOpen,
     onOpen: onUpdateDialogOpen,
     onClose: onUpdateDialogClose,
-  } = useDialogFromUrl('presetId');
+  } = useDialogForId('updatePreset');
   const preset = useMemo(
     () => presets.find((preset) => preset.id === presetId),
     [presets, presetId]

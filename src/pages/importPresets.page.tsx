@@ -17,7 +17,7 @@ const ImportPresetsPage: NextPage = () => {
     open: isCreateDialogOpen,
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
-  } = useDialog();
+  } = useDialog('createImportPreset');
   const { mutateAsync: createCSVImportPreset, isLoading: isCreating } =
     useCreateCSVImportPreset();
 

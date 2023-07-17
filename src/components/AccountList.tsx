@@ -2,7 +2,6 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
 import useDialogForId from '@lib/useDialogForId';
-import useDialogFromUrl from '@lib/useDialogFromUrl';
 import type { Account } from '@server/account/types';
 import useDeleteAccount from '@lib/accounts/useDeleteAccount';
 import useUpdateAccount from '@lib/accounts/useUpdateAccount';
@@ -22,7 +21,7 @@ const AccountList = ({ accounts, presets }: Props) => {
     open: deleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
-  } = useDialogForId();
+  } = useDialogForId('deleteAccount');
   const { mutateAsync: deleteAccount, isLoading: isDeleting } =
     useDeleteAccount();
   const handleDelete = () =>
@@ -33,7 +32,7 @@ const AccountList = ({ accounts, presets }: Props) => {
     open: isUpdateDialogOpen,
     onOpen: onUpdateDialogOpen,
     onClose: onUpdateDialogClose,
-  } = useDialogFromUrl('accountId');
+  } = useDialogForId('updateAccount');
   const account = useMemo(
     () => accounts.find((account) => account.id === accountId),
     [accounts, accountId]

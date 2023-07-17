@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import type { Category } from '@server/category/types';
 import useDialogForId from '@lib/useDialogForId';
 import useDeleteCategory from '@lib/categories/useDeleteCategory';
-import useDialogFromUrl from '@lib/useDialogFromUrl';
 import useUpdateCategory from '@lib/categories/useUpdateCategory';
 import ConfirmationDialog from './ConfirmationDialog';
 import CreateUpdateCategoryDialog from './CreateUpdateCategoryDialog';
@@ -20,7 +19,7 @@ const CategoryList = ({ categories }: Props) => {
     open: deleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
-  } = useDialogForId();
+  } = useDialogForId('deleteCategory');
   const { mutateAsync: deleteCategory, isLoading: isDeleting } =
     useDeleteCategory();
   const handleDelete = () =>
@@ -31,7 +30,7 @@ const CategoryList = ({ categories }: Props) => {
     open: isUpdateDialogOpen,
     onOpen: onUpdateDialogOpen,
     onClose: onUpdateDialogClose,
-  } = useDialogFromUrl('categoryId');
+  } = useDialogForId('updateCategory');
   const category = useMemo(
     () => categories.find((category) => category.id === categoryId),
     [categories, categoryId]

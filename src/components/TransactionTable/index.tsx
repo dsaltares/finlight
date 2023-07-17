@@ -26,7 +26,6 @@ import type {
 import useDialogForId from '@lib/useDialogForId';
 import useDeleteTransactions from '@lib/transactions/useDeleteTransactions';
 import useUpdateTransaction from '@lib/transactions/useUpdateTransaction';
-import useDialogFromUrl from '@lib/useDialogFromUrl';
 import useUpdateTransactions from '@lib/transactions/useUpdateTransactions';
 import ConfirmationDialog from '../ConfirmationDialog';
 import CreateUpdateTransactionDialog from '../CreateUpdateTransactionDialog';
@@ -64,13 +63,13 @@ const TransactionTable = ({
     open: isDeleteDialogOpen,
     onOpen: onDeleteDialogOpen,
     onClose: onDeleteDialogClose,
-  } = useDialogForId();
+  } = useDialogForId('deleteTransaction');
   const {
     openFor: transactionId,
     open: isUpdateDialogOpen,
     onOpen: onUpdateDialogOpen,
     onClose: onUpdateDialogClose,
-  } = useDialogFromUrl('transactionId');
+  } = useDialogForId('updateTransaction');
 
   const { mutateAsync: updateTransaction, isLoading: isUpdating } =
     useUpdateTransaction();

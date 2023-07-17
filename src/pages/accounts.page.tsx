@@ -20,7 +20,7 @@ const AccountsPage: NextPage = () => {
     open: isCreateDialogOpen,
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
-  } = useDialog();
+  } = useDialog('createAccount');
   const { mutateAsync: createAccount, isLoading: isCreating } =
     useCreateAccount();
 
