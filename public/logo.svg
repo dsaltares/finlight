@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.1893044"
-     inkscape:cx="353.56802"
-     inkscape:cy="603.71424"
+     inkscape:zoom="0.98966142"
+     inkscape:cx="102.0551"
+     inkscape:cy="528.46356"
      inkscape:window-width="1920"
      inkscape:window-height="1080"
      inkscape:window-x="1512"
@@ -34,39 +34,160 @@
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
-     id="defs2" />
+     id="defs2">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3856">
+      <rect
+         style="fill:#515b5f;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         id="rect3858"
+         width="104.45338"
+         height="104.45338"
+         x="50.338982"
+         y="81.800842"
+         inkscape:label="base-clip"
+         inkscape:export-filename="logo-no-text.svg"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96"
+         ry="4"
+         rx="4" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4046">
+      <rect
+         style="fill:#263238;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         id="rect4048"
+         width="104.45338"
+         height="104.45338"
+         x="50.338982"
+         y="81.800842"
+         inkscape:label="base-mask" />
+    </clipPath>
+  </defs>
   <g
-     inkscape:label="Layer 1"
+     inkscape:label="Logo"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:31.75px;font-family:'Roboto Mono';-inkscape-font-specification:'Roboto Mono Bold';fill:#263238;fill-opacity:1;stroke-width:0.264583"
+       x="25.41534"
+       y="217.05186"
+       id="text345"
+       inkscape:label="finlight"
+       inkscape:export-filename="logo-regular.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
+         sodipodi:role="line"
+         id="tspan343"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:31.75px;font-family:'Roboto Mono';-inkscape-font-specification:'Roboto Mono Bold';fill:#263238;fill-opacity:1;stroke-width:0.264583"
+         x="25.41534"
+         y="217.05186">FINLIGHT</tspan></text>
     <rect
-       style="fill:#263238;stroke:none;stroke-width:0.264583;fill-opacity:1"
+       style="fill:#515b5f;fill-opacity:1;stroke:none;stroke-width:0.264583"
        id="rect269"
        width="104.45338"
        height="104.45338"
        x="50.338982"
-       y="81.800842" />
+       y="81.800842"
+       inkscape:label="base"
+       inkscape:export-filename="logo-no-text.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="rect1841"
+       style="display:inline;fill:#1a2327;stroke-width:0.264583"
+       d="m 69.636223,162.34348 11.295848,-12.87794 -10.287596,-8.32194 8.198247,-15.62712 -9.173731,-7.54253 65.444629,-12.51207 24.75272,25.98233 -1.20977,58.64319 -56.06417,0.62924 z"
+       sodipodi:nodetypes="cccccccccc"
+       inkscape:label="shadow"
+       clip-path="url(#clipPath4046)" />
+    <g
+       id="g1786"
+       inkscape:label="sripes"
+       transform="translate(-0.22742844,-0.45497704)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
+         id="rect2612-2"
+         width="41.156754"
+         height="18.242456"
+         x="67.643005"
+         y="125.36127"
+         ry="9.0099936"
+         inkscape:label="medium" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
+         id="rect2612-2-7"
+         width="70.300186"
+         height="18.242455"
+         x="67.643005"
+         y="103.00314"
+         ry="9.0099936"
+         inkscape:label="large" />
+      <circle
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         id="path2859"
+         cx="76.430534"
+         cy="157.17435"
+         r="8.7875252"
+         inkscape:label="small" />
+    </g>
+  </g>
+  <g
+     inkscape:label="Logo rounded"
+     inkscape:groupmode="layer"
+     id="g3797"
+     style="display:none">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
-       id="rect2612-2"
-       width="41.156754"
-       height="18.242456"
-       x="67.185631"
-       y="125.69497"
-       ry="9.0099936" />
-    <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
-       id="rect2612-2-7"
-       width="70.300186"
-       height="18.242455"
-       x="66.629456"
-       y="103.00314"
-       ry="9.0099936" />
-    <circle
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       id="path2859"
-       cx="76.863037"
-       cy="157.17435"
-       r="8.7875252" />
+       style="fill:#515b5f;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       id="rect3785"
+       width="104.45338"
+       height="104.45338"
+       x="50.338982"
+       y="81.800842"
+       inkscape:label="base"
+       inkscape:export-filename="logo-no-text-rounded.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       ry="4"
+       rx="4" />
+    <path
+       id="path3787"
+       style="fill:#1a2327;stroke-width:0.264583"
+       d="m 69.636223,162.34348 11.295848,-12.87794 -10.287596,-8.32194 8.198247,-15.62712 -9.173731,-7.54253 65.444629,-12.51207 24.75272,25.98233 -1.20977,58.64319 -56.06417,0.62924 z"
+       sodipodi:nodetypes="cccccccccc"
+       inkscape:label="shadow"
+       clip-path="url(#clipPath3856)" />
+    <g
+       id="g3795"
+       inkscape:label="sripes"
+       transform="translate(-0.22742844,-0.45497704)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
+         id="rect3789"
+         width="41.156754"
+         height="18.242456"
+         x="67.643005"
+         y="125.36127"
+         ry="9.0099936"
+         inkscape:label="medium" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
+         id="rect3791"
+         width="70.300186"
+         height="18.242455"
+         x="67.643005"
+         y="103.00314"
+         ry="9.0099936"
+         inkscape:label="large" />
+      <circle
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         id="circle3793"
+         cx="76.430534"
+         cy="157.17435"
+         r="8.7875252"
+         inkscape:label="small" />
+    </g>
   </g>
 </svg>
