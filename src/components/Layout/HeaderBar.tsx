@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
@@ -29,22 +30,37 @@ const HeaderBar = ({ onOpenSidebar }: Props) => {
       <AppBar position="fixed" sx={{ top: 0, left: 0 }}>
         <Toolbar>
           {!isMobile && <Box width={DrawerWidth} />}
-          <Stack direction="row" gap={3} alignItems="center">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            gap={4}
+            width={`calc(100% - ${!isMobile ? DrawerWidth : 0}px)`}
+          >
+            <Stack direction="row" gap={3} alignItems="center">
+              {isMobile && (
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={onOpenSidebar}
+                >
+                  <MenuIcon />
+                </IconButton>
+              )}
+              <Typography variant="h5" component="h1">
+                {RouteTitles[pathname]}
+              </Typography>
+            </Stack>
             {isMobile && (
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={onOpenSidebar}
-              >
-                <MenuIcon />
-              </IconButton>
+              <Image
+                alt="logo"
+                width={40}
+                height={40}
+                src="/logo-no-text.svg"
+              />
             )}
-
-            <Typography variant="h5" component="h1">
-              {RouteTitles[pathname]}
-            </Typography>
           </Stack>
         </Toolbar>
       </AppBar>

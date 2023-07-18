@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import AddIcon from '@mui/icons-material/Add';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import Stack from '@mui/material/Stack';
+import Head from 'next/head';
 import WithAuthentication from '@components/WithAuthentication';
 import client from '@lib/api';
 import useDialog from '@lib/useDialog';
@@ -11,6 +12,7 @@ import CreateUpdateCSVImportPresetDialog from '@components/CreateUpdateCSVImport
 import Fab from '@components/Fab';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import EmptyState from '@components/EmptyState';
+import AppName from '@lib/appName';
 
 const ImportPresetsPage: NextPage = () => {
   const { data: presets, isLoading } = client.getCSVImportPresets.useQuery();
@@ -41,6 +43,9 @@ const ImportPresetsPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>{`Import presets - ${AppName}`}</title>
+      </Head>
       {content}
       {isCreateDialogOpen && (
         <CreateUpdateCSVImportPresetDialog

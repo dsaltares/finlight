@@ -7,6 +7,7 @@ import InputLabel from '@mui/material/InputLabel';
 import TuneIcon from '@mui/icons-material/Tune';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
+import Head from 'next/head';
 import WithAuthentication from '@components/WithAuthentication';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import CategorizedExpensesReport from '@components/Reports/CategorizedExpensesReport';
@@ -16,6 +17,7 @@ import ReportSettingsDialog from '@components/ReportSettingsDialog';
 import client from '@lib/api';
 import IncomeVsExpensesReport from '@components/Reports/IncomeVsExpensesReport';
 import AccountPositionsReport from '@components/Reports/AccountPositionsReport';
+import AppName from '@lib/appName';
 
 const Reports = {
   categorizedExpenses: {
@@ -55,41 +57,46 @@ const InsightsPage: NextPage = () => {
       : 'categorizedExpenses';
   const ReportComponent = Reports[report].Component;
   return (
-    <Stack gap={2} height="100%">
-      <Stack direction="row" gap={1} alignItems="center">
-        <FormControl fullWidth>
-          <InputLabel id="select-report-label">Report</InputLabel>
-          <Select
-            label="Report"
-            id="select-report"
-            labelId="select-report-label"
-            value={report}
-            onChange={(e) => setFilters({ report: e.target.value })}
-          >
-            {Object.entries(Reports).map(([value, { name }]) => (
-              <MenuItem key={value} value={value}>
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Stack>
-          <Badge badgeContent={numFilters} color="secondary">
-            <IconButton color="primary" onClick={onSettingsDialogOpen}>
-              <TuneIcon />
-            </IconButton>
-          </Badge>
+    <>
+      <Head>
+        <title>{`Insights - ${AppName}`}</title>
+      </Head>
+      <Stack gap={2} height="100%">
+        <Stack direction="row" gap={1} alignItems="center">
+          <FormControl fullWidth>
+            <InputLabel id="select-report-label">Report</InputLabel>
+            <Select
+              label="Report"
+              id="select-report"
+              labelId="select-report-label"
+              value={report}
+              onChange={(e) => setFilters({ report: e.target.value })}
+            >
+              {Object.entries(Reports).map(([value, { name }]) => (
+                <MenuItem key={value} value={value}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Stack>
+            <Badge badgeContent={numFilters} color="secondary">
+              <IconButton color="primary" onClick={onSettingsDialogOpen}>
+                <TuneIcon />
+              </IconButton>
+            </Badge>
+          </Stack>
         </Stack>
+        <ReportComponent />
+        {isSettingsDialogOpen && (
+          <ReportSettingsDialog
+            open={isSettingsDialogOpen}
+            onClose={onSettingsDialogClose}
+            accounts={data?.accounts || []}
+          />
+        )}
       </Stack>
-      <ReportComponent />
-      {isSettingsDialogOpen && (
-        <ReportSettingsDialog
-          open={isSettingsDialogOpen}
-          onClose={onSettingsDialogClose}
-          accounts={data?.accounts || []}
-        />
-      )}
-    </Stack>
+    </>
   );
 };
 

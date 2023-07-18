@@ -10,6 +10,7 @@ import { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import TextField from '@mui/material/TextField';
+import Head from 'next/head';
 import client from '@lib/api';
 import WithAuthentication from '@components/WithAuthentication';
 import useDialog from '@lib/useDialog';
@@ -22,6 +23,7 @@ import Fab from '@components/Fab';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import EmptyState from '@components/EmptyState';
 import type { TransactionType } from '@server/transaction/types';
+import AppName from '@lib/appName';
 
 const TransactionsPage: NextPage = () => {
   const {
@@ -94,66 +96,73 @@ const TransactionsPage: NextPage = () => {
   }
 
   return (
-    <Stack gap={2} height="100%">
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        gap={2}
-      >
-        <TextField
-          fullWidth
-          placeholder="Search..."
-          size="small"
-          value={filtersByField.transactionsGlobally || ''}
-          onChange={(e) => setFilters({ transactionsGlobally: e.target.value })}
-        />
-        <Stack direction="row" gap={1}>
-          <IconButton
-            color="error"
-            onClick={onMultiDeleteOpen}
-            disabled={!hasRowsSelected}
-          >
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            color="primary"
-            onClick={onMultiUpdateOpen}
-            disabled={!hasRowsSelected}
-          >
-            <EditIcon />
-          </IconButton>
-          <Badge
-            badgeContent={Object.keys(filtersByField).length}
-            color="secondary"
-          >
-            <IconButton color="primary" onClick={onFilterDialogOpen}>
-              <FilterAltIcon />
+    <>
+      <Head>
+        <title>{`Transactions - ${AppName}`}</title>
+      </Head>
+      <Stack gap={2} height="100%">
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          gap={2}
+        >
+          <TextField
+            fullWidth
+            placeholder="Search..."
+            size="small"
+            value={filtersByField.transactionsGlobally || ''}
+            onChange={(e) =>
+              setFilters({ transactionsGlobally: e.target.value })
+            }
+          />
+          <Stack direction="row" gap={1}>
+            <IconButton
+              color="error"
+              onClick={onMultiDeleteOpen}
+              disabled={!hasRowsSelected}
+            >
+              <DeleteIcon />
             </IconButton>
-          </Badge>
+            <IconButton
+              color="primary"
+              onClick={onMultiUpdateOpen}
+              disabled={!hasRowsSelected}
+            >
+              <EditIcon />
+            </IconButton>
+            <Badge
+              badgeContent={Object.keys(filtersByField).length}
+              color="secondary"
+            >
+              <IconButton color="primary" onClick={onFilterDialogOpen}>
+                <FilterAltIcon />
+              </IconButton>
+            </Badge>
+          </Stack>
         </Stack>
-      </Stack>
-      {content}
-      <CreateUpdateTransactionDialog
-        open={isCreateDialogOpen}
-        loading={isCreating}
-        accounts={data?.accounts || []}
-        categories={categories || []}
-        onClose={onCreateDialogClose}
-        onCreate={createTransaction}
-      />
-      {isFilterDialogOpen && (
-        <TransactionFilterDialog
-          open={isFilterDialogOpen}
-          onClose={onFilterDialogClose}
+        {content}
+        <CreateUpdateTransactionDialog
+          open={isCreateDialogOpen}
+          loading={isCreating}
           accounts={data?.accounts || []}
           categories={categories || []}
+          onClose={onCreateDialogClose}
+          onCreate={createTransaction}
         />
-      )}
-      <Fab aria-label="New transaction" onClick={onCreateDialogOpen}>
-        <AddIcon />
-      </Fab>
-    </Stack>
+        {isFilterDialogOpen && (
+          <TransactionFilterDialog
+            open={isFilterDialogOpen}
+            onClose={onFilterDialogClose}
+            accounts={data?.accounts || []}
+            categories={categories || []}
+          />
+        )}
+        <Fab aria-label="New transaction" onClick={onCreateDialogOpen}>
+          <AddIcon />
+        </Fab>
+      </Stack>
+    </>
   );
 };
 
