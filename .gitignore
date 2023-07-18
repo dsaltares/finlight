@@ -39,3 +39,5 @@ next-env.d.ts
 # data
 /database
 data/exchangeRates
+
+public/sw.js.map
