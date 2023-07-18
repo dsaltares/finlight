@@ -37,7 +37,7 @@ const AccountsPage: NextPage = () => {
     );
   } else {
     content = (
-      <Stack gap={2}>
+      <Stack gap={2} paddingBottom={5}>
         <Stack direction="row" justifyContent="flex-start">
           <BalanceCard
             balance={data.total.value}

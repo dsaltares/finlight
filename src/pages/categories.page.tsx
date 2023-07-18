@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import AddIcon from '@mui/icons-material/Add';
 import LabelIcon from '@mui/icons-material/Label';
+import Stack from '@mui/material/Stack';
 import client from '@lib/api';
 import WithAuthentication from '@components/WithAuthentication';
 import useDialog from '@lib/useDialog';
@@ -31,7 +32,11 @@ const CategoriesPage: NextPage = () => {
       >{`You don't have any categories yet`}</EmptyState>
     );
   } else {
-    content = <CategoryList categories={categories || []} />;
+    content = (
+      <Stack paddingBottom={5}>
+        <CategoryList categories={categories} />
+      </Stack>
+    );
   }
 
   return (

@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import AddIcon from '@mui/icons-material/Add';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import Stack from '@mui/material/Stack';
 import WithAuthentication from '@components/WithAuthentication';
 import client from '@lib/api';
 import useDialog from '@lib/useDialog';
@@ -31,7 +32,11 @@ const ImportPresetsPage: NextPage = () => {
       >{`You don't have any import presets yet.`}</EmptyState>
     );
   } else {
-    content = <CSVImportPresetList presets={presets} />;
+    content = (
+      <Stack paddingBottom={5}>
+        <CSVImportPresetList presets={presets} />
+      </Stack>
+    );
   }
 
   return (
