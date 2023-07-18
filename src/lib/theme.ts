@@ -11,6 +11,9 @@ const theme = createTheme({
     secondary: {
       main: '#aeea00',
     },
+    background: {
+      default: '#fafafa',
+    },
   },
   components: {
     MuiButton: {
@@ -18,6 +21,26 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
         },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#fff',
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          backgroundColor: '#fff',
+        },
+      },
+    },
+    MuiPaper: {
+      defaultProps: {
+        elevation: 0,
+        variant: 'outlined',
       },
     },
   },

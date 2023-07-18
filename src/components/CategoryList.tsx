@@ -12,6 +12,7 @@ import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import ConfirmationDialog from './ConfirmationDialog';
 import CreateUpdateCategoryDialog from './CreateUpdateCategoryDialog';
 import CategoryListItem from './CategoryListItem';
+import Paper from '@mui/material/Paper';
 
 type Props = {
   categories: Category[];
@@ -63,16 +64,18 @@ const CategoryList = ({ categories }: Props) => {
         onChange={(e) => setFilters({ category: e.target.value })}
         size="small"
       />
-      <List>
-        {filteredCategories.map((category) => (
-          <CategoryListItem
-            key={category.id}
-            category={category}
-            onUpdate={onUpdateDialogOpen}
-            onDelete={onDeleteOpen}
-          />
-        ))}
-      </List>
+      <Paper>
+        <List>
+          {filteredCategories.map((category) => (
+            <CategoryListItem
+              key={category.id}
+              category={category}
+              onUpdate={onUpdateDialogOpen}
+              onDelete={onDeleteOpen}
+            />
+          ))}
+        </List>
+      </Paper>
       <ConfirmationDialog
         id="delete-category"
         title="Delete category"

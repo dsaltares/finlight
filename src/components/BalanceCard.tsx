@@ -17,8 +17,6 @@ const BalanceCard = ({ balance, currency }: Props) => {
   const iconSize = 32;
   return (
     <Paper
-      elevation={0}
-      variant="outlined"
       sx={{
         paddingX: theme.spacing(2),
         paddingY: theme.spacing(1),

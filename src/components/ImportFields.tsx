@@ -37,7 +37,7 @@ const ImportFields = ({ fields, onAppend, onRemove, onMove }: Props) => (
         </MenuItem>
       ))}
     </Select>
-    <Paper elevation={0} variant="outlined">
+    <Paper>
       {fields.length > 0 ? (
         <List>
           {fields.map((field, index, allFields) => (

@@ -90,7 +90,7 @@ const ImportPreview = ({ watch }: Props) => {
   }, [csv, delimiter, fields, rowsToSkipStart, rowsToSkipEnd]);
 
   return (
-    <Paper variant="outlined">
+    <Paper>
       <Stack gap={0.5} paddingX={2} paddingY={1}>
         <Stack
           direction="row"

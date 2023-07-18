@@ -19,7 +19,7 @@ const AuthCard = ({ title, icon, children }: PropsWithChildren<Props>) => {
       justifyContent="center"
       sx={{ backgroundColor: theme.palette.grey[100] }}
     >
-      <Paper variant="outlined" sx={{ maxWidth: 640, width: '100%' }}>
+      <Paper sx={{ maxWidth: 640, width: '100%' }}>
         <Stack padding={4} gap={6} width="100%" alignItems="center">
           <Stack direction="row" gap={2} alignItems="center">
             {!!icon && icon}

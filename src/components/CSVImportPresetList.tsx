@@ -1,6 +1,7 @@
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
+import Paper from '@mui/material/Paper';
 import useDialogForId from '@lib/useDialogForId';
 import type { CSVImportPreset } from '@server/csvImportPreset/types';
 import useDeleteCSVImportPreset from '@lib/csvImportPresets/useDeleteCSVImportPreset';
@@ -39,40 +40,42 @@ const CSVImportPresetList = ({ presets }: Props) => {
     useUpdateCSVImportPreset();
 
   return (
-    <List>
-      {presets.map((preset) => (
-        <CSVImportPresetListItem
-          key={preset.id}
-          preset={preset}
-          onUpdate={onUpdateDialogOpen}
-          onDelete={onDeleteOpen}
-        />
-      ))}
+    <Paper>
+      <List>
+        {presets.map((preset) => (
+          <CSVImportPresetListItem
+            key={preset.id}
+            preset={preset}
+            onUpdate={onUpdateDialogOpen}
+            onDelete={onDeleteOpen}
+          />
+        ))}
 
-      <ConfirmationDialog
-        id="delete-preset"
-        title="Delete import preset"
-        open={deleteOpen}
-        loading={isDeleting}
-        onClose={onDeleteClose}
-        onConfirm={handleDelete}
-      >
-        <Typography variant="body1">
-          Are you sure you want to delete this import preset? The action cannot
-          be undone.
-        </Typography>
-      </ConfirmationDialog>
+        <ConfirmationDialog
+          id="delete-preset"
+          title="Delete import preset"
+          open={deleteOpen}
+          loading={isDeleting}
+          onClose={onDeleteClose}
+          onConfirm={handleDelete}
+        >
+          <Typography variant="body1">
+            Are you sure you want to delete this import preset? The action
+            cannot be undone.
+          </Typography>
+        </ConfirmationDialog>
 
-      {!!preset && (
-        <CreateUpdateCSVImportPresetDialog
-          preset={preset}
-          open={isUpdateDialogOpen}
-          loading={isUpdating}
-          onClose={onUpdateDialogClose}
-          onUpdate={updatePreset}
-        />
-      )}
-    </List>
+        {!!preset && (
+          <CreateUpdateCSVImportPresetDialog
+            preset={preset}
+            open={isUpdateDialogOpen}
+            loading={isUpdating}
+            onClose={onUpdateDialogClose}
+            onUpdate={updatePreset}
+          />
+        )}
+      </List>
+    </Paper>
   );
 };
 

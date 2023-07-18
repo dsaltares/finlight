@@ -48,7 +48,7 @@ const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
         </ChartContainer>
       </Grid>
       <Grid xs={12} md={4}>
-        <Paper variant="outlined">
+        <Paper>
           <TableContainer>
             <Table size="small">
               <TableHead>

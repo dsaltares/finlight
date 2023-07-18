@@ -21,13 +21,23 @@ import AppName from '@lib/appName';
 
 export const sendVerificationRequest: EmailConfig['sendVerificationRequest'] =
   async ({ identifier: email, url, provider: { server, from } }) => {
-    const { host } = new URL(url);
+    const parsedUrl = new URL(url);
+    const callbackUrl = parsedUrl.searchParams.get('callbackUrl');
+    if (callbackUrl) {
+      const parsedCallback = new URL(callbackUrl);
+      parsedCallback.searchParams.delete('signOut');
+      parsedUrl.searchParams.set('callbackUrl', parsedCallback.toString());
+    }
     const transport = nodemailer.createTransport(server);
-    const generateEmailArgs = { url, host, email };
+    const generateEmailArgs = {
+      url: parsedUrl.toString(),
+      host: parsedUrl.host,
+      email,
+    };
     await transport.sendMail({
       to: email,
       from,
-      subject: `Sign in to ${host}`,
+      subject: `Sign in to ${parsedUrl.host}`,
       text: generateTextEmail(generateEmailArgs),
       html: generateHtmlEmail(generateEmailArgs),
     });
@@ -145,8 +155,8 @@ const baseUrl = (host: string) => {
 
 const theme = {
   colors: {
-    primary: '#1976D2',
-    background: '#e3f2fd',
+    primary: '#263238',
+    background: '#fafafa',
     white: '#FFFFFF',
   },
   font: 'Roboto Mono, monospace',

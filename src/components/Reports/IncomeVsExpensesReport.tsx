@@ -51,7 +51,7 @@ const IncomeVsExpensesReport = () => {
         </BarChart>
       </ChartContainer>
       <Stack>
-        <Paper variant="outlined">
+        <Paper>
           <TableContainer>
             <Table size="small">
               <TableHead>

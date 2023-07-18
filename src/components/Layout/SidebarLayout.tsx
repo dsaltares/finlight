@@ -7,12 +7,14 @@ import {
 } from 'react';
 import Stack from '@mui/material/Stack';
 import { useRouter } from 'next/router';
+import { useTheme } from '@mui/material/styles';
 import useIsMobile from '@lib/useIsMobile';
 import Sidebar from './Sidebar';
 import { DrawerWidth } from './constants';
 import HeaderBar from './HeaderBar';
 
 const SidebarLayout = ({ children }: PropsWithChildren) => {
+  const theme = useTheme();
   const isMobile = useIsMobile();
   const [mobileOpen, setMobileOpen] = useState(false);
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
@@ -32,6 +34,7 @@ const SidebarLayout = ({ children }: PropsWithChildren) => {
           flexGrow={1}
           paddingY={isMobile ? 2 : 3}
           paddingX={isMobile ? 1 : 3}
+          sx={{ backgroundColor: theme.palette.background.default }}
         >
           {children}
         </Stack>

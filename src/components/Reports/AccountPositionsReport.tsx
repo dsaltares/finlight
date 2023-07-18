@@ -88,7 +88,7 @@ const AccountPositionsReport = () => {
         </LineChart>
       </ChartContainer>
       <Stack>
-        <Paper variant="outlined">
+        <Paper>
           <TableContainer>
             <Table size="small">
               <TableHead>

@@ -160,7 +160,7 @@ const TransactionTable = ({
   );
 
   return (
-    <Paper elevation={0} variant="outlined" sx={{ height: '100%' }}>
+    <Paper sx={{ height: '100%' }}>
       <TableVirtuoso
         data={table.getRowModel().rows}
         components={VirtuosoTableComponents}

@@ -1,6 +1,7 @@
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
+import Paper from '@mui/material/Paper';
 import useDialogForId from '@lib/useDialogForId';
 import type { Account } from '@server/account/types';
 import useDeleteAccount from '@lib/accounts/useDeleteAccount';
@@ -41,41 +42,43 @@ const AccountList = ({ accounts, presets }: Props) => {
     useUpdateAccount();
 
   return (
-    <List disablePadding>
-      {accounts.map((account) => (
-        <AccountListItem
-          key={account.id}
-          account={account}
-          onUpdate={onUpdateDialogOpen}
-          onDelete={onDeleteOpen}
-        />
-      ))}
+    <Paper>
+      <List disablePadding>
+        {accounts.map((account) => (
+          <AccountListItem
+            key={account.id}
+            account={account}
+            onUpdate={onUpdateDialogOpen}
+            onDelete={onDeleteOpen}
+          />
+        ))}
 
-      <ConfirmationDialog
-        id="delete-account"
-        title="Delete account"
-        open={deleteOpen}
-        loading={isDeleting}
-        onClose={onDeleteClose}
-        onConfirm={handleDelete}
-      >
-        <Typography variant="body1">
-          Are you sure you want to delete this account? The action cannot be
-          undone and all transactions for the account will also be deleted.
-        </Typography>
-      </ConfirmationDialog>
+        <ConfirmationDialog
+          id="delete-account"
+          title="Delete account"
+          open={deleteOpen}
+          loading={isDeleting}
+          onClose={onDeleteClose}
+          onConfirm={handleDelete}
+        >
+          <Typography variant="body1">
+            Are you sure you want to delete this account? The action cannot be
+            undone and all transactions for the account will also be deleted.
+          </Typography>
+        </ConfirmationDialog>
 
-      {!!account && (
-        <CreateUpdateAccountDialog
-          account={account}
-          presets={presets}
-          open={isUpdateDialogOpen}
-          loading={isUpdating}
-          onClose={onUpdateDialogClose}
-          onUpdate={updateAccount}
-        />
-      )}
-    </List>
+        {!!account && (
+          <CreateUpdateAccountDialog
+            account={account}
+            presets={presets}
+            open={isUpdateDialogOpen}
+            loading={isUpdating}
+            onClose={onUpdateDialogClose}
+            onUpdate={updateAccount}
+          />
+        )}
+      </List>
+    </Paper>
   );
 };
 
