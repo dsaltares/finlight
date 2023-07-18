@@ -30,37 +30,21 @@ const HeaderBar = ({ onOpenSidebar }: Props) => {
       <AppBar position="fixed" sx={{ top: 0, left: 0 }}>
         <Toolbar>
           {!isMobile && <Box width={DrawerWidth} />}
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            gap={4}
-            width={`calc(100% - ${!isMobile ? DrawerWidth : 0}px)`}
-          >
-            <Stack direction="row" gap={3} alignItems="center">
-              {isMobile && (
-                <IconButton
-                  size="large"
-                  edge="start"
-                  color="inherit"
-                  aria-label="menu"
-                  onClick={onOpenSidebar}
-                >
-                  <MenuIcon />
-                </IconButton>
-              )}
-              <Typography variant="h5" component="h1">
-                {RouteTitles[pathname]}
-              </Typography>
-            </Stack>
+          <Stack direction="row" gap={3} alignItems="center">
             {isMobile && (
-              <Image
-                alt="logo"
-                width={40}
-                height={40}
-                src="/logo-no-text.svg"
-              />
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                onClick={onOpenSidebar}
+              >
+                <MenuIcon />
+              </IconButton>
             )}
+            <Typography variant="h5" component="h1">
+              {RouteTitles[pathname]}
+            </Typography>
           </Stack>
         </Toolbar>
       </AppBar>
