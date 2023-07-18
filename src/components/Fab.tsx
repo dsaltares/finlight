@@ -7,7 +7,7 @@ const Fab = (props: Props) => {
   const theme = useTheme();
   return (
     <BaseFab
-      color="primary"
+      color="secondary"
       {...props}
       sx={{
         position: 'fixed',

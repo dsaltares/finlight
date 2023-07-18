@@ -24,7 +24,7 @@ const Sidebar = ({ mobileOpen, onClose }: Props) => {
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           boxSizing: 'border-box',
-          width: DrawerWidth,
+          width: '90%',
         },
       }}
     >

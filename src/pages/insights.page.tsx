@@ -74,7 +74,7 @@ const InsightsPage: NextPage = () => {
           </Select>
         </FormControl>
         <Stack>
-          <Badge badgeContent={numFilters} color="primary">
+          <Badge badgeContent={numFilters} color="secondary">
             <IconButton color="primary" onClick={onSettingsDialogOpen}>
               <TuneIcon />
             </IconButton>

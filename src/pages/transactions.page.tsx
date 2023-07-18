@@ -125,7 +125,7 @@ const TransactionsPage: NextPage = () => {
           </IconButton>
           <Badge
             badgeContent={Object.keys(filtersByField).length}
-            color="primary"
+            color="secondary"
           >
             <IconButton color="primary" onClick={onFilterDialogOpen}>
               <FilterAltIcon />

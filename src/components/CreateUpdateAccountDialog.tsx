@@ -189,7 +189,7 @@ const CreateUpdateAccountDialog = ({
           <LoadingButton
             type="submit"
             variant="contained"
-            color="primary"
+            color="secondary"
             loading={loading}
             disabled={!isValid}
           >

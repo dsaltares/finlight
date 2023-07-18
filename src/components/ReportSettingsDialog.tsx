@@ -157,7 +157,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
         <Button
           type="submit"
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={handleApplyFilters}
         >
           Apply
