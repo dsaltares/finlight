@@ -16,13 +16,13 @@ const CategorizedIncomeReport = () => {
 
   if (isLoading) {
     return <FullScreenSpinner />;
-  } else if (!data || data.length === 0) {
+  } else if (!data || data.categories.length === 0) {
     return <NoTransactionsFound />;
   }
 
   return (
     <CategoryReport
-      data={data || []}
+      data={data}
       numberType="positive"
       currency={filtersByField.currency}
     />

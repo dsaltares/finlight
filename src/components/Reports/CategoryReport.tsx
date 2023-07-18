@@ -9,7 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
-import type { CategoryAggregate } from '@server/reports/types';
+import type { GetCategoryReportOutput } from '@server/reports/types';
 import { formatAmount } from '@lib/format';
 import CategoryChip from '../CategoryChip';
 import useIsMobile from '@lib/useIsMobile';
@@ -19,7 +19,7 @@ import PieLabel from './PieLabel';
 type NumberType = 'positive' | 'negative' | 'neutral';
 
 type Props = {
-  data: CategoryAggregate[];
+  data: GetCategoryReportOutput;
   numberType?: NumberType;
   currency?: string;
 };
@@ -32,7 +32,7 @@ const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
         <ChartContainer>
           <PieChart>
             <Pie
-              data={data}
+              data={data.categories}
               cx="50%"
               cy="50%"
               dataKey="value"
@@ -40,7 +40,7 @@ const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
               labelLine={!isMobile}
               label={(props) => <PieLabel {...props} />}
             >
-              {data.map((entry, index) => (
+              {data.categories.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={stringToColor(entry.name)} />
               ))}
             </Pie>
@@ -58,7 +58,18 @@ const CategoryReport = ({ data, numberType, currency = 'EUR' }: Props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.map((datum) => (
+                <TableRow>
+                  <TableCell>Total</TableCell>
+                  <TableCell>
+                    <Typography
+                      color={numberTypeToColor(numberType)}
+                      variant="inherit"
+                    >
+                      {formatAmount(data.total, currency)}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+                {data.categories.map((datum) => (
                   <TableRow key={datum.id}>
                     <TableCell>
                       <CategoryChip id={datum.id} name={datum.name} />
