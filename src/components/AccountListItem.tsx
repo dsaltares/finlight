@@ -34,7 +34,7 @@ const AccountListItem = ({ account, onUpdate, onDelete }: Props) => {
   } = useImportTransactions(account);
 
   return (
-    <ListItem disableGutters>
+    <ListItem disableGutters disablePadding>
       <ListItemButton
         component={Link}
         href={Routes.transactionsForAccount(account.id)}

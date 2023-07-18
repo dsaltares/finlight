@@ -36,14 +36,14 @@ const AccountList = ({ accounts, presets }: Props) => {
   } = useDialogForId('updateAccount');
   const account = useMemo(
     () => accounts.find((account) => account.id === accountId),
-    [accounts, accountId]
+    [accounts, accountId],
   );
   const { mutateAsync: updateAccount, isLoading: isUpdating } =
     useUpdateAccount();
 
   return (
     <Paper>
-      <List disablePadding>
+      <List>
         {accounts.map((account) => (
           <AccountListItem
             key={account.id}

@@ -38,7 +38,7 @@ const CategoryList = ({ categories }: Props) => {
   } = useDialogForId('updateCategory');
   const category = useMemo(
     () => categories.find((category) => category.id === categoryId),
-    [categories, categoryId]
+    [categories, categoryId],
   );
   const { mutateAsync: updateCategory, isLoading: isUpdating } =
     useUpdateCategory();
@@ -46,14 +46,14 @@ const CategoryList = ({ categories }: Props) => {
   const { filtersByField, setFilters } = useFiltersFromUrl();
   const fuse = useMemo(
     () => new Fuse(categories, { keys: ['name'] }),
-    [categories]
+    [categories],
   );
   const filteredCategories = useMemo(
     () =>
       filtersByField.category
         ? fuse.search(filtersByField.category).map((result) => result.item)
         : categories,
-    [categories, fuse, filtersByField.category]
+    [categories, fuse, filtersByField.category],
   );
 
   return (

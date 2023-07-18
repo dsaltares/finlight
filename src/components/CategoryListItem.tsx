@@ -19,7 +19,7 @@ type Props = {
 };
 
 const CategoryListItem = ({ category, onUpdate, onDelete }: Props) => (
-  <ListItem disableGutters>
+  <ListItem disableGutters disablePadding>
     <ListItemButton
       component={Link}
       href={Routes.transactionsForCategory(category.id)}
