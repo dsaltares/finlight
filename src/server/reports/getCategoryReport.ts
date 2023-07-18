@@ -46,7 +46,7 @@ export const getCategoryReport: Procedure<
       [categoryId]: [...transactionsForCategory, transaction],
     };
   }, {});
-  return Object.entries(transactionsByCategory)
+  const categories = Object.entries(transactionsByCategory)
     .map(([categoryId, transactions]) => ({
       id: categoryId,
       name: transactions[0].category?.name || 'Unknown',
@@ -65,6 +65,10 @@ export const getCategoryReport: Procedure<
       ),
     }))
     .sort((a, b) => b.value - a.value);
+  return {
+    categories,
+    total: categories.reduce((acc, category) => acc + category.value, 0),
+  };
 };
 
 export default procedure

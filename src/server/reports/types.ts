@@ -33,7 +33,10 @@ export const GetCategoryReportInput = z.object({
   accounts: z.string().array().optional(),
   currency: z.string().optional().default('EUR'),
 });
-export const GetCategoryReportOutput = CategoryAggregate.array();
+export const GetCategoryReportOutput = z.object({
+  categories: CategoryAggregate.array(),
+  total: z.number(),
+});
 export const GetIncomeVsExpensesReportInput = z.object({
   from: Date.optional(),
   until: Date.optional(),
