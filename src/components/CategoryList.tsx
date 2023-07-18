@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
 import type { Category } from '@server/category/types';
 import useDialogForId from '@lib/useDialogForId';
 import useDeleteCategory from '@lib/categories/useDeleteCategory';
@@ -12,7 +13,6 @@ import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import ConfirmationDialog from './ConfirmationDialog';
 import CreateUpdateCategoryDialog from './CreateUpdateCategoryDialog';
 import CategoryListItem from './CategoryListItem';
-import Paper from '@mui/material/Paper';
 
 type Props = {
   categories: Category[];

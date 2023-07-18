@@ -1,2 +1,2 @@
-const AppName = 'Budget';
+const AppName = 'Finlight';
 export default AppName;

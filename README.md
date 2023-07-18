@@ -1,4 +1,4 @@
-# 💸 Budget app
+# 💸 Finlight
 
 Simple budgetting app built with Next.js.
 
@@ -52,11 +52,3 @@ yarn test:unit --watch
 ```
 
 The local development database is persisted locally in the `database` folder.
-
-## ✍️ Contributing
-
-Please understand this is my personal Next.js starter template. Although I welcome issues and PRs with suggestions, I may reject them if they do not match the technologies I use or my preferred workflows.
-
-Please do not be offended nor surprised if your contribution is not accepted.
-
-By all means, feel free to draw inspiration from this template for your own project setup.

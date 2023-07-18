@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import AddIcon from '@mui/icons-material/Add';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Stack from '@mui/material/Stack';
+import Head from 'next/head';
 import WithAuthentication from '@components/WithAuthentication';
 import client from '@lib/api';
 import useDialog from '@lib/useDialog';
@@ -12,6 +13,7 @@ import Fab from '@components/Fab';
 import EmptyState from '@components/EmptyState';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import BalanceCard from '@components/BalanceCard';
+import AppName from '@lib/appName';
 
 const AccountsPage: NextPage = () => {
   const { data, isLoading: isLoadingAccounts } = client.getAccounts.useQuery();
@@ -51,6 +53,9 @@ const AccountsPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>{`Accounts - ${AppName}`}</title>
+      </Head>
       {content}
       {isCreateDialogOpen && (
         <CreateUpdateAccountDialog

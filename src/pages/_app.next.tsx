@@ -28,8 +28,8 @@ const App = ({
 }: AppProps<PageProps>) => (
   <>
     <Head>
-      <title>Budget</title>
-      <meta name="description" content="Budgetting app" />
+      <title>Finlight</title>
+      <meta name="description" content="Personal finance app" />
       <meta
         name="viewport"
         content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -61,7 +61,7 @@ const App = ({
     <Script
       id="cookie-banner-init"
       dangerouslySetInnerHTML={{
-        __html: `window.addEventListener("load",function(){window.wpcb.init({"border":"thin","corners":"small","colors":{"popup":{"background":"#FFFFFF","text":"#000000","border":"#808080"},"button":{"background":"#1976D2","text":"#ffffff"}},"position":"bottom","content":{"href":"https://budget.saltares.com/cookie_policy.pdf","message":"We use cookies to ensure you get the best experience."}})});`,
+        __html: `window.addEventListener("load",function(){window.wpcb.init({"border":"thin","corners":"small","colors":{"popup":{"background":"#FFFFFF","text":"#000000","border":"#808080"},"button":{"background":"#1976D2","text":"#ffffff"}},"position":"bottom","content":{"href":"https://finlight.saltares.com/cookie_policy.pdf","message":"We use cookies to ensure you get the best experience."}})});`,
       }}
     />
   </>

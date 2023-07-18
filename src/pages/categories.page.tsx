@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import AddIcon from '@mui/icons-material/Add';
 import LabelIcon from '@mui/icons-material/Label';
 import Stack from '@mui/material/Stack';
+import Head from 'next/head';
 import client from '@lib/api';
 import WithAuthentication from '@components/WithAuthentication';
 import useDialog from '@lib/useDialog';
@@ -11,6 +12,7 @@ import useCreateCategory from '@lib/categories/useCreateCategory';
 import Fab from '@components/Fab';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import EmptyState from '@components/EmptyState';
+import AppName from '@lib/appName';
 
 const CategoriesPage: NextPage = () => {
   const { data: categories, isLoading } = client.getCategories.useQuery();
@@ -41,6 +43,9 @@ const CategoriesPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>{`Categories - ${AppName}`}</title>
+      </Head>
       {content}
       {isCreateDialogOpen && (
         <CreateUpdateCategoryDialog
