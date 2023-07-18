@@ -1,7 +1,7 @@
 {
     "theme_color": "#263238",
     "background_color": "#fafafa",
-    "display": "fullscren",
+    "display": "fullscreen",
     "scope": "/",
     "start_url": "/",
     "name": "Finlight",
