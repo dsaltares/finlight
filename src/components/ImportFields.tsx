@@ -45,15 +45,13 @@ const ImportFields = ({ fields, onAppend, onRemove, onMove }: Props) => (
               <ListItemText secondary={field} />
               <Stack direction="row">
                 {index > 0 && (
-                  <IconButton>
-                    <ArrowUpwardIcon onClick={() => onMove(index, index - 1)} />
+                  <IconButton onClick={() => onMove(index, index - 1)}>
+                    <ArrowUpwardIcon />
                   </IconButton>
                 )}
                 {index < allFields.length - 1 && (
-                  <IconButton>
-                    <ArrowDownwardIcon
-                      onClick={() => onMove(index, index + 1)}
-                    />
+                  <IconButton onClick={() => onMove(index, index + 1)}>
+                    <ArrowDownwardIcon />
                   </IconButton>
                 )}
                 <IconButton onClick={() => onRemove(index)}>
