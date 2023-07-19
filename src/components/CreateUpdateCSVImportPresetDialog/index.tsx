@@ -125,7 +125,7 @@ const CreateUpdateCSVImportPresetDialog = ({
       }
       onClose();
     },
-    [onCreate, onUpdate, onClose, preset]
+    [onCreate, onUpdate, onClose, preset],
   );
 
   return (
@@ -142,12 +142,7 @@ const CreateUpdateCSVImportPresetDialog = ({
           {preset ? 'Edit import preset' : 'Create import preset'}
         </DialogTitle>
         <DialogContent>
-          <Stack
-            paddingY={1}
-            gap={1.5}
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <Stack paddingY={1} gap={1.5}>
             <TextField
               required
               label="Name"
