@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
