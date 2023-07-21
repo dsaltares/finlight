@@ -30,10 +30,10 @@ import Routes from '@lib/routes';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import NoTransactionsFound from './NoTransactionsFound';
 
-const AccountPositionsReport = () => {
+const AccountBalancesReport = () => {
   const theme = useTheme();
   const { filtersByField } = useFiltersFromUrl();
-  const { data, isLoading } = client.getAccountPositionsReport.useQuery({
+  const { data, isLoading } = client.getAccountBalancesReport.useQuery({
     from: filtersByField.from,
     until: filtersByField.until,
     accounts: filtersByField.accounts?.split(','),
@@ -45,9 +45,9 @@ const AccountPositionsReport = () => {
     () =>
       accounts?.accounts.reduce<Record<string, Account | undefined>>(
         (acc, account) => ({ ...acc, [account.name]: account }),
-        {}
+        {},
       ) || {},
-    [accounts]
+    [accounts],
   );
 
   if (isLoading) {
@@ -100,7 +100,7 @@ const AccountPositionsReport = () => {
                         href={
                           accountsByName[name]?.id
                             ? Routes.transactionsForAccount(
-                                accountsByName[name]?.id as string
+                                accountsByName[name]?.id as string,
                               )
                             : Routes.transactions
                         }
@@ -153,4 +153,4 @@ const AccountPositionsReport = () => {
   );
 };
 
-export default AccountPositionsReport;
+export default AccountBalancesReport;

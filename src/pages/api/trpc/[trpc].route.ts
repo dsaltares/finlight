@@ -8,6 +8,6 @@ export default createNextApiHandler({
   batching: { enabled: true },
   onError: (err) => {
     // eslint-disable-next-line no-console
-    console.error(err);
+    console.error(err.error);
   },
 });
