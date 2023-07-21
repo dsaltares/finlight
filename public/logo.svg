@@ -24,15 +24,15 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.98966142"
-     inkscape:cx="102.0551"
-     inkscape:cy="528.46356"
-     inkscape:window-width="1920"
-     inkscape:window-height="1080"
-     inkscape:window-x="1512"
-     inkscape:window-y="0"
+     inkscape:zoom="0.67617818"
+     inkscape:cx="95.389058"
+     inkscape:cy="622.61695"
+     inkscape:window-width="1512"
+     inkscape:window-height="832"
+     inkscape:window-x="0"
+     inkscape:window-y="38"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="g268" />
   <defs
      id="defs2">
     <clipPath
@@ -93,9 +93,9 @@
        x="50.338982"
        y="81.800842"
        inkscape:label="base"
-       inkscape:export-filename="logo-no-text.svg"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="logo.png"
+       inkscape:export-xdpi="124.5034"
+       inkscape:export-ydpi="124.5034" />
     <path
        id="rect1841"
        style="display:inline;fill:#1a2327;stroke-width:0.264583"
@@ -128,6 +128,53 @@
       <circle
          style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583"
          id="path2859"
+         cx="76.430534"
+         cy="157.17435"
+         r="8.7875252"
+         inkscape:label="small" />
+    </g>
+  </g>
+  <g
+     inkscape:label="Favicon"
+     inkscape:groupmode="layer"
+     id="g268"
+     style="display:none">
+    <rect
+       style="fill:#515b5f;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       id="rect256"
+       width="104.45338"
+       height="104.45338"
+       x="50.338982"
+       y="81.800842"
+       inkscape:label="base"
+       inkscape:export-filename="../../../Desktop/favicon.png"
+       inkscape:export-xdpi="124.5034"
+       inkscape:export-ydpi="124.5034" />
+    <g
+       id="g266"
+       inkscape:label="sripes"
+       transform="translate(-0.22742844,-0.45497704)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
+         id="rect260"
+         width="41.156754"
+         height="18.242456"
+         x="67.643005"
+         y="125.36127"
+         ry="9.0099936"
+         inkscape:label="medium" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.198103"
+         id="rect262"
+         width="70.300186"
+         height="18.242455"
+         x="67.643005"
+         y="103.00314"
+         ry="9.0099936"
+         inkscape:label="large" />
+      <circle
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         id="circle264"
          cx="76.430534"
          cy="157.17435"
          r="8.7875252"
