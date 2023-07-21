@@ -16,7 +16,7 @@ import {
   getDisplayFormatForGranularity,
 } from './utils';
 
-export const getAccountPositionsReport: Procedure<
+export const getAccountBalancesReport: Procedure<
   GetAccountPositionsReportInput,
   GetAccountPositionsReportOutput
 > = async ({
@@ -49,26 +49,26 @@ export const getAccountPositionsReport: Procedure<
       ...acc,
       [account.id]: account,
     }),
-    {}
+    {},
   );
   const accountsByName = accounts.reduce<Record<string, BankAccount>>(
     (acc, account) => ({
       ...acc,
       [account.name]: account,
     }),
-    {}
+    {},
   );
   const rates = await getRates(
     Array.from(
       new Set([
         ...transactions.map((transaction) => transaction.account.currency),
         currency,
-      ])
-    )
+      ]),
+    ),
   );
   const dateFormat = getFormatForGranularity(granularity);
   const buckets = groupBy(transactions, (transaction) =>
-    format(transaction.date, dateFormat)
+    format(transaction.date, dateFormat),
   );
   const bucketKeys = Object.keys(buckets).sort((a, b) => a.localeCompare(b));
   const data: AccountPositionsBucket[] = [];
@@ -81,29 +81,29 @@ export const getAccountPositionsReport: Procedure<
             ? data[data.length - 1].positions[accountsById[accountId].name]
             : accountsById[accountId].initialBalance,
       }),
-      {}
+      {},
     );
     const positions = accountIds.reduce<Record<string, number>>(
       (acc, accountId) => {
         const accountTransactions = buckets[bucketKey].filter(
-          (transaction) => transaction.accountId === accountId
+          (transaction) => transaction.accountId === accountId,
         );
         const account = accountsById[accountId];
         const balance = accountTransactions.reduce(
           (sum, transaction) => sum + transaction.amount,
-          prevPositions[accountId]
+          prevPositions[accountId],
         );
         return {
           ...acc,
           [account.name]: balance,
         };
       },
-      {}
+      {},
     );
     data.push({
       bucket: format(
         parse(bucketKey, dateFormat, new Date()),
-        getDisplayFormatForGranularity(granularity)
+        getDisplayFormatForGranularity(granularity),
       ),
       positions,
       total: 0,
@@ -132,17 +132,17 @@ export const getAccountPositionsReport: Procedure<
             balance,
             accountsByName[name].currency,
             currency,
-            rates
+            rates,
           ),
         }),
-        {}
+        {},
       );
       return {
         ...datum,
         positions,
         total: Object.values(positions).reduce(
           (acc, position) => acc + position,
-          0
+          0,
         ),
       };
     });
@@ -151,4 +151,4 @@ export const getAccountPositionsReport: Procedure<
 export default procedure
   .input(GetAccountPositionsReportInput)
   .output(GetAccountPositionsReportOutput)
-  .query(getAccountPositionsReport);
+  .query(getAccountBalancesReport);

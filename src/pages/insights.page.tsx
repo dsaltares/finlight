@@ -16,7 +16,8 @@ import useDialog from '@lib/useDialog';
 import ReportSettingsDialog from '@components/ReportSettingsDialog';
 import client from '@lib/api';
 import IncomeVsExpensesReport from '@components/Reports/IncomeVsExpensesReport';
-import AccountPositionsReport from '@components/Reports/AccountPositionsReport';
+import AccountBalancesReport from '@components/Reports/AccountBalancesReport';
+import BalanceForecastReport from '@components/Reports/BalanceForecastReport';
 import AppName from '@lib/appName';
 
 const Reports = {
@@ -32,9 +33,13 @@ const Reports = {
     name: 'Income vs Expenses',
     Component: IncomeVsExpensesReport,
   },
-  accountPositions: {
-    name: 'Account positions',
-    Component: AccountPositionsReport,
+  accountBalances: {
+    name: 'Account balances',
+    Component: AccountBalancesReport,
+  },
+  balanceForecast: {
+    name: 'Balance forecast',
+    Component: BalanceForecastReport,
   },
 };
 
@@ -49,7 +54,7 @@ const InsightsPage: NextPage = () => {
   const { filtersByField, setFilters } = useFiltersFromUrl();
   const { data } = client.getAccounts.useQuery();
   const numFilters = Object.keys(filtersByField).filter(
-    (field) => field !== 'report'
+    (field) => field !== 'report',
   ).length;
   const report: Report =
     filtersByField.report && Reports.hasOwnProperty(filtersByField.report)
