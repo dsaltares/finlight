@@ -8,16 +8,7 @@ Install dependencies:
 
 - [Docker](https://www.docker.com/)
 - node (ideally via [fnm](https://github.com/Schniz/fnm))
-
-Create a new Next.js project using this starter template. You can use either `yarn` or `npm`.
-
-```
-yarn create next-app --example https://github.com/dsaltares/next-starter <your_app_name>
-```
-
-```
-npx create-next-app --example https://github.com/dsaltares/next-starter <your_app_name>
-```
+- `yarn`
 
 Set up your local environment variables.
 
