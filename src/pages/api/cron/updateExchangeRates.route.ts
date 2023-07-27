@@ -31,10 +31,13 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   const dateChunks = chunk(dates, 5);
-  for (const dateChunk of dateChunks) {
+  for (let chunkIdx = 0; chunkIdx < dateChunks.length; chunkIdx++) {
+    const dateChunk = dateChunks[chunkIdx];
     await Promise.all(dateChunk.map(importRates));
-    console.log('Waiting 60 seconds...');
-    await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
+    if (chunkIdx < dateChunks.length - 1) {
+      console.log('Waiting 60 seconds...');
+      await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
+    }
   }
 
   let date = latestRate?.date || startOfYesterday();
