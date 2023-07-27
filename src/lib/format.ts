@@ -1,7 +1,23 @@
 import format from 'date-fns/format';
+import type { TimeGranularity } from '@server/reports/types';
 
 export const formatDate = (date: Date | string) =>
   format(new Date(date), 'dd MMMM yyyy');
+
+export const formatDateWithGranularity = (
+  date: Date | string,
+  granularity: TimeGranularity,
+) => {
+  const formatString =
+    granularity === 'Daily'
+      ? 'dd MMMM yyyy'
+      : granularity === 'Monthly'
+      ? 'MMMM yyyy'
+      : granularity === 'Quarterly'
+      ? 'qqq yyyy'
+      : 'yyyy';
+  return format(new Date(date), formatString);
+};
 
 export const formatAmount = (amount: number, currency: string | undefined) =>
   isNaN(amount)

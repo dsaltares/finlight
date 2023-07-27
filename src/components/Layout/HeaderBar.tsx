@@ -19,6 +19,7 @@ const RouteTitles: Record<string, string> = {
   '/categories': 'Categories',
   '/insights': 'Insights',
   '/importPresets': 'Import Presets',
+  '/budget': 'Budget',
 };
 
 const HeaderBar = ({ onOpenSidebar }: Props) => {

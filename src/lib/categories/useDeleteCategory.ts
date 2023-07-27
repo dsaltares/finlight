@@ -28,6 +28,7 @@ const useDeleteCategory = (options?: Options) => {
         options?.onSettled?.apply(this, args),
         queryClient.invalidateQueries(getQueryKey(client.getCategories)),
         queryClient.invalidateQueries(getQueryKey(client.getTransactions)),
+        queryClient.invalidateQueries(getQueryKey(client.getBudget)),
       ]),
   });
 };

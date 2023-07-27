@@ -28,9 +28,10 @@ const useUpdateTransaction = (options?: Options) => {
         options?.onSettled?.apply(this, args),
         queryClient.invalidateQueries(getQueryKey(client.getTransactions)),
         queryClient.invalidateQueries(
-          getQueryKey(client.getIncomeVsExpensesReport)
+          getQueryKey(client.getIncomeVsExpensesReport),
         ),
         queryClient.invalidateQueries(getQueryKey(client.getCategoryReport)),
+        queryClient.invalidateQueries(getQueryKey(client.getBudget)),
       ]),
   });
 };
