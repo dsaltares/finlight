@@ -24,7 +24,7 @@ import MenuItem from '@mui/material/MenuItem';
 import PaymentIcon from '@mui/icons-material/Payment';
 import PaidIcon from '@mui/icons-material/Paid';
 import type { BudgetEntry, BudgetEntryType } from '@server/budget/types';
-import { formatAmount } from '@lib/format';
+import { formatAmount, formatPercentage } from '@lib/format';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import CategoryChip from './CategoryChip';
@@ -116,52 +116,37 @@ const BudgetTable = ({ entries, onUpdateEntry }: Props) => {
       }),
       columnHelper.accessor('actual', {
         header: 'Actual',
-        cell: (info) => {
-          let color = 'success.main';
-          if (
-            info.row.original.type === 'Expense' &&
-            info.getValue() > info.row.original.target
-          ) {
-            color = 'error.main';
-          } else if (
-            info.row.original.type === 'Income' &&
-            info.getValue() < info.row.original.target
-          ) {
-            color = 'error.main';
-          }
-          return (
-            <Typography color={color} fontSize="inherit">
-              {formatAmount(info.getValue(), currency)}
-            </Typography>
-          );
-        },
+        cell: (info) => (
+          <Typography color={getColor(info.row.original)} fontSize="inherit">
+            {formatAmount(info.getValue(), currency)}
+          </Typography>
+        ),
         meta: { numeric: true },
       }),
       columnHelper.display({
         id: 'difference',
         header: 'Difference',
-        cell: (info) => {
-          let color = 'success.main';
-          if (
-            info.row.original.type === 'Expense' &&
-            info.row.original.actual > info.row.original.target
-          ) {
-            color = 'error.main';
-          } else if (
-            info.row.original.type === 'Income' &&
-            info.row.original.actual < info.row.original.target
-          ) {
-            color = 'error.main';
-          }
-          return (
-            <Typography color={color} fontSize="inherit">
-              {formatAmount(
-                Math.abs(info.row.original.actual - info.row.original.target),
-                currency,
-              )}
-            </Typography>
-          );
-        },
+        cell: (info) => (
+          <Typography color={getColor(info.row.original)} fontSize="inherit">
+            {formatAmount(
+              Math.abs(info.row.original.actual - info.row.original.target),
+              currency,
+            )}
+          </Typography>
+        ),
+        meta: { numeric: true },
+      }),
+      columnHelper.display({
+        id: 'differencePct',
+        header: 'Difference (%)',
+        cell: (info) => (
+          <Typography color={getColor(info.row.original)} fontSize="inherit">
+            {formatPercentage(
+              Math.abs(info.row.original.actual - info.row.original.target) /
+                info.row.original.target,
+            )}
+          </Typography>
+        ),
         meta: { numeric: true },
       }),
     ],
@@ -261,6 +246,16 @@ const BudgetTable = ({ entries, onUpdateEntry }: Props) => {
                   {formatAmount(actualTotal - targetTotal, currency)}
                 </Typography>
               </TableCell>
+              <TableCell align="right">
+                <Typography
+                  color={
+                    actualTotal > targetTotal ? 'success.main' : 'error.main'
+                  }
+                  fontSize="inherit"
+                >
+                  {formatPercentage((actualTotal - targetTotal) / targetTotal)}
+                </Typography>
+              </TableCell>
             </TableRow>
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
@@ -284,3 +279,12 @@ const BudgetTable = ({ entries, onUpdateEntry }: Props) => {
 };
 
 export default BudgetTable;
+
+const getColor = ({ type, target, actual }: BudgetEntry) => {
+  if (type === 'Expense' && actual > target) {
+    return 'error.main';
+  } else if (type === 'Income' && actual < target) {
+    return 'error.main';
+  }
+  return 'success.main';
+};

@@ -28,3 +28,6 @@ export const formatAmount = (amount: number, currency: string | undefined) =>
       })
         .format(parseFloat(amount.toString().replace('-0', '0')))
         .replace('-0', '0');
+
+export const formatPercentage = (percentage: number) =>
+  `${(percentage * 100).toFixed(2)}%`;
