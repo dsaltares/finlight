@@ -48,6 +48,7 @@ model User {
   bankAccounts     BankAccount[]
   categories       Category[]
   cSVImportPresets CSVImportPreset[]
+  budgets          Budget[]
 }
 
 model VerificationToken {
@@ -102,8 +103,9 @@ model Category {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions Transaction[]
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+  budgetEntries BudgetEntry[]
 
   @@unique([userId, name])
 }
@@ -158,4 +160,45 @@ model CSVImportPreset {
 
   user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   accounts BankAccount[]
+}
+
+enum BudgetGranularity {
+  Monthly
+  Quarterly
+  Yearly
+}
+
+model Budget {
+  id          String            @id @default(cuid())
+  userId      String
+  granularity BudgetGranularity @default(Monthly)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries BudgetEntry[]
+
+  @@unique([userId])
+}
+
+enum BudgetEntryType {
+  Income
+  Expense
+}
+
+model BudgetEntry {
+  id         String          @id @default(cuid())
+  type       BudgetEntryType
+  budgetId   String
+  categoryId String
+  target     Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  budget   Budget   @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([budgetId, categoryId])
 }

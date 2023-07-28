@@ -43,7 +43,6 @@ const items = [
     label: 'Budget',
     href: Routes.budget,
     icon: SavingsIcon,
-    disabled: true,
   },
 ];
 
@@ -57,7 +56,6 @@ const NavigationItems = () => {
             component={Link}
             href={item.href}
             selected={pathname.startsWith(item.href)}
-            disabled={item.disabled}
           >
             <ListItemIcon>
               <item.icon />

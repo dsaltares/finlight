@@ -37,7 +37,7 @@ export const DefaultSort = { id: 'date', desc: true };
 const toTransactionTableRow = (
   transaction: Transaction,
   accountsById: Record<string, Account>,
-  categoriesById: Record<string, Category>
+  categoriesById: Record<string, Category>,
 ) => ({
   ...transaction,
   accountName: accountsById[transaction.accountId].name,
@@ -78,17 +78,17 @@ const useTransactionTable = ({
         ...acc,
         [account.id]: account,
       }),
-      {}
+      {},
     );
     const categoriesById = (categories || []).reduce(
       (acc, category) => ({
         ...acc,
         [category.id]: category,
       }),
-      {}
+      {},
     );
     return (transactions || []).map((transaction) =>
-      toTransactionTableRow(transaction, accountsById, categoriesById)
+      toTransactionTableRow(transaction, accountsById, categoriesById),
     );
   }, [accounts, transactions, categories]);
 
@@ -174,7 +174,7 @@ const useTransactionTable = ({
         ),
       }),
     ],
-    [onDeleteDialogOpen, onUpdateDialogOpen]
+    [onDeleteDialogOpen, onUpdateDialogOpen],
   );
 
   return useReactTable({

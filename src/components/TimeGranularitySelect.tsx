@@ -9,9 +9,14 @@ const id = 'time-granularity-select';
 type Props = {
   value: TimeGranularity | '';
   onChange: (value: TimeGranularity | '') => void;
+  granularities?: TimeGranularity[];
 };
 
-const TimeGranularitySelect = ({ value, onChange }: Props) => (
+const TimeGranularitySelect = ({
+  value,
+  onChange,
+  granularities = [...TimeGranularities],
+}: Props) => (
   <FormControl fullWidth>
     <InputLabel id={`${id}-label`}>Time granularity</InputLabel>
     <Select
@@ -21,7 +26,7 @@ const TimeGranularitySelect = ({ value, onChange }: Props) => (
       value={value}
       onChange={(e) => onChange(e.target.value as TimeGranularity | '')}
     >
-      {TimeGranularities.map((granularity) => (
+      {granularities.map((granularity) => (
         <MenuItem key={granularity} value={granularity}>
           {granularity}
         </MenuItem>

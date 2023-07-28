@@ -2,6 +2,8 @@ import createAccount from './account/createAccount';
 import deleteAccount from './account/deleteAccount';
 import getAccounts from './account/getAccounts';
 import updateAccount from './account/updateAccount';
+import getBudget from './budget/getBudget';
+import updateBudget from './budget/updateBudget';
 import createCategory from './category/createCategory';
 import deleteCategory from './category/deleteCategory';
 import getCategories from './category/getCategories';
@@ -45,6 +47,8 @@ const router = trpc.router({
   getIncomeVsExpensesReport,
   getAccountBalancesReport,
   getBalanceForecastReport,
+  getBudget,
+  updateBudget,
 });
 
 export default router;
