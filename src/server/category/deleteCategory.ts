@@ -12,22 +12,29 @@ export const deleteCategory: Procedure<
       userId: session?.userId as string,
     },
   });
-  await prisma.category.update({
-    where: {
-      id,
-    },
-    data: {
-      deletedAt: new Date(),
-    },
-  });
-  await prisma.transaction.updateMany({
-    where: {
-      categoryId: id,
-    },
-    data: {
-      categoryId: null,
-    },
-  });
+  await Promise.all([
+    prisma.category.update({
+      where: {
+        id,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    }),
+    prisma.transaction.updateMany({
+      where: {
+        categoryId: id,
+      },
+      data: {
+        categoryId: null,
+      },
+    }),
+    prisma.budgetEntry.deleteMany({
+      where: {
+        categoryId: id,
+      },
+    }),
+  ]);
 };
 
 export default procedure
