@@ -22,6 +22,7 @@ export const BudgetEntryInput = z.object({
 export const Budget = z.object({
   id: z.string(),
   userId: z.string(),
+  granularity: TimeGranularity,
   entries: z.array(BudgetEntry),
 });
 

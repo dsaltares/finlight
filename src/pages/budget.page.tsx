@@ -100,7 +100,9 @@ const BudgetPage: NextPage = () => {
             <Typography variant="h6" whiteSpace="nowrap">
               {formatDateWithGranularity(
                 filtersByField.date || new Date(),
-                (filtersByField.granularity as TimeGranularity) || 'Monthly',
+                (filtersByField.granularity as TimeGranularity) ||
+                  budget?.granularity ||
+                  'Monthly',
               )}
             </Typography>
             <TextField

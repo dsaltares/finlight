@@ -15,7 +15,6 @@ import TimeGranularitySelect from './TimeGranularitySelect';
 import CurrencyAutocomplete from './CurrencyAutocomplete';
 
 const DefaultCurrency = 'EUR';
-const DefaultGranularity: TimeGranularity = 'Monthly';
 
 type Props = {
   open: boolean;
@@ -34,7 +33,7 @@ const BudgetOptionsDialog = ({ open, onClose }: Props) => {
       : new Date(),
   );
   const [granularity, setGranularity] = useState<TimeGranularity | ''>(
-    (filtersByField.granularity || 'Monthly') as TimeGranularity,
+    (filtersByField.granularity as TimeGranularity) || '',
   );
   const [currency, setCurrency] = useState(
     currencyOptionsById[filtersByField.currency ?? DefaultCurrency],
@@ -44,7 +43,7 @@ const BudgetOptionsDialog = ({ open, onClose }: Props) => {
     setFilters({
       date: date?.toISOString(),
       currency: currency.id !== DefaultCurrency ? currency.id : undefined,
-      granularity: granularity === DefaultGranularity ? undefined : granularity,
+      granularity,
     });
     onClose();
   };

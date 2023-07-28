@@ -162,9 +162,16 @@ model CSVImportPreset {
   accounts BankAccount[]
 }
 
+enum BudgetGranularity {
+  Monthly
+  Quarterly
+  Yearly
+}
+
 model Budget {
-  id     String @id @default(cuid())
-  userId String
+  id          String            @id @default(cuid())
+  userId      String
+  granularity BudgetGranularity @default(Monthly)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

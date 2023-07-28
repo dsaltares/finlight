@@ -8,29 +8,25 @@ export const updateBudget: Procedure<
   UpdateBudgetInput,
   UpdateBudgetOutput
 > = async ({
-  input: { granularity = 'Monthly', currency = 'EUR', entries },
+  input: { granularity, currency = 'EUR', entries },
   ctx: { session },
 }) => {
   const [budget, rates] = await Promise.all([
     ensureBudgetExists(session?.userId as string),
     getRates([currency]),
   ]);
-  const multiplier = getGranularityMultiplier(granularity);
+  const desiredGranularity = granularity || budget.granularity;
   await prisma.budget.update({
     where: { id: budget.id },
     data: {
+      granularity: desiredGranularity,
       entries: {
         deleteMany: {},
         createMany: {
           data: entries.map((entry) => ({
             categoryId: entry.categoryId,
             type: entry.type,
-            target: convertAmount(
-              Math.round(multiplier * entry.target * 100) / 100,
-              currency,
-              'EUR',
-              rates,
-            ),
+            target: convertAmount(entry.target, currency, 'EUR', rates),
           })),
         },
       },
@@ -42,14 +38,3 @@ export default procedure
   .input(UpdateBudgetInput)
   .output(UpdateBudgetOutput)
   .mutation(updateBudget);
-
-const getGranularityMultiplier = (granularity: string) => {
-  switch (granularity) {
-    case 'Yearly':
-      return 1 / 12;
-    case 'Quarterly':
-      return 1 / 3;
-    default:
-      return 1.0;
-  }
-};

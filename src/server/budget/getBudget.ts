@@ -14,16 +14,20 @@ import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { convertAmount, getRates } from '@server/reports/utils';
 import { GetBudgetInput, GetBudgetOutput, type TimeGranularity } from './types';
-import { ensureBudgetExists } from './utils';
+import {
+  ensureBudgetExists,
+  granularityToMonthly,
+  monthlyToGranularity,
+} from './utils';
 
 export const getBudget: Procedure<GetBudgetInput, GetBudgetOutput> = async ({
-  input: { date = new Date(), granularity = 'Monthly', currency = 'EUR' },
+  input: { date = new Date(), granularity, currency = 'EUR' },
   ctx: { session },
 }) => {
-  const { from, until } = getDateRange(new Date(date), granularity);
-  const multiplier = getGranularityMultiplier(granularity);
-  const [budget, transactions, categories] = await Promise.all([
-    ensureBudgetExists(session?.userId as string),
+  const budget = await ensureBudgetExists(session?.userId as string);
+  const outputGranularity = granularity || budget.granularity;
+  const { from, until } = getDateRange(new Date(date), outputGranularity);
+  const [transactions, categories] = await Promise.all([
     prisma.transaction.findMany({
       where: {
         account: {
@@ -60,6 +64,11 @@ export const getBudget: Procedure<GetBudgetInput, GetBudgetOutput> = async ({
   const missingCategories = categories.filter(
     (category) => !usedCategories.has(category.id),
   );
+  const multiplier =
+    outputGranularity === budget.granularity
+      ? 1.0
+      : granularityToMonthly(budget.granularity) *
+        monthlyToGranularity(outputGranularity);
   return {
     ...budget,
     entries: [
@@ -114,17 +123,6 @@ const getDateRange = (date: Date, granularity: TimeGranularity) => {
         from: startOfMonth(date),
         until: endOfMonth(date),
       };
-  }
-};
-
-const getGranularityMultiplier = (granularity: string) => {
-  switch (granularity) {
-    case 'Yearly':
-      return 12;
-    case 'Quarterly':
-      return 3;
-    default:
-      return 1;
   }
 };
 
