@@ -47,7 +47,7 @@ const BudgetPage: NextPage = () => {
       },
     );
   const { mutate: updateBudget, isLoading: isUpdating } = useUpdateBudget();
-  const { control, watch } = useForm<BudgetFormValues>({
+  const { control } = useForm<BudgetFormValues>({
     mode: 'onBlur',
     defaultValues: {
       entries: budget?.entries || [],
@@ -61,7 +61,6 @@ const BudgetPage: NextPage = () => {
     control,
     name: 'entries',
   });
-  const [entriesWatch] = watch(['entries']);
   useEffect(
     () => replaceEntries(budget?.entries || []),
     [budget, replaceEntries],
@@ -79,9 +78,7 @@ const BudgetPage: NextPage = () => {
   if (isLoading) {
     content = <FullScreenSpinner />;
   } else {
-    content = (
-      <BudgetTable entries={entriesWatch} onUpdateEntry={updateEntry} />
-    );
+    content = <BudgetTable entries={entries} onUpdateEntry={updateEntry} />;
   }
 
   return (

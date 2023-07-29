@@ -1,6 +1,8 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import {
   type RowData,
+  type Row,
+  type HeaderGroup,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -29,6 +31,8 @@ import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import useSortFromUrl from '@lib/useSortFromUrl';
 import CategoryChip from './CategoryChip';
 
+const DefaultCurrency = 'EUR';
+
 type Props = {
   entries: BudgetEntry[];
   onUpdateEntry: (idx: number, entry: BudgetEntry) => void;
@@ -46,9 +50,168 @@ declare module '@tanstack/table-core' {
 export const DefaultSort = { id: 'type', desc: true };
 
 const BudgetTable = ({ entries, onUpdateEntry }: Props) => {
-  const { sorting, toggleSort } = useSortFromUrl(DefaultSort);
+  const table = useBudgetTable(entries, onUpdateEntry);
+
+  return (
+    <Paper>
+      <TableContainer>
+        <Table size="small">
+          <BudgetTableHead headerGroups={table.getHeaderGroups()} />
+          <TableBody>
+            <BudgetSummaryTableRow entries={entries} />
+            {table.getRowModel().rows.map((row) => (
+              <BudgetTableRow key={row.id} row={row} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  );
+};
+
+export default BudgetTable;
+
+const getColor = ({ type, target, actual }: BudgetEntry) => {
+  if (type === 'Expense' && actual > target) {
+    return 'error.main';
+  } else if (type === 'Income' && actual < target) {
+    return 'error.main';
+  }
+  return 'success.main';
+};
+
+type BudgetTableHeadProps = {
+  headerGroups: HeaderGroup<BudgetEntry>[];
+};
+
+const BudgetTableHeadBase = ({ headerGroups }: BudgetTableHeadProps) => {
+  const { toggleSort } = useSortFromUrl(DefaultSort);
+  return (
+    <TableHead>
+      {headerGroups.map((headerGroup) => (
+        <TableRow key={headerGroup.id}>
+          {headerGroup.headers.map((header) => (
+            <TableCell
+              key={header.id}
+              sortDirection={header.column.getIsSorted()}
+              align={
+                header.getContext().column.columnDef.meta?.numeric
+                  ? 'right'
+                  : 'left'
+              }
+            >
+              <TableSortLabel
+                active={!!header.column.getIsSorted()}
+                direction={header.column.getIsSorted() || undefined}
+                onClick={() => toggleSort(header.column.id)}
+              >
+                {flexRender(
+                  header.column.columnDef.header,
+                  header.getContext(),
+                )}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </TableHead>
+  );
+};
+
+const BudgetTableHead = memo(BudgetTableHeadBase);
+
+type BudgetTableRowProps = {
+  row: Row<BudgetEntry>;
+};
+
+const BudgetTableRowBase = ({ row }: BudgetTableRowProps) => (
+  <TableRow>
+    {row.getVisibleCells().map((cell) => (
+      <TableCell
+        key={cell.id}
+        align={cell.column.columnDef.meta?.numeric ? 'right' : 'left'}
+      >
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </TableCell>
+    ))}
+  </TableRow>
+);
+const BudgetTableRow = memo(BudgetTableRowBase);
+
+type BudgetSummaryTableRowProps = {
+  entries: BudgetEntry[];
+};
+
+const BudgetSummaryTableRowBase = ({ entries }: BudgetSummaryTableRowProps) => {
   const { filtersByField } = useFiltersFromUrl();
-  const currency = filtersByField.currency || 'EUR';
+  const currency = filtersByField.currency || DefaultCurrency;
+  const { targetTotal, actualTotal } = useMemo(
+    () =>
+      entries.reduce<{ targetTotal: number; actualTotal: number }>(
+        (acc, entry) => {
+          const multiplier = entry.type === 'Expense' ? -1 : 1;
+          return {
+            targetTotal: acc.targetTotal + entry.target * multiplier,
+            actualTotal: acc.actualTotal + entry.actual * multiplier,
+          };
+        },
+        { targetTotal: 0, actualTotal: 0 },
+      ),
+    [entries],
+  );
+
+  return (
+    <TableRow>
+      <TableCell />
+      <TableCell>
+        {' '}
+        <Typography fontWeight="bold" fontSize="inherit">
+          Total
+        </Typography>
+      </TableCell>
+      <TableCell align="right">
+        <Typography color="success.main" fontSize="inherit">
+          {formatAmount(targetTotal, currency)}
+        </Typography>
+      </TableCell>
+      <TableCell align="right">
+        <Typography
+          color={actualTotal > targetTotal ? 'success.main' : 'error.main'}
+          fontSize="inherit"
+        >
+          {formatAmount(actualTotal, currency)}
+        </Typography>
+      </TableCell>
+      <TableCell align="right">
+        <Typography
+          color={actualTotal > targetTotal ? 'success.main' : 'error.main'}
+          fontSize="inherit"
+        >
+          {formatAmount(actualTotal - targetTotal, currency)}
+        </Typography>
+      </TableCell>
+      <TableCell align="right">
+        <Typography
+          color={actualTotal > targetTotal ? 'success.main' : 'error.main'}
+          fontSize="inherit"
+        >
+          {formatPercentage((actualTotal - targetTotal) / targetTotal)}
+        </Typography>
+      </TableCell>
+    </TableRow>
+  );
+};
+
+const BudgetSummaryTableRow = memo(BudgetSummaryTableRowBase);
+
+const useBudgetTable = (
+  entries: BudgetEntry[],
+  onUpdateEntry: (idx: number, entry: BudgetEntry) => void,
+) => {
+  const { sorting } = useSortFromUrl(DefaultSort);
+  const { filtersByField } = useFiltersFromUrl();
+  const currency = filtersByField.currency || DefaultCurrency;
+
   const columns = useMemo(
     () => [
       columnHelper.accessor('type', {
@@ -152,6 +315,7 @@ const BudgetTable = ({ entries, onUpdateEntry }: Props) => {
     ],
     [currency, onUpdateEntry],
   );
+
   const table = useReactTable({
     data: entries,
     columns,
@@ -165,126 +329,5 @@ const BudgetTable = ({ entries, onUpdateEntry }: Props) => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const { targetTotal, actualTotal } = useMemo(
-    () =>
-      entries.reduce<{ targetTotal: number; actualTotal: number }>(
-        (acc, entry) => {
-          const multiplier = entry.type === 'Expense' ? -1 : 1;
-          return {
-            targetTotal: acc.targetTotal + entry.target * multiplier,
-            actualTotal: acc.actualTotal + entry.actual * multiplier,
-          };
-        },
-        { targetTotal: 0, actualTotal: 0 },
-      ),
-    [entries],
-  );
-
-  return (
-    <Paper>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableCell
-                    key={header.id}
-                    sortDirection={header.column.getIsSorted()}
-                    align={
-                      header.getContext().column.columnDef.meta?.numeric
-                        ? 'right'
-                        : 'left'
-                    }
-                  >
-                    <TableSortLabel
-                      active={!!header.column.getIsSorted()}
-                      direction={header.column.getIsSorted() || undefined}
-                      onClick={() => toggleSort(header.column.id)}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell />
-              <TableCell>
-                {' '}
-                <Typography fontWeight="bold" fontSize="inherit">
-                  Total
-                </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography color="success.main" fontSize="inherit">
-                  {formatAmount(targetTotal, currency)}
-                </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography
-                  color={
-                    actualTotal > targetTotal ? 'success.main' : 'error.main'
-                  }
-                  fontSize="inherit"
-                >
-                  {formatAmount(actualTotal, currency)}
-                </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography
-                  color={
-                    actualTotal > targetTotal ? 'success.main' : 'error.main'
-                  }
-                  fontSize="inherit"
-                >
-                  {formatAmount(actualTotal - targetTotal, currency)}
-                </Typography>
-              </TableCell>
-              <TableCell align="right">
-                <Typography
-                  color={
-                    actualTotal > targetTotal ? 'success.main' : 'error.main'
-                  }
-                  fontSize="inherit"
-                >
-                  {formatPercentage((actualTotal - targetTotal) / targetTotal)}
-                </Typography>
-              </TableCell>
-            </TableRow>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    align={
-                      cell.column.columnDef.meta?.numeric ? 'right' : 'left'
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-  );
-};
-
-export default BudgetTable;
-
-const getColor = ({ type, target, actual }: BudgetEntry) => {
-  if (type === 'Expense' && actual > target) {
-    return 'error.main';
-  } else if (type === 'Income' && actual < target) {
-    return 'error.main';
-  }
-  return 'success.main';
+  return table;
 };
