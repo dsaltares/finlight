@@ -10,6 +10,8 @@ import { useMemo, useState } from 'react';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import startOfDay from 'date-fns/startOfDay';
+import endOfDay from 'date-fns/endOfDay';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
@@ -46,7 +48,7 @@ const TransactionFilterDialog = ({
         label: account.name,
         id: account.id,
       })),
-    [accounts]
+    [accounts],
   );
   const categoryOptions = useMemo(
     () =>
@@ -54,42 +56,42 @@ const TransactionFilterDialog = ({
         label: category.name,
         id: category.id,
       })),
-    [categories]
+    [categories],
   );
   const [account, setAccount] = useState(
     () =>
       accountOptions.find((option) => option.id === filtersByField.accountId) ||
-      null
+      null,
   );
   const [type, setType] = useState<TransactionType | ''>(() =>
-    filtersByField.type ? (filtersByField.type as TransactionType) : ''
+    filtersByField.type ? (filtersByField.type as TransactionType) : '',
   );
   const [category, setCategory] = useState(
     () =>
       categoryOptions.find(
-        (option) => option.id === filtersByField.categoryId
-      ) || null
+        (option) => option.id === filtersByField.categoryId,
+      ) || null,
   );
   const [description, setDescription] = useState(filtersByField.description);
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
       ? new Date(filtersByField.from)
-      : null
+      : null,
   );
   const [until, setUntil] = useState(
     typeof filtersByField.until === 'string'
       ? new Date(filtersByField.until)
-      : null
+      : null,
   );
   const [period, setPeriod] = useState<Period | ''>(
-    getPeriodForDateRange([from, until])
+    getPeriodForDateRange([from, until]),
   );
   const [minAmount, setMinAmount] = useState(filtersByField.minAmount);
   const [maxAmount, setMaxAmount] = useState(filtersByField.maxAmount);
   const handleApplyFilters = () => {
     setFilters({
-      from: from?.toISOString(),
-      until: until?.toISOString(),
+      from: from ? startOfDay(from).toISOString() : undefined,
+      until: until ? endOfDay(until).toISOString() : undefined,
       minAmount,
       maxAmount,
       type: type || undefined,

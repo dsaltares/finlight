@@ -8,6 +8,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
+import startOfDay from 'date-fns/startOfDay';
+import endOfDay from 'date-fns/endOfDay';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import { currencyOptionsById } from '@lib/autoCompleteOptions';
@@ -38,30 +40,30 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
       ? new Date(filtersByField.from)
-      : null
+      : null,
   );
   const [until, setUntil] = useState(
     typeof filtersByField.until === 'string'
       ? new Date(filtersByField.until)
-      : null
+      : null,
   );
   const [period, setPeriod] = useState<Period | ''>(
-    getPeriodForDateRange([from, until])
+    getPeriodForDateRange([from, until]),
   );
   const [timeGranularity, setTimeGranularity] = useState<TimeGranularity | ''>(
-    (filtersByField.timeGranularity as TimeGranularity) ?? ''
+    (filtersByField.timeGranularity as TimeGranularity) ?? '',
   );
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>(
-    filtersByField.accounts ? filtersByField.accounts.split(',') : []
+    filtersByField.accounts ? filtersByField.accounts.split(',') : [],
   );
   const [currency, setCurrency] = useState(
-    currencyOptionsById[filtersByField.currency ?? DefaultCurrency]
+    currencyOptionsById[filtersByField.currency ?? DefaultCurrency],
   );
 
   const handleApplyFilters = () => {
     setFilters({
-      from: from?.toISOString(),
-      until: until?.toISOString(),
+      from: from ? startOfDay(from).toISOString() : undefined,
+      until: until ? endOfDay(until).toISOString() : undefined,
       accounts:
         selectedAccounts.length > 0 && selectedAccounts.length < accounts.length
           ? selectedAccounts.join(',')
