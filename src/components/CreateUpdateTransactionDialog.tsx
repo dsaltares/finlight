@@ -130,7 +130,7 @@ const CreateUpdateTransactionDialog = ({
       }
       onClose();
     },
-    [onCreate, onUpdate, onClose, transaction]
+    [onCreate, onUpdate, onClose, transaction],
   );
 
   return (
@@ -177,31 +177,32 @@ const CreateUpdateTransactionDialog = ({
               error={!!errors.description}
               {...register('description')}
             />
-            <Controller
-              control={control}
-              name="account"
-              rules={{ required: true }}
-              render={({ field: { value, onChange, onBlur } }) => (
-                <Autocomplete
-                  disableClearable
-                  id="account-autocomplete"
-                  value={value}
-                  onChange={(_event, newValue) => onChange(newValue!)}
-                  options={accountOptions}
-                  isOptionEqualToValue={isOptionEqualToValue}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Account"
-                      required
-                      error={!!errors.account}
-                    />
-                  )}
-                  onBlur={onBlur}
-                  disabled={!!transaction}
-                />
-              )}
-            />
+            {!transaction && (
+              <Controller
+                control={control}
+                name="account"
+                rules={{ required: true }}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <Autocomplete
+                    disableClearable
+                    id="account-autocomplete"
+                    value={value}
+                    onChange={(_event, newValue) => onChange(newValue!)}
+                    options={accountOptions}
+                    isOptionEqualToValue={isOptionEqualToValue}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Account"
+                        required
+                        error={!!errors.account}
+                      />
+                    )}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+            )}
             <Controller
               control={control}
               name="type"
