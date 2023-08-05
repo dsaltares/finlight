@@ -79,7 +79,7 @@ const CreateUpdateCategoryDialog = ({
       }
       onClose();
     },
-    [onCreate, onUpdate, onClose, category]
+    [onCreate, onUpdate, onClose, category],
   );
 
   return (
@@ -122,8 +122,8 @@ const CreateUpdateCategoryDialog = ({
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Import patterns"
-                      placeholder="Patterns to automatically categorize transactions on import."
+                      label="Keywords"
+                      helperText="Automatically categorize transactions on import."
                       error={!!errors.importPatterns}
                     />
                   )}

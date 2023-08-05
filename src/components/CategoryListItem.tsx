@@ -33,9 +33,9 @@ const CategoryListItem = ({ category, onUpdate, onDelete }: Props) => (
         primary={category.name}
         secondary={
           category.importPatterns.length > 1
-            ? `${category.importPatterns.length} import patterns`
+            ? `${category.importPatterns.length} keywords`
             : category.importPatterns.length === 1
-            ? '1 import pattern'
+            ? '1 keyword'
             : undefined
         }
       />
