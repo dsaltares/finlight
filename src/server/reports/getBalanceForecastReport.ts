@@ -41,7 +41,11 @@ export const getBalanceForecastReport: Procedure<
           accountBalancesReport.length -
         1;
   const buckets: BalanceForecastBucket[] = accountBalancesReport.map(
-    ({ bucket, total }) => ({ bucket, balance: total }),
+    ({ bucket, total }, index) => ({
+      bucket,
+      balance: total,
+      forecast: accountBalancesReport[0].total + averageDelta * index,
+    }),
   );
   const forecastBuckets: BalanceForecastBucket[] = getEmptyForecastBuckets(
     buckets[buckets.length - 1].bucket,

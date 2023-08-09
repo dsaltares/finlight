@@ -1,7 +1,8 @@
 import {
   Area,
-  AreaChart,
+  Bar,
   CartesianGrid,
+  ComposedChart,
   Legend,
   Tooltip,
   XAxis,
@@ -36,7 +37,7 @@ const BalanceForecastReport = () => {
 
   return (
     <ChartContainer>
-      <AreaChart data={data}>
+      <ComposedChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="bucket" />
         <YAxis />
@@ -45,19 +46,20 @@ const BalanceForecastReport = () => {
           formatter={(value) => formatAmount(value as number, currency)}
         />
         <Area
-          dataKey="balance"
-          name="Balance"
-          stroke={theme.palette.primary.dark}
-          fill={theme.palette.primary.light}
-        />
-        <Area
           dataKey="forecast"
           name="Forecast"
           stroke={theme.palette.secondary.dark}
           fill={theme.palette.secondary.light}
           strokeDasharray="3 3"
         />
-      </AreaChart>
+        <Bar
+          name="Balance"
+          dataKey="balance"
+          barSize={20}
+          stroke={theme.palette.primary.dark}
+          fill={theme.palette.primary.light}
+        />
+      </ComposedChart>
     </ChartContainer>
   );
 };
