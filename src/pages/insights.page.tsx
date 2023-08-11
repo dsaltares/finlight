@@ -19,6 +19,7 @@ import IncomeVsExpensesReport from '@components/Reports/IncomeVsExpensesReport';
 import AccountBalancesReport from '@components/Reports/AccountBalancesReport';
 import BalanceForecastReport from '@components/Reports/BalanceForecastReport';
 import AppName from '@lib/appName';
+import ReportSettingsChips from '@components/ReportSettingsChips';
 
 const Reports = {
   categorizedExpenses: {
@@ -92,6 +93,7 @@ const InsightsPage: NextPage = () => {
             </Badge>
           </Stack>
         </Stack>
+        <ReportSettingsChips />
         <ReportComponent />
         {isSettingsDialogOpen && (
           <ReportSettingsDialog
