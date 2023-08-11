@@ -137,14 +137,14 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
               />
             </Stack>
           </Stack>
-          <TimeGranularitySelect
-            value={timeGranularity}
-            onChange={setTimeGranularity}
-          />
           <AccountSelect
             accounts={accounts}
             selected={selectedAccounts}
             onChange={setSelectedAccounts}
+          />
+          <TimeGranularitySelect
+            value={timeGranularity}
+            onChange={setTimeGranularity}
           />
           <CurrencyAutocomplete value={currency} onChange={setCurrency} />
         </Stack>
