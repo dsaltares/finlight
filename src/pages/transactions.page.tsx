@@ -24,6 +24,7 @@ import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
 import EmptyState from '@components/EmptyState';
 import type { TransactionType } from '@server/transaction/types';
 import AppName from '@lib/appName';
+import TransactionFilterChips from '@components/TransactionFilterChips';
 
 const TransactionsPage: NextPage = () => {
   const {
@@ -141,6 +142,7 @@ const TransactionsPage: NextPage = () => {
             </Badge>
           </Stack>
         </Stack>
+        <TransactionFilterChips />
         {content}
         <CreateUpdateTransactionDialog
           open={isCreateDialogOpen}

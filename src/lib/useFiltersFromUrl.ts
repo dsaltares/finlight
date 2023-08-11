@@ -14,15 +14,15 @@ const useFiltersFromUrl = () => {
             value: query[key] as string,
           };
         }),
-    [query]
+    [query],
   );
   const filtersByField = useMemo(
     () =>
       filters.reduce<Record<string, string | undefined>>(
         (acc, filter) => ({ ...acc, [filter.id]: filter.value }),
-        {}
+        {},
       ),
-    [filters]
+    [filters],
   );
   const setFilters = useCallback(
     (filters: Record<string, string | undefined>) => {
@@ -33,10 +33,10 @@ const useFiltersFromUrl = () => {
         if (!filters[id]) {
           delete newQuery[field];
         }
-        void push({ query: newQuery }, undefined, { shallow: true });
       });
+      void push({ query: newQuery }, undefined, { shallow: true });
     },
-    [push, query]
+    [push, query],
   );
 
   return {
