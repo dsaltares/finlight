@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { Date } from '../types';
 
-export const Date = z.union([z.string(), z.date()]);
 export const Amount = z.object({
   value: z.number(),
   currency: z.string(),

@@ -1,6 +1,5 @@
 import { z } from 'zod';
-
-export const Date = z.union([z.string(), z.date()]);
+import { Date, DateFilter } from '../types';
 
 export const TransactionTypes = ['Income', 'Expense', 'Transfer'] as const;
 export const TransactionType = z.enum(TransactionTypes);
@@ -18,8 +17,7 @@ export const Transaction = z.object({
 });
 
 export const GetTransactionsInput = z.object({
-  from: Date.optional(),
-  until: Date.optional(),
+  date: DateFilter.optional(),
   minAmount: z.number().optional(),
   maxAmount: z.number().optional(),
   accountId: z.string().optional(),

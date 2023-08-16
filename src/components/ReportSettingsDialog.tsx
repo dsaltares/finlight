@@ -14,11 +14,8 @@ import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import { currencyOptionsById } from '@lib/autoCompleteOptions';
 import type { TimeGranularity } from '@server/reports/types';
-import PeriodSelect, {
-  type Period,
-  getPeriodForDateRange,
-  getDateRangeForPeriod,
-} from './PeriodSelect';
+import { isPeriod, type Period } from '@server/types';
+import PeriodSelect from './PeriodSelect';
 import AccountSelect from './AccountSelect';
 import CurrencyAutocomplete from './CurrencyAutocomplete';
 import TimeGranularitySelect from './TimeGranularitySelect';
@@ -48,7 +45,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
       : null,
   );
   const [period, setPeriod] = useState<Period | ''>(
-    getPeriodForDateRange([from, until]),
+    isPeriod(filtersByField.period) ? filtersByField.period : '',
   );
   const [timeGranularity, setTimeGranularity] = useState<TimeGranularity | ''>(
     (filtersByField.timeGranularity as TimeGranularity) ?? '',
@@ -62,6 +59,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
 
   const handleApplyFilters = () => {
     setFilters({
+      period: period || undefined,
       from: from ? startOfDay(from).toISOString() : undefined,
       until: until ? endOfDay(until).toISOString() : undefined,
       accounts:
@@ -79,6 +77,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
     setFilters({
       from: undefined,
       until: undefined,
+      period: undefined,
       accounts: undefined,
       currency: undefined,
       timeGranularity: undefined,
@@ -106,10 +105,9 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
               label="Period"
               value={period}
               onChange={(period) => {
-                const [newFrom, newUntil] = getDateRangeForPeriod(period);
                 setPeriod(period);
-                setFrom(newFrom);
-                setUntil(newUntil);
+                setFrom(null);
+                setUntil(null);
               }}
             />
             <Stack direction="row" gap={1}>
@@ -118,7 +116,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
                 value={from}
                 onChange={(date) => {
                   setFrom(date);
-                  setPeriod(getPeriodForDateRange([from, until]));
+                  setPeriod('');
                 }}
                 maxDate={until}
                 format="dd/MM/yyyy"
@@ -129,7 +127,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
                 value={until}
                 onChange={(date) => {
                   setUntil(date);
-                  setPeriod(getPeriodForDateRange([from, until]));
+                  setPeriod('');
                 }}
                 minDate={from}
                 format="dd/MM/yyyy"

@@ -7,6 +7,7 @@
     "build": "./scripts/app-build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "prettier:check": "prettier -c .",
     "prettier:format": "prettier -w .",
     "docker:up": "docker compose up -d",

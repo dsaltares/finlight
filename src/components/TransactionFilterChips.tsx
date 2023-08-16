@@ -15,6 +15,12 @@ import client from '@lib/api';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
 import { formatDate } from '@lib/format';
+import {
+  type Period,
+  PeriodLabels,
+  isPeriod,
+  isDateRange,
+} from '@server/types';
 
 const TransactionFilterChips = () => {
   const theme = useTheme();
@@ -47,6 +53,7 @@ const TransactionFilterChips = () => {
     setFilters({ minAmount: undefined, maxAmount: undefined });
   const handleClearDate = () =>
     setFilters({ from: undefined, until: undefined });
+  const handleClearPeriod = () => setFilters({ period: undefined });
 
   if (Object.keys(filtersByField).length === 0) {
     return null;
@@ -56,13 +63,23 @@ const TransactionFilterChips = () => {
   const onlyMax = !filtersByField.minAmount && !!filtersByField.maxAmount;
   const onlyMin = !!filtersByField.minAmount && !filtersByField.maxAmount;
 
-  const hasDate = !!filtersByField.from || !!filtersByField.until;
+  const hasDateRange = isDateRange({
+    from: filtersByField.from,
+    until: filtersByField.until,
+  });
   const onlyFrom = !!filtersByField.from && !filtersByField.until;
   const onlyUntil = !filtersByField.from && !!filtersByField.until;
 
   return (
     <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
-      {hasDate && (
+      {isPeriod(filtersByField.period) && (
+        <Chip
+          variant="outlined"
+          label={PeriodLabels[filtersByField.period as Period]}
+          onDelete={handleClearPeriod}
+        />
+      )}
+      {hasDateRange && (
         <Chip
           variant="outlined"
           label={

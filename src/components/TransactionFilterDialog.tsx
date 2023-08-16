@@ -17,11 +17,8 @@ import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
 import { isOptionEqualToValue } from '@lib/autoCompleteOptions';
 import type { TransactionType } from '@server/transaction/types';
-import PeriodSelect, {
-  getDateRangeForPeriod,
-  getPeriodForDateRange,
-  type Period,
-} from './PeriodSelect';
+import { isPeriod, type Period } from '@server/types';
+import PeriodSelect from './PeriodSelect';
 import TransactionTypeSelect from './TransactionTypeSelect';
 
 type Props = {
@@ -73,6 +70,9 @@ const TransactionFilterDialog = ({
       ) || null,
   );
   const [description, setDescription] = useState(filtersByField.description);
+  const [period, setPeriod] = useState<Period | ''>(
+    isPeriod(filtersByField.period) ? filtersByField.period : '',
+  );
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
       ? new Date(filtersByField.from)
@@ -83,13 +83,11 @@ const TransactionFilterDialog = ({
       ? new Date(filtersByField.until)
       : null,
   );
-  const [period, setPeriod] = useState<Period | ''>(
-    getPeriodForDateRange([from, until]),
-  );
   const [minAmount, setMinAmount] = useState(filtersByField.minAmount);
   const [maxAmount, setMaxAmount] = useState(filtersByField.maxAmount);
   const handleApplyFilters = () => {
     setFilters({
+      period: period || undefined,
       from: from ? startOfDay(from).toISOString() : undefined,
       until: until ? endOfDay(until).toISOString() : undefined,
       minAmount,
@@ -106,6 +104,7 @@ const TransactionFilterDialog = ({
     setFilters({
       from: undefined,
       until: undefined,
+      period: undefined,
       minAmount: undefined,
       maxAmount: undefined,
       accountId: undefined,
@@ -134,10 +133,9 @@ const TransactionFilterDialog = ({
               label="Period"
               value={period}
               onChange={(period) => {
-                const [newFrom, newUntil] = getDateRangeForPeriod(period);
                 setPeriod(period);
-                setFrom(newFrom);
-                setUntil(newUntil);
+                setFrom(null);
+                setUntil(null);
               }}
             />
             <Stack direction="row" gap={1}>
@@ -146,7 +144,7 @@ const TransactionFilterDialog = ({
                 value={from}
                 onChange={(date) => {
                   setFrom(date);
-                  setPeriod(getPeriodForDateRange([from, until]));
+                  setPeriod('');
                 }}
                 maxDate={until}
                 format="dd/MM/yyyy"
@@ -156,7 +154,7 @@ const TransactionFilterDialog = ({
                 value={until}
                 onChange={(date) => {
                   setUntil(date);
-                  setPeriod(getPeriodForDateRange([from, until]));
+                  setPeriod('');
                 }}
                 minDate={from}
                 format="dd/MM/yyyy"

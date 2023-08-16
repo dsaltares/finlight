@@ -1,14 +1,14 @@
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { GetTransactionsInput, GetTransactionsOutput } from './types';
+import { getDateWhereFromFilter } from './utils';
 
 export const getTransactions: Procedure<
   GetTransactionsInput,
   GetTransactionsOutput
 > = async ({
   input: {
-    from,
-    until,
+    date,
     minAmount,
     maxAmount,
     accountId,
@@ -23,10 +23,7 @@ export const getTransactions: Procedure<
       account: {
         userId: session?.userId as string,
       },
-      date: {
-        gte: from,
-        lte: until,
-      },
+      date: getDateWhereFromFilter(date),
       amount: {
         gte: minAmount,
         lte: maxAmount,

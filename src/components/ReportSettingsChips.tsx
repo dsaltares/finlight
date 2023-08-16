@@ -5,6 +5,12 @@ import client from '@lib/api';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import { formatDate } from '@lib/format';
 import type { Account } from '@server/account/types';
+import {
+  type Period,
+  PeriodLabels,
+  isDateRange,
+  isPeriod,
+} from '@server/types';
 
 const ReportSettingsChips = () => {
   const { filtersByField, setFilters } = useFiltersFromUrl();
@@ -20,6 +26,7 @@ const ReportSettingsChips = () => {
   );
 
   const handleClearAccounts = () => setFilters({ accounts: undefined });
+  const handleClearPeriod = () => setFilters({ period: undefined });
   const handleClearDate = () =>
     setFilters({ from: undefined, until: undefined });
   const handleClearTimeGranularity = () =>
@@ -29,14 +36,24 @@ const ReportSettingsChips = () => {
     return null;
   }
 
-  const hasDate = !!filtersByField.from || !!filtersByField.until;
+  const hasDateRange = isDateRange({
+    from: filtersByField.from,
+    until: filtersByField.until,
+  });
   const onlyFrom = !!filtersByField.from && !filtersByField.until;
   const onlyUntil = !filtersByField.from && !!filtersByField.until;
   const selectedAccounts = filtersByField.accounts?.split(',') || [];
 
   return (
     <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
-      {hasDate && (
+      {isPeriod(filtersByField.period) && (
+        <Chip
+          variant="outlined"
+          label={PeriodLabels[filtersByField.period as Period]}
+          onDelete={handleClearPeriod}
+        />
+      )}
+      {hasDateRange && (
         <Chip
           variant="outlined"
           label={

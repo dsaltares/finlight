@@ -3,6 +3,7 @@ import groupBy from 'lodash.groupby';
 import parse from 'date-fns/parse';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
+import { getDateWhereFromFilter } from '@server/transaction/utils';
 import {
   GetIncomeVsExpensesReportInput,
   GetIncomeVsExpensesReportOutput,
@@ -18,7 +19,7 @@ export const getIncomeVsExpensesReport: Procedure<
   GetIncomeVsExpensesReportInput,
   GetIncomeVsExpensesReportOutput
 > = async ({
-  input: { from, until, accounts, currency, granularity },
+  input: { date, accounts, currency, granularity },
   ctx: { session },
 }) => {
   const transactions = await prisma.transaction.findMany({
@@ -29,10 +30,7 @@ export const getIncomeVsExpensesReport: Procedure<
         id: accounts ? { in: accounts } : undefined,
         userId: session?.userId as string,
       },
-      date: {
-        gte: from,
-        lte: until,
-      },
+      date: getDateWhereFromFilter(date),
     },
     include: {
       account: true,
@@ -44,12 +42,12 @@ export const getIncomeVsExpensesReport: Procedure<
       new Set([
         ...transactions.map((transaction) => transaction.account.currency),
         currency,
-      ])
-    )
+      ]),
+    ),
   );
   const dateFormat = getFormatForGranularity(granularity);
   const buckets = groupBy(transactions, (transaction) =>
-    format(transaction.date, dateFormat)
+    format(transaction.date, dateFormat),
   );
   return Object.keys(buckets)
     .sort()
@@ -64,9 +62,9 @@ export const getIncomeVsExpensesReport: Procedure<
               transaction.amount,
               transaction.account.currency,
               currency,
-              rates
+              rates,
             ),
-          0
+          0,
         );
       const expenses = bucket
         .filter((transaction) => transaction.type === 'Expense')
@@ -77,14 +75,14 @@ export const getIncomeVsExpensesReport: Procedure<
               transaction.amount,
               transaction.account.currency,
               currency,
-              rates
+              rates,
             ),
-          0
+          0,
         );
       return {
         bucket: format(
           parse(bucketKey, dateFormat, new Date()),
-          getDisplayFormatForGranularity(granularity)
+          getDisplayFormatForGranularity(granularity),
         ),
         income,
         expenses,
