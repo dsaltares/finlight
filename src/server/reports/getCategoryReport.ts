@@ -1,15 +1,13 @@
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
+import { getDateWhereFromFilter } from '@server/transaction/utils';
 import { GetCategoryReportInput, GetCategoryReportOutput } from './types';
 import { type TransactionResult, getRates, convertAmount } from './utils';
 
 export const getCategoryReport: Procedure<
   GetCategoryReportInput,
   GetCategoryReportOutput
-> = async ({
-  input: { type, from, until, accounts, currency },
-  ctx: { session },
-}) => {
+> = async ({ input: { type, date, accounts, currency }, ctx: { session } }) => {
   const transactions = await prisma.transaction.findMany({
     where: {
       deletedAt: null,
@@ -18,10 +16,7 @@ export const getCategoryReport: Procedure<
         id: accounts ? { in: accounts } : undefined,
         userId: session?.userId as string,
       },
-      date: {
-        gte: from,
-        lte: until,
-      },
+      date: getDateWhereFromFilter(date),
     },
     include: {
       account: true,
@@ -33,8 +28,8 @@ export const getCategoryReport: Procedure<
       new Set([
         ...transactions.map((transaction) => transaction.account.currency),
         currency,
-      ])
-    )
+      ]),
+    ),
   );
   const transactionsByCategory = transactions.reduce<
     Record<string, TransactionResult[]>
@@ -58,10 +53,10 @@ export const getCategoryReport: Procedure<
               transaction.amount,
               transaction.account.currency,
               currency,
-              rates
+              rates,
             ),
-          0
-        )
+          0,
+        ),
       ),
     }))
     .sort((a, b) => b.value - a.value);

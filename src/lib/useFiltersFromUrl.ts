@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
 
+export type FiltersByField = Record<string, string | undefined>;
+
 const useFiltersFromUrl = () => {
   const { query, push } = useRouter();
   const filters = useMemo(
@@ -18,7 +20,7 @@ const useFiltersFromUrl = () => {
   );
   const filtersByField = useMemo(
     () =>
-      filters.reduce<Record<string, string | undefined>>(
+      filters.reduce<FiltersByField>(
         (acc, filter) => ({ ...acc, [filter.id]: filter.value }),
         {},
       ),

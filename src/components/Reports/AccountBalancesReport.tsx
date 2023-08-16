@@ -28,14 +28,14 @@ import type { TimeGranularity } from '@server/reports/types';
 import type { Account } from '@server/account/types';
 import Routes from '@lib/routes';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
+import getDateFilter from '@lib/getDateFilter';
 import NoTransactionsFound from './NoTransactionsFound';
 
 const AccountBalancesReport = () => {
   const theme = useTheme();
   const { filtersByField } = useFiltersFromUrl();
   const { data, isLoading } = client.getAccountBalancesReport.useQuery({
-    from: filtersByField.from,
-    until: filtersByField.until,
+    date: getDateFilter(filtersByField),
     accounts: filtersByField.accounts?.split(','),
     currency: filtersByField.currency,
     granularity: filtersByField.timeGranularity as TimeGranularity,

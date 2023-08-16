@@ -25,6 +25,7 @@ import EmptyState from '@components/EmptyState';
 import type { TransactionType } from '@server/transaction/types';
 import AppName from '@lib/appName';
 import TransactionFilterChips from '@components/TransactionFilterChips';
+import getDateFilter from '@lib/getDateFilter';
 
 const TransactionsPage: NextPage = () => {
   const {
@@ -52,8 +53,7 @@ const TransactionsPage: NextPage = () => {
   const { filtersByField, setFilters } = useFiltersFromUrl();
   const { data: transactions, isLoading: isLoadingTransactions } =
     client.getTransactions.useQuery({
-      from: filtersByField.from,
-      until: filtersByField.until,
+      date: getDateFilter(filtersByField),
       minAmount: filtersByField.minAmount
         ? parseFloat(filtersByField.minAmount)
         : undefined,

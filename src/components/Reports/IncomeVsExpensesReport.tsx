@@ -15,14 +15,14 @@ import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import { formatAmount } from '@lib/format';
 import type { TimeGranularity } from '@server/reports/types';
 import FullScreenSpinner from '@components/Layout/FullScreenSpinner';
+import getDateFilter from '@lib/getDateFilter';
 import NoTransactionsFound from './NoTransactionsFound';
 
 const IncomeVsExpensesReport = () => {
   const theme = useTheme();
   const { filtersByField } = useFiltersFromUrl();
   const { data, isLoading } = client.getIncomeVsExpensesReport.useQuery({
-    from: filtersByField.from,
-    until: filtersByField.until,
+    date: getDateFilter(filtersByField),
     accounts: filtersByField.accounts?.split(','),
     currency: filtersByField.currency,
     granularity: filtersByField.timeGranularity as TimeGranularity,

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { TransactionType } from '@server/transaction/types';
+import { DateFilter } from '../types';
 
-export const Date = z.union([z.string(), z.date()]);
 export const TimeGranularities = [
   'Daily',
   'Monthly',
@@ -33,8 +33,7 @@ export const BalanceForecastBucket = z.object({
 
 export const GetCategoryReportInput = z.object({
   type: TransactionType,
-  from: Date.optional(),
-  until: Date.optional(),
+  date: DateFilter.optional(),
   accounts: z.string().array().optional(),
   currency: z.string().optional().default('EUR'),
 });
@@ -43,24 +42,21 @@ export const GetCategoryReportOutput = z.object({
   total: z.number(),
 });
 export const GetIncomeVsExpensesReportInput = z.object({
-  from: Date.optional(),
-  until: Date.optional(),
+  date: DateFilter.optional(),
   accounts: z.string().array().optional(),
   currency: z.string().optional().default('EUR'),
   granularity: TimeGranularity.optional().default('Monthly'),
 });
 export const GetIncomeVsExpensesReportOutput = IncomeVsExpensesBucket.array();
 export const GetAccountPositionsReportInput = z.object({
-  from: Date.optional(),
-  until: Date.optional(),
+  date: DateFilter.optional(),
   accounts: z.string().array().optional(),
   currency: z.string().optional().default('EUR'),
   granularity: TimeGranularity.optional().default('Monthly'),
 });
 export const GetAccountPositionsReportOutput = AccountPositionsBucket.array();
 export const GetBalanceForecastReportInput = z.object({
-  from: Date.optional(),
-  until: Date.optional(),
+  date: DateFilter.optional(),
   accounts: z.string().array().optional(),
   currency: z.string().optional().default('EUR'),
   granularity: TimeGranularity.optional().default('Monthly'),

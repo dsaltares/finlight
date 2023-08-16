@@ -1,6 +1,5 @@
 import { z } from 'zod';
-
-export const Date = z.union([z.string(), z.date()]);
+import { Date } from '../types';
 
 export const BudgetEntryTypes = ['Income', 'Expense'] as const;
 export const BudgetEntryType = z.enum(BudgetEntryTypes);

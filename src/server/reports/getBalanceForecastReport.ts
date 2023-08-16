@@ -17,13 +17,12 @@ export const getBalanceForecastReport: Procedure<
   GetBalanceForecastReportInput,
   GetBalanceForecastReportOutput
 > = async ({
-  input: { from, until, accounts: selectedAccounts, currency, granularity },
+  input: { date, accounts: selectedAccounts, currency, granularity },
   ctx: { session },
 }) => {
   const accountBalancesReport = await getAccountBalancesReport({
     input: {
-      from,
-      until,
+      date,
       accounts: selectedAccounts,
       currency,
       granularity,

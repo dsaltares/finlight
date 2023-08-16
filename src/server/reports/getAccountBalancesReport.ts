@@ -4,6 +4,7 @@ import parse from 'date-fns/parse';
 import type { BankAccount } from '@prisma/client';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
+import { getDateWhereFromFilter } from '@server/transaction/utils';
 import {
   type AccountPositionsBucket,
   GetAccountPositionsReportInput,
@@ -20,7 +21,7 @@ export const getAccountBalancesReport: Procedure<
   GetAccountPositionsReportInput,
   GetAccountPositionsReportOutput
 > = async ({
-  input: { from, until, accounts: selectedAccounts, currency, granularity },
+  input: { date, accounts: selectedAccounts, currency, granularity },
   ctx: { session },
 }) => {
   const transactions = await prisma.transaction.findMany({
@@ -110,6 +111,7 @@ export const getAccountBalancesReport: Procedure<
     });
   }
 
+  const { gte: from, lte: until } = getDateWhereFromFilter(date);
   const formatedFrom = from && format(new Date(from), dateFormat);
   const formatedUntil = until && format(new Date(until), dateFormat);
   return data

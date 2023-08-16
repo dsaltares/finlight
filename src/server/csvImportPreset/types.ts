@@ -1,6 +1,5 @@
 import { z } from 'zod';
-
-export const dateSchema = z.union([z.string(), z.date()]);
+import { Date } from '../types';
 
 export const CSVImportFields = [
   'Date',
@@ -23,8 +22,8 @@ export const CSVImportPreset = z.object({
   decimal: z.string(),
   rowsToSkipStart: z.number(),
   rowsToSkipEnd: z.number(),
-  createdAt: dateSchema,
-  updatedAt: dateSchema,
+  createdAt: Date,
+  updatedAt: Date,
 });
 
 export const GetCSVImportPresetsInput = z.void();
