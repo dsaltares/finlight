@@ -21,7 +21,7 @@ const items = [
   },
   {
     label: 'Transactions',
-    href: Routes.transactions,
+    href: Routes.recentTransactions,
     icon: ReceiptLongIcon,
   },
   {
