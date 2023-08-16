@@ -4,12 +4,13 @@ const Routes = {
   signOut: '/api/auth/signout',
   notFound: '/404',
   transactions: '/transactions',
+  recentTransactions: '/transactions?filterByPeriod=lastMonth',
   transactionsForCategory: (categoryId: string) =>
-    `/transactions?filterByCategoryId=${categoryId}`,
+    `/transactions?filterByCategoryId=${categoryId}&filterByPeriod=lastMonth`,
   transactionsForAccount: (accountId: string) =>
-    `/transactions?filterByAccountId=${accountId}`,
+    `/transactions?filterByAccountId=${accountId}&filterByPeriod=lastMonth`,
   accounts: '/accounts',
-  insights: '/insights',
+  insights: '/insights?filterByPeriod=lastMonth',
   budget: '/budget',
   categories: '/categories',
   importPresets: '/importPresets',

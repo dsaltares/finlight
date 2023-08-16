@@ -102,7 +102,7 @@ const AccountBalancesReport = () => {
                             ? Routes.transactionsForAccount(
                                 accountsByName[name]?.id as string,
                               )
-                            : Routes.transactions
+                            : Routes.recentTransactions
                         }
                       >
                         {name}
