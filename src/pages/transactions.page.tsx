@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import TextField from '@mui/material/TextField';
 import Head from 'next/head';
+import Typography from '@mui/material/Typography';
 import client from '@lib/api';
 import WithAuthentication from '@components/WithAuthentication';
 import useDialog from '@lib/useDialog';
@@ -26,8 +27,10 @@ import type { TransactionType } from '@server/transaction/types';
 import AppName from '@lib/appName';
 import TransactionFilterChips from '@components/TransactionFilterChips';
 import getDateFilter from '@lib/getDateFilter';
+import useIsMobile from '@lib/useIsMobile';
 
 const TransactionsPage: NextPage = () => {
+  const isMobile = useIsMobile();
   const {
     open: isCreateDialogOpen,
     onOpen: onCreateDialogOpen,
@@ -108,6 +111,16 @@ const TransactionsPage: NextPage = () => {
           justifyContent="space-between"
           gap={2}
         >
+          {!isMobile && transactions && (
+            <Stack>
+              <Typography
+                variant="subtitle2"
+                noWrap
+              >{`${transactions?.length} ${
+                transactions?.length === 1 ? 'transaction' : 'transactions'
+              }`}</Typography>
+            </Stack>
+          )}
           <TextField
             fullWidth
             placeholder="Search..."
