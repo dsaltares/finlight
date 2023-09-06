@@ -15,7 +15,7 @@ export type ProcedureArgs<TInput> = {
   input: TInput;
 };
 export type Procedure<TInput, TOutput> = (
-  args: ProcedureArgs<TInput>
+  args: ProcedureArgs<TInput>,
 ) => Promise<TOutput>;
 
 const trpc = initTRPC.context<Context>().meta<Meta>().create();

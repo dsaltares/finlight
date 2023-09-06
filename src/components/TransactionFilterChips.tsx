@@ -6,6 +6,7 @@ import PaidIcon from '@mui/icons-material/Paid';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useMemo } from 'react';
 import { useTheme } from '@mui/material/styles';
+import createUTCDate from '@lib/createUTCDate';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import {
   type TransactionType,
@@ -84,12 +85,18 @@ const TransactionFilterChips = () => {
           variant="outlined"
           label={
             onlyFrom
-              ? `From ${formatDate(new Date(filtersByField.from as string))}`
+              ? `From ${formatDate(
+                  createUTCDate(filtersByField.from as string),
+                )}`
               : onlyUntil
-              ? `Until ${formatDate(new Date(filtersByField.until as string))}`
+              ? `Until ${formatDate(
+                  createUTCDate(filtersByField.until as string),
+                )}`
               : `Between ${formatDate(
-                  new Date(filtersByField.from as string),
-                )} and ${formatDate(new Date(filtersByField.until as string))}`
+                  createUTCDate(filtersByField.from as string),
+                )} and ${formatDate(
+                  createUTCDate(filtersByField.until as string),
+                )}`
           }
           onDelete={handleClearDate}
         />

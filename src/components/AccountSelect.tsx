@@ -20,9 +20,9 @@ const AccountSelect = ({ accounts, selected, onChange }: Props) => {
     () =>
       accounts.reduce<Record<string, Account>>(
         (acc, account) => ({ ...acc, [account.id]: account }),
-        {}
+        {},
       ),
-    [accounts]
+    [accounts],
   );
   return (
     <FormControl fullWidth>

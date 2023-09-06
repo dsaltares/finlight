@@ -4,6 +4,7 @@ import parseDate from 'date-fns/parse';
 import { useRouter } from 'next/router';
 import { enqueueSnackbar } from 'notistack';
 import { TRPCClientError } from '@trpc/client';
+import createUTCDate from '@lib/createUTCDate';
 import Routes from '@lib/routes';
 import type { Account } from '@server/account/types';
 import useCreateTransactions from '@lib/transactions/useCreateTransactions';
@@ -39,7 +40,7 @@ const useImportTransactions = (account: Account) => {
   const { data: categories } = client.getCategories.useQuery();
   const preset = useMemo(
     () => presets?.find((preset) => preset.id === account.csvImportPresetId),
-    [presets, account.csvImportPresetId]
+    [presets, account.csvImportPresetId],
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleUploadClick = () => fileInputRef.current?.click();
@@ -71,14 +72,18 @@ const useImportTransactions = (account: Account) => {
           const actualAmount = deposit || -Math.abs(withdrawal) || amount;
 
           return {
-            date: parseDate(record[dateIndex], preset.dateFormat, new Date()),
+            date: parseDate(
+              record[dateIndex],
+              preset.dateFormat,
+              createUTCDate(),
+            ),
             description,
             amount: actualAmount - fee,
             categoryId:
               categories?.find((category) =>
                 category.importPatterns.some((pattern) =>
-                  description.toLowerCase().includes(pattern.toLowerCase())
-                )
+                  description.toLowerCase().includes(pattern.toLowerCase()),
+                ),
               )?.id || null,
           };
         });
@@ -93,7 +98,7 @@ const useImportTransactions = (account: Account) => {
         console.error(e);
       }
     },
-    [preset, categories, createTransactions, account.id, router]
+    [preset, categories, createTransactions, account.id, router],
   );
   const handleFileSelected: ChangeEventHandler<HTMLInputElement> = useCallback(
     (event) => {
@@ -107,7 +112,7 @@ const useImportTransactions = (account: Account) => {
         }
       }
     },
-    [handleFileUploaded]
+    [handleFileUploaded],
   );
 
   return {
@@ -124,7 +129,7 @@ export default useImportTransactions;
 const parseNumericField = (
   record: string[],
   preset: CSVImportPreset,
-  fieldName: CSVImportField
+  fieldName: CSVImportField,
 ) => {
   const fieldIndex = preset.fields.indexOf(fieldName);
   let amountStr = fieldIndex > -1 ? record[fieldIndex] : '0';

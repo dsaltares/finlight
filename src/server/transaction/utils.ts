@@ -6,6 +6,7 @@ import endOfYear from 'date-fns/endOfYear';
 import startOfMonth from 'date-fns/startOfMonth';
 import startOfToday from 'date-fns/startOfToday';
 import startOfYear from 'date-fns/startOfYear';
+import createUTCDate from '@lib/createUTCDate';
 import prisma from '@server/prisma';
 import type { DateFilter } from '@server/types';
 import { isDateRange, isPeriod, type Period } from '@server/types';
@@ -48,7 +49,7 @@ export const getDateWhereFromFilter = (date: DateFilter | undefined) => {
 };
 
 const getDateRangeForPeriod = (period: Period | '') => {
-  const now = new Date();
+  const now = createUTCDate();
   const today = startOfToday();
   switch (period) {
     case 'last30Days':

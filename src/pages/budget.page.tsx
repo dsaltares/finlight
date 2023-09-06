@@ -21,6 +21,7 @@ import useDialog from '@lib/useDialog';
 import BudgetOptionsDialog from '@components/BudgetOptionsDialog';
 import { formatDateWithGranularity } from '@lib/format';
 import useUpdateBudget from '@lib/budget/useUpdateBudget';
+import createUTCDate from '@lib/createUTCDate';
 
 type BudgetFormValues = {
   entries: BudgetEntry[];
@@ -96,7 +97,7 @@ const BudgetPage: NextPage = () => {
           <Stack direction="row" gap={2} alignItems="center" width="100%">
             <Typography variant="h6" whiteSpace="nowrap">
               {formatDateWithGranularity(
-                filtersByField.date || new Date(),
+                filtersByField.date || createUTCDate(),
                 (filtersByField.granularity as TimeGranularity) ||
                   budget?.granularity ||
                   'Monthly',

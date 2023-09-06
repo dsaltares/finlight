@@ -34,7 +34,7 @@ const CSVImportPresetList = ({ presets }: Props) => {
   } = useDialogForId('updatePreset');
   const preset = useMemo(
     () => presets.find((preset) => preset.id === presetId),
-    [presets, presetId]
+    [presets, presetId],
   );
   const { mutateAsync: updatePreset, isLoading: isUpdating } =
     useUpdateCSVImportPreset();

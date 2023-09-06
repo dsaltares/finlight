@@ -144,7 +144,7 @@ export const generateHtmlEmail = ({ url, host, email }: GenerateEmailArgs) => {
         </MjmlWrapper>
       </MjmlBody>
     </Mjml>,
-    { validationLevel: 'strict', minify: false }
+    { validationLevel: 'strict', minify: false },
   ).html;
 };
 

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Routes from '@lib/routes';
 
 const WithNoAuthentication = <P extends object>(
-  Component: React.ComponentType<P>
+  Component: React.ComponentType<P>,
 ) => {
   function RequireNoAuthentication(props: P) {
     const router = useRouter();

@@ -76,7 +76,7 @@ const TransactionTable = ({
     useUpdateTransaction();
   const transaction = useMemo(
     () => transactions?.find((transaction) => transaction.id === transactionId),
-    [transactions, transactionId]
+    [transactions, transactionId],
   );
   const { mutateAsync: deleteTransactions, isLoading: isDeleting } =
     useDeleteTransactions();
@@ -92,7 +92,7 @@ const TransactionTable = ({
     useUpdateTransactions();
 
   const handleMultiUpdate = async (
-    data: Omit<UpdateTransactionsInput, 'ids'>
+    data: Omit<UpdateTransactionsInput, 'ids'>,
   ) => {
     await updateTransactions({
       ids: table.getSelectedRowModel().flatRows.map((row) => row.original.id),
@@ -141,13 +141,13 @@ const TransactionTable = ({
                   >
                     {flexRender(
                       header.column.columnDef.header,
-                      header.getContext()
+                      header.getContext(),
                     )}
                   </TableSortLabel>
                 ) : (
                   flexRender(
                     header.column.columnDef.header,
-                    header.getContext()
+                    header.getContext(),
                   )
                 )}
               </TableCell>
@@ -156,7 +156,7 @@ const TransactionTable = ({
         ))}
       </>
     ),
-    [table, toggleSort]
+    [table, toggleSort],
   );
 
   return (

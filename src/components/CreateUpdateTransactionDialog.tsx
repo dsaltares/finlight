@@ -1,3 +1,4 @@
+import createUTCDate from '@lib/createUTCDate';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -91,7 +92,9 @@ const CreateUpdateTransactionDialog = ({
       categoryOptions,
       defaultValues: {
         amount: transaction?.amount.toString(),
-        date: transaction?.date ? new Date(transaction.date) : startOfToday(),
+        date: transaction?.date
+          ? createUTCDate(transaction.date)
+          : startOfToday(),
         description: transaction?.description || '',
         account,
         type: transaction?.type || 'Expense',
@@ -111,7 +114,7 @@ const CreateUpdateTransactionDialog = ({
   const onSubmit: SubmitHandler<TransactionFormValues> = useCallback(
     async (values) => {
       const common = {
-        date: new Date(values.date!),
+        date: createUTCDate(values.date!),
         categoryId: values.category?.id || null,
         amount: parseFloat(values.amount),
       };
@@ -149,7 +152,7 @@ const CreateUpdateTransactionDialog = ({
           {transaction ? 'Edit transaction' : 'Create transaction'}
         </DialogTitle>
         <DialogContent>
-          <Stack paddingY={1} gap={1.5} component="form">
+          <Stack paddingY={1} gap={1.5}>
             <TextField
               required
               type="number"

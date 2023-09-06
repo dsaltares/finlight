@@ -10,7 +10,7 @@ const useDialogForId = (queryParam: string) => {
         shallow: true,
       });
     },
-    [query, push, queryParam]
+    [query, push, queryParam],
   );
   const onClose = useCallback(() => {
     // Some dialogs set query params, so we need to wait a bit before closing

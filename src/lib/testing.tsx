@@ -14,7 +14,7 @@ import client from './api';
 
 const customRender = (
   ui: React.ReactElement,
-  providerData: ProviderData = {}
+  providerData: ProviderData = {},
 ) => render(ui, { wrapper: createProviders(providerData) });
 
 type ProviderData = {
@@ -67,25 +67,25 @@ export const mockRouter: NextRouter = {
 
 export const mockTrpcQuery = (name: string, result: object) =>
   rest.get(`http://localhost:3000/api/trpc/${name}`, (_req, res, ctx) =>
-    res(ctx.json([{ result: { data: result } }]))
+    res(ctx.json([{ result: { data: result } }])),
   );
 
 export const mockTrpcMutation = (name: string, result: object) =>
   rest.post(`http://localhost:3000/api/trpc/${name}`, (_req, res, ctx) =>
-    res(ctx.json([{ result: { data: result } }]))
+    res(ctx.json([{ result: { data: result } }])),
   );
 
 export const mockTrpcMutationError = (name: string, error: TRPCError) =>
   rest.post(`http://localhost:3000/api/trpc/${name}`, (_req, res, ctx) =>
     res(
       ctx.status(500),
-      ctx.json([{ error: { code: error.code, message: error.message } }])
-    )
+      ctx.json([{ error: { code: error.code, message: error.message } }]),
+    ),
   );
 
 export const mockSession = (session: Session | undefined | null) =>
   rest.get('http://localhost:3000/api/auth/session', (_req, res, ctx) =>
-    session ? res(ctx.json(session)) : res(ctx.json({}))
+    session ? res(ctx.json(session)) : res(ctx.json({})),
   );
 
 export * from '@testing-library/react';

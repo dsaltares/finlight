@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
+import createUTCDate from '@lib/createUTCDate';
 import client from '@lib/api';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import { formatDate } from '@lib/format';
@@ -58,12 +59,18 @@ const ReportSettingsChips = () => {
           variant="outlined"
           label={
             onlyFrom
-              ? `From ${formatDate(new Date(filtersByField.from as string))}`
+              ? `From ${formatDate(
+                  createUTCDate(filtersByField.from as string),
+                )}`
               : onlyUntil
-              ? `Until ${formatDate(new Date(filtersByField.until as string))}`
+              ? `Until ${formatDate(
+                  createUTCDate(filtersByField.until as string),
+                )}`
               : `Between ${formatDate(
-                  new Date(filtersByField.from as string),
-                )} and ${formatDate(new Date(filtersByField.until as string))}`
+                  createUTCDate(filtersByField.from as string),
+                )} and ${formatDate(
+                  createUTCDate(filtersByField.until as string),
+                )}`
           }
           onDelete={handleClearDate}
         />

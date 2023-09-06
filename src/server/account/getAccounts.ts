@@ -17,7 +17,7 @@ export const getAccounts: Procedure<
     },
   });
   const rates = await getRates(
-    Array.from(new Set(accounts.map(({ currency }) => currency)))
+    Array.from(new Set(accounts.map(({ currency }) => currency))),
   );
   return {
     accounts,
@@ -25,7 +25,7 @@ export const getAccounts: Procedure<
       value: accounts.reduce(
         (acc, account) =>
           acc + convertAmount(account.balance, account.currency, 'EUR', rates),
-        0
+        0,
       ),
       currency: 'EUR',
     },

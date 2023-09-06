@@ -10,6 +10,7 @@ import type {
   Category,
   Transaction,
 } from '@prisma/client';
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { convertAmount, getRates } from '@server/reports/utils';
@@ -21,12 +22,12 @@ import {
 } from './utils';
 
 export const getBudget: Procedure<GetBudgetInput, GetBudgetOutput> = async ({
-  input: { date = new Date(), granularity, currency = 'EUR' },
+  input: { date = createUTCDate(), granularity, currency = 'EUR' },
   ctx: { session },
 }) => {
   const budget = await ensureBudgetExists(session?.userId as string);
   const outputGranularity = granularity || budget.granularity;
-  const { from, until } = getDateRange(new Date(date), outputGranularity);
+  const { from, until } = getDateRange(createUTCDate(date), outputGranularity);
   const [transactions, categories] = await Promise.all([
     prisma.transaction.findMany({
       where: {

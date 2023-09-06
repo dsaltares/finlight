@@ -8,6 +8,7 @@ import isToday from 'date-fns/isToday';
 import format from 'date-fns/format';
 import chunk from 'lodash.chunk';
 import fetch from 'node-fetch';
+import createUTCDate from '@lib/createUTCDate';
 import { PolygonGroupedDailyFX } from '@lib/polygon';
 
 const ratesPath = path.join('data', 'exchangeRates');
@@ -19,12 +20,12 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const getDatesToFetch = () => {
   const dates: Date[] = [];
   for (
-    let date = startOfYear(addYears(new Date(), -1));
+    let date = startOfYear(addYears(createUTCDate(), -1));
     !isToday(date);
     date = addDays(date, 1)
   ) {
     const fileExists = fs.existsSync(
-      path.join(ratesPath, `${formatDate(date)}.json`)
+      path.join(ratesPath, `${formatDate(date)}.json`),
     );
     if (!fileExists) {
       dates.push(date);
@@ -39,13 +40,13 @@ const fetchExchangeRatesForDate = async (date: Date) => {
   console.log('Fetching exchange rates for', formattedDate);
   try {
     const response = await fetch(
-      `https://api.polygon.io/v2/aggs/grouped/locale/global/market/fx/${formattedDate}?adjusted=true&apiKey=${process.env.POLYGON_API_KEY}`
+      `https://api.polygon.io/v2/aggs/grouped/locale/global/market/fx/${formattedDate}?adjusted=true&apiKey=${process.env.POLYGON_API_KEY}`,
     );
     const data = await response.json();
     const polygonResponse = PolygonGroupedDailyFX.parse(data);
     fs.writeFileSync(
       path.join(ratesPath, `${formattedDate}.json`),
-      JSON.stringify(polygonResponse, null, 2)
+      JSON.stringify(polygonResponse, null, 2),
     );
   } catch (e) {
     console.log('Error fetching exchange rates for', formattedDate, e);
@@ -56,7 +57,7 @@ const rateLimit = async <T>(
   data: T[],
   fn: (item: T) => Promise<void>,
   concurrency: number,
-  timeUnitMs: number
+  timeUnitMs: number,
 ) => {
   const chunks = chunk(data, concurrency);
   for (const chunk of chunks) {

@@ -19,7 +19,7 @@ export const PolygonGroupedDailyFX = z.object({
         t: z.number(),
         v: z.number(),
         vw: z.number().optional(),
-      })
+      }),
     )
     .optional(),
 });

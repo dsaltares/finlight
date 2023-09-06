@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 import { useState } from 'react';
 import startOfDay from 'date-fns/startOfDay';
 import endOfDay from 'date-fns/endOfDay';
+import createUTCDate from '@lib/createUTCDate';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import { currencyOptionsById } from '@lib/autoCompleteOptions';
@@ -36,12 +37,12 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
   const { filtersByField, setFilters } = useFiltersFromUrl();
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
-      ? new Date(filtersByField.from)
+      ? createUTCDate(filtersByField.from)
       : null,
   );
   const [until, setUntil] = useState(
     typeof filtersByField.until === 'string'
-      ? new Date(filtersByField.until)
+      ? createUTCDate(filtersByField.until)
       : null,
   );
   const [period, setPeriod] = useState<Period | ''>(

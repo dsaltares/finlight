@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import startOfDay from 'date-fns/startOfDay';
 import endOfDay from 'date-fns/endOfDay';
+import createUTCDate from '@lib/createUTCDate';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
 import type { Category } from '@server/category/types';
@@ -75,12 +76,12 @@ const TransactionFilterDialog = ({
   );
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
-      ? new Date(filtersByField.from)
+      ? createUTCDate(filtersByField.from)
       : null,
   );
   const [until, setUntil] = useState(
     typeof filtersByField.until === 'string'
-      ? new Date(filtersByField.until)
+      ? createUTCDate(filtersByField.until)
       : null,
   );
   const [minAmount, setMinAmount] = useState(filtersByField.minAmount);

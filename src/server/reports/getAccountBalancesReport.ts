@@ -2,6 +2,7 @@ import format from 'date-fns/format';
 import groupBy from 'lodash.groupby';
 import parse from 'date-fns/parse';
 import type { BankAccount } from '@prisma/client';
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { getDateWhereFromFilter } from '@server/transaction/utils';
@@ -103,7 +104,7 @@ export const getAccountBalancesReport: Procedure<
     );
     data.push({
       bucket: format(
-        parse(bucketKey, dateFormat, new Date()),
+        parse(bucketKey, dateFormat, createUTCDate()),
         getDisplayFormatForGranularity(granularity),
       ),
       positions,
@@ -112,8 +113,8 @@ export const getAccountBalancesReport: Procedure<
   }
 
   const { gte: from, lte: until } = getDateWhereFromFilter(date);
-  const formatedFrom = from && format(new Date(from), dateFormat);
-  const formatedUntil = until && format(new Date(until), dateFormat);
+  const formatedFrom = from && format(createUTCDate(from), dateFormat);
+  const formatedUntil = until && format(createUTCDate(until), dateFormat);
   return data
     .filter((_datum, index) => {
       if (formatedFrom && bucketKeys[index] < formatedFrom) {

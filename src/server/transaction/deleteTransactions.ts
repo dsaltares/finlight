@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { DeleteTransactionsInput, DeleteTransactionsOutput } from './types';
@@ -28,7 +29,7 @@ export const deleteTransaction: Procedure<
       id: { in: ids },
     },
     data: {
-      deletedAt: new Date(),
+      deletedAt: createUTCDate(),
     },
   });
   await updateAccountBalance(transactions[0].accountId);

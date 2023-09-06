@@ -13,6 +13,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Autocomplete from '@mui/material/Autocomplete';
 import Checkbox from '@mui/material/Checkbox';
+import createUTCDate from '@lib/createUTCDate';
 import type {
   TransactionType,
   UpdateTransactionsInput,
@@ -58,7 +59,7 @@ const UpdateTransactionsDialog = ({
         label: category.name,
         id: category.id,
       })),
-    [categories]
+    [categories],
   );
   const {
     control,
@@ -82,13 +83,13 @@ const UpdateTransactionsDialog = ({
     async (values) => {
       const processed = {
         ...values,
-        date: new Date(values.date!),
+        date: createUTCDate(values.date!),
         categoryId: values.category?.id || null,
         amount: parseFloat(values.amount),
         type: values.type as TransactionType,
       };
       const hasEnabledFields = Object.values(enabledFields).some(
-        (field) => !!field
+        (field) => !!field,
       );
       if (hasEnabledFields) {
         const data = Object.keys(enabledFields).reduce<
@@ -101,13 +102,13 @@ const UpdateTransactionsDialog = ({
                   [field]: processed[field as FormFieldName],
                 }
               : acc,
-          {}
+          {},
         );
         await onUpdate(data);
       }
       onClose();
     },
-    [onUpdate, onClose, enabledFields]
+    [onUpdate, onClose, enabledFields],
   );
 
   return (
@@ -124,12 +125,7 @@ const UpdateTransactionsDialog = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle id={`${id}-title`}>Edit transactions</DialogTitle>
         <DialogContent>
-          <Stack
-            paddingY={1}
-            gap={1.5}
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <Stack paddingY={1} gap={1.5}>
             <Stack direction="row" gap={0.5} alignItems="center">
               <Checkbox
                 checked={!!enabledFields['amount']}

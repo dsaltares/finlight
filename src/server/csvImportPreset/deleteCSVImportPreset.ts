@@ -1,3 +1,4 @@
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import {
@@ -20,7 +21,7 @@ export const deleteCSVImportPreset: Procedure<
       id,
     },
     data: {
-      deletedAt: new Date(),
+      deletedAt: createUTCDate(),
     },
   });
 };

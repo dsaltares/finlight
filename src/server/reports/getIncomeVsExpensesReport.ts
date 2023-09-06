@@ -1,6 +1,7 @@
 import format from 'date-fns/format';
 import groupBy from 'lodash.groupby';
 import parse from 'date-fns/parse';
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { getDateWhereFromFilter } from '@server/transaction/utils';
@@ -81,7 +82,7 @@ export const getIncomeVsExpensesReport: Procedure<
         );
       return {
         bucket: format(
-          parse(bucketKey, dateFormat, new Date()),
+          parse(bucketKey, dateFormat, createUTCDate()),
           getDisplayFormatForGranularity(granularity),
         ),
         income,

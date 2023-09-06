@@ -4,12 +4,17 @@ import NavigationItems from './NavigationItems';
 import UserMenu from './UserMenu';
 
 const SidebarContent = () => (
-  <Stack justifyContent="space-between" height="100%" paddingTop={4} paddingBottom={1}>
+  <Stack
+    justifyContent="space-between"
+    height="100%"
+    paddingTop={4}
+    paddingBottom={1}
+  >
     <Stack gap={3}>
       <Stack alignItems="center">
-    <Logo />
-    </Stack>
-    <NavigationItems />
+        <Logo />
+      </Stack>
+      <NavigationItems />
     </Stack>
     <UserMenu />
   </Stack>

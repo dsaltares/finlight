@@ -27,11 +27,11 @@ export const getRates = async (currencies: string[]) => {
             currency,
             rate: 1,
           };
-    })
+    }),
   );
   return rates.reduce<RatesByCurrency>(
     (acc, rate) => ({ ...acc, [rate.currency]: rate.rate }),
-    {}
+    {},
   );
 };
 
@@ -44,7 +44,7 @@ export const convertAmount = (
   amount: number,
   currency: string,
   targetCurrency: string,
-  rates: RatesByCurrency
+  rates: RatesByCurrency,
 ) => {
   // To do RON -> USD
   // baseToTarget: EUR -> USD
@@ -70,7 +70,7 @@ export const getFormatForGranularity = (granularity: TimeGranularity) => {
 };
 
 export const getDisplayFormatForGranularity = (
-  granularity: TimeGranularity
+  granularity: TimeGranularity,
 ) => {
   switch (granularity) {
     case 'Daily':

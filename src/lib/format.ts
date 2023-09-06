@@ -1,8 +1,9 @@
 import format from 'date-fns/format';
+import createUTCDate from '@lib/createUTCDate';
 import type { TimeGranularity } from '@server/reports/types';
 
 export const formatDate = (date: Date | string) =>
-  format(new Date(date), 'dd MMMM yyyy');
+  format(createUTCDate(date), 'dd MMMM yyyy');
 
 export const formatDateWithGranularity = (
   date: Date | string,
@@ -16,7 +17,7 @@ export const formatDateWithGranularity = (
       : granularity === 'Quarterly'
       ? 'qqq yyyy'
       : 'yyyy';
-  return format(new Date(date), formatString);
+  return format(createUTCDate(date), formatString);
 };
 
 export const formatAmount = (amount: number, currency: string | undefined) =>

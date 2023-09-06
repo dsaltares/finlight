@@ -32,7 +32,7 @@ const useSortFromUrl = (defaultSort: ColumnSort | undefined = undefined) => {
 
       void push({ query: newQuery }, undefined, { shallow: true });
     },
-    [push, query, sortBy, sortDir, defaultSort]
+    [push, query, sortBy, sortDir, defaultSort],
   );
   return {
     sorting,

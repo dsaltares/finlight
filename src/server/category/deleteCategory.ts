@@ -1,3 +1,4 @@
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { DeleteCategoryInput, DeleteCategoryOutput } from './types';
@@ -18,7 +19,7 @@ export const deleteCategory: Procedure<
         id,
       },
       data: {
-        deletedAt: new Date(),
+        deletedAt: createUTCDate(),
       },
     }),
     prisma.transaction.updateMany({

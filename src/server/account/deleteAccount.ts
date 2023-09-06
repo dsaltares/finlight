@@ -1,3 +1,4 @@
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { DeleteAccountInput, DeleteAccountOutput } from './types';
@@ -17,7 +18,7 @@ export const deleteAccount: Procedure<
       id,
     },
     data: {
-      deletedAt: new Date(),
+      deletedAt: createUTCDate(),
     },
   });
   await prisma.transaction.updateMany({
@@ -25,7 +26,7 @@ export const deleteAccount: Procedure<
       accountId: id,
     },
     data: {
-      deletedAt: new Date(),
+      deletedAt: createUTCDate(),
     },
   });
 };

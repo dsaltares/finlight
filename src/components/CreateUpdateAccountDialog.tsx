@@ -70,7 +70,7 @@ const CreateUpdateAccountDialog = ({
     const presetOptions = presets.map(({ id, name }) => ({ id, label: name }));
     const csvImportPreset = account
       ? presetOptions.find(
-          (option) => option.id === account.csvImportPresetId
+          (option) => option.id === account.csvImportPresetId,
         ) || null
       : null;
     return { presetOptions, csvImportPreset };
@@ -109,7 +109,7 @@ const CreateUpdateAccountDialog = ({
       }
       onClose();
     },
-    [onCreate, onUpdate, onClose, account]
+    [onCreate, onUpdate, onClose, account],
   );
 
   return (

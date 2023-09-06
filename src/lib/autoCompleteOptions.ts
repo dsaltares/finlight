@@ -17,7 +17,7 @@ export const currencyOptionsById = currencyOptions.reduce<OptionsById>(
     ...acc,
     [option.id]: option,
   }),
-  {}
+  {},
 );
 
 export const isOptionEqualToValue = (option: Option, value: Option) =>

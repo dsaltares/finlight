@@ -4,6 +4,7 @@ import parse from 'date-fns/parse';
 import addYears from 'date-fns/addYears';
 import addQuarters from 'date-fns/addQuarters';
 import addMonths from 'date-fns/addMonths';
+import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import type { BalanceForecastBucket, TimeGranularity } from './types';
 import {
@@ -72,7 +73,7 @@ const getEmptyForecastBuckets = (
   const lastRealDate = parse(
     lastRealBucket,
     getDisplayFormatForGranularity(granularity),
-    new Date(),
+    createUTCDate(),
   );
   const numBuckets =
     granularity === 'Daily'

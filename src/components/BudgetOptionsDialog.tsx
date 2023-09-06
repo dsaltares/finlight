@@ -8,6 +8,7 @@ import { useState } from 'react';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import createUTCDate from '@lib/createUTCDate';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import { currencyOptionsById } from '@lib/autoCompleteOptions';
 import { TimeGranularities, type TimeGranularity } from '@server/budget/types';
@@ -29,8 +30,8 @@ const BudgetOptionsDialog = ({ open, onClose }: Props) => {
   const { filtersByField, setFilters } = useFiltersFromUrl();
   const [date, setDate] = useState<Date | null>(
     typeof filtersByField.date === 'string'
-      ? new Date(filtersByField.date)
-      : new Date(),
+      ? createUTCDate(filtersByField.date)
+      : createUTCDate(),
   );
   const [granularity, setGranularity] = useState<TimeGranularity | ''>(
     (filtersByField.granularity as TimeGranularity) || '',
