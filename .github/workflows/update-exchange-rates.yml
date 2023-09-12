@@ -9,4 +9,4 @@ jobs:
     steps:
       - name: Update exchange rates
         run: |-
-          curl -X POST https://finlight.saltares.com/api/con/updateExchangeRates?CRON_API_KEY=${{ secrets.CRON_API_KEY }}
+          curl -X POST https://finlight.saltares.com/api/cron/updateExchangeRates?CRON_API_KEY=${{ secrets.CRON_API_KEY }}
