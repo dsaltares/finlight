@@ -63,8 +63,9 @@ const getDateRangeForPeriod = (period: Period | '') => {
       return [startOfMonth(oneMonthAgo), endOfMonth(oneMonthAgo)];
     }
     case 'last3Months': {
-      const threeMonthsAgo = addMonths(now, -2);
-      return [startOfMonth(threeMonthsAgo), endOfMonth(now)];
+      const oneMonthAgo = addMonths(now, -1);
+      const threeMonthsAgo = addMonths(now, -3);
+      return [startOfMonth(threeMonthsAgo), endOfMonth(oneMonthAgo)];
     }
     case 'currentYear':
       return [startOfYear(now), endOfYear(now)];
