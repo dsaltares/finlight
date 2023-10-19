@@ -34,7 +34,7 @@
     "@tanstack/react-table": "^8.10.0",
     "@trpc/client": "^10.33.1",
     "@trpc/next": "^10.33.1",
-    "@trpc/react-query": "^10.33.1",
+    "@trpc/react-query": "^10.38.5",
     "@trpc/server": "^10.33.1",
     "csv-parse": "^5.4.0",
     "currency-codes": "^2.1.0",
