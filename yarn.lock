@@ -2591,10 +2591,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-5.1.2.tgz#07508b45797cb81ec3f273011b054cd0755eddca"
   integrity sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==
 
-"@types/mjml-react@^2.0.6":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@types/mjml-react/-/mjml-react-2.0.6.tgz#f63f6af88e89fb588099bb3dd1f487befdb1a061"
-  integrity sha512-pOYAX16xjkWNHWPNETfDYiUGYYwHQeuhtrUFDVCWh49zisgkLRG9kA3W9324Kc+KmO+xQp2LQldTVprhJ7ZMbw==
+"@types/mjml-react@^2.0.9":
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/@types/mjml-react/-/mjml-react-2.0.9.tgz#dde47e4416e506a94f2450fdd91c353f9b9ea97f"
+  integrity sha512-BAJQK1/kEWERE3anwpkO9o+JqrcjWkkpTemb3npc3YNFr0emjDKbnydG+I/wT8k6Oit+v5unK0AYPDAPYUvxlQ==
   dependencies:
     "@types/react" "*"
 
