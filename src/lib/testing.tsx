@@ -6,7 +6,7 @@ import { SessionProvider } from 'next-auth/react';
 import type { NextRouter } from 'next/router';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import type { Session } from 'next-auth';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import type { TRPCError } from '@trpc/server';
@@ -66,26 +66,28 @@ export const mockRouter: NextRouter = {
 };
 
 export const mockTrpcQuery = (name: string, result: object) =>
-  rest.get(`http://localhost:3000/api/trpc/${name}`, (_req, res, ctx) =>
-    res(ctx.json([{ result: { data: result } }])),
+  http.get(`http://localhost:3000/api/trpc/${name}`, () =>
+    Response.json([{ result: { data: result } }]),
   );
 
 export const mockTrpcMutation = (name: string, result: object) =>
-  rest.post(`http://localhost:3000/api/trpc/${name}`, (_req, res, ctx) =>
-    res(ctx.json([{ result: { data: result } }])),
+  http.post(`http://localhost:3000/api/trpc/${name}`, () =>
+    Response.json([{ result: { data: result } }]),
   );
 
 export const mockTrpcMutationError = (name: string, error: TRPCError) =>
-  rest.post(`http://localhost:3000/api/trpc/${name}`, (_req, res, ctx) =>
-    res(
-      ctx.status(500),
-      ctx.json([{ error: { code: error.code, message: error.message } }]),
-    ),
+  http.post(
+    `http://localhost:3000/api/trpc/${name}`,
+    () =>
+      new HttpResponse(null, {
+        status: 500,
+        statusText: error.message,
+      }),
   );
 
 export const mockSession = (session: Session | undefined | null) =>
-  rest.get('http://localhost:3000/api/auth/session', (_req, res, ctx) =>
-    session ? res(ctx.json(session)) : res(ctx.json({})),
+  http.get('http://localhost:3000/api/auth/session', () =>
+    session ? Response.json(session) : Response.json({}),
   );
 
 export * from '@testing-library/react';
