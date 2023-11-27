@@ -66,13 +66,21 @@ export const mockRouter: NextRouter = {
 };
 
 export const mockTrpcQuery = (name: string, result: object) =>
-  http.get(`http://localhost:3000/api/trpc/${name}`, () =>
-    Response.json([{ result: { data: result } }]),
+  http.get(
+    `http://localhost:3000/api/trpc/${name}`,
+    () =>
+      new Response(JSON.stringify([{ result: { data: result } }]), {
+        status: 200,
+      }),
   );
 
 export const mockTrpcMutation = (name: string, result: object) =>
-  http.post(`http://localhost:3000/api/trpc/${name}`, () =>
-    Response.json([{ result: { data: result } }]),
+  http.post(
+    `http://localhost:3000/api/trpc/${name}`,
+    () =>
+      new Response(JSON.stringify([{ result: { data: result } }]), {
+        status: 200,
+      }),
   );
 
 export const mockTrpcMutationError = (name: string, error: TRPCError) =>
@@ -87,7 +95,13 @@ export const mockTrpcMutationError = (name: string, error: TRPCError) =>
 
 export const mockSession = (session: Session | undefined | null) =>
   http.get('http://localhost:3000/api/auth/session', () =>
-    session ? Response.json(session) : Response.json({}),
+    session
+      ? new Response(JSON.stringify(session), {
+          status: 200,
+        })
+      : new Response(JSON.stringify({}), {
+          status: 200,
+        }),
   );
 
 export * from '@testing-library/react';
