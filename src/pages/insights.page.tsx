@@ -20,6 +20,7 @@ import AccountBalancesReport from '@components/Reports/AccountBalancesReport';
 import BalanceForecastReport from '@components/Reports/BalanceForecastReport';
 import AppName from '@lib/appName';
 import ReportSettingsChips from '@components/ReportSettingsChips';
+import CategorizedExpensesOverTimeReport from '@components/Reports/CategorizedExpensesOverTimeReport';
 
 const Reports = {
   categorizedExpenses: {
@@ -29,6 +30,10 @@ const Reports = {
   categorizedIncome: {
     name: 'Where the money comes from',
     Component: CategorizedIncomeReport,
+  },
+  categorizedExpensesOverTime: {
+    name: 'Where the money goes over time',
+    Component: CategorizedExpensesOverTimeReport,
   },
   incomeVsExpenses: {
     name: 'Income vs Expenses',
@@ -53,7 +58,8 @@ const InsightsPage: NextPage = () => {
     onClose: onSettingsDialogClose,
   } = useDialog('reportSettings');
   const { filtersByField, setFilters } = useFiltersFromUrl();
-  const { data } = client.getAccounts.useQuery();
+  const { data: accounts } = client.getAccounts.useQuery();
+  const { data: categories } = client.getCategories.useQuery();
   const numFilters = Object.keys(filtersByField).filter(
     (field) => field !== 'report',
   ).length;
@@ -99,7 +105,8 @@ const InsightsPage: NextPage = () => {
           <ReportSettingsDialog
             open={isSettingsDialogOpen}
             onClose={onSettingsDialogClose}
-            accounts={data?.accounts || []}
+            accounts={accounts?.accounts || []}
+            categories={categories || []}
           />
         )}
       </Stack>

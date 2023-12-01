@@ -16,22 +16,30 @@ import type { Account } from '@server/account/types';
 import { currencyOptionsById } from '@lib/autoCompleteOptions';
 import type { TimeGranularity } from '@server/reports/types';
 import { isPeriod, type Period } from '@server/types';
+import type { Category } from '@server/category/types';
 import PeriodSelect from './PeriodSelect';
 import AccountSelect from './AccountSelect';
 import CurrencyAutocomplete from './CurrencyAutocomplete';
 import TimeGranularitySelect from './TimeGranularitySelect';
+import CategorySelect from './CategorySelect';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   accounts: Account[];
+  categories: Category[];
 };
 
 const id = 'report-filter-dialog';
 const DefaultCurrency = 'EUR';
 const DefaultGranularity: TimeGranularity = 'Monthly';
 
-const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
+const ReportSettingsDialog = ({
+  open,
+  onClose,
+  accounts,
+  categories,
+}: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const { filtersByField, setFilters } = useFiltersFromUrl();
@@ -54,6 +62,9 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>(
     filtersByField.accounts ? filtersByField.accounts.split(',') : [],
   );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    filtersByField.categories ? filtersByField.categories.split(',') : [],
+  );
   const [currency, setCurrency] = useState(
     currencyOptionsById[filtersByField.currency ?? DefaultCurrency],
   );
@@ -66,6 +77,11 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
       accounts:
         selectedAccounts.length > 0 && selectedAccounts.length < accounts.length
           ? selectedAccounts.join(',')
+          : undefined,
+      categories:
+        selectedCategories.length > 0 &&
+        selectedCategories.length < accounts.length
+          ? selectedCategories.join(',')
           : undefined,
       currency: currency.id !== DefaultCurrency ? currency.id : undefined,
       timeGranularity:
@@ -80,6 +96,7 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
       until: undefined,
       period: undefined,
       accounts: undefined,
+      categories: undefined,
       currency: undefined,
       timeGranularity: undefined,
     });
@@ -140,6 +157,11 @@ const ReportSettingsDialog = ({ open, onClose, accounts }: Props) => {
             accounts={accounts}
             selected={selectedAccounts}
             onChange={setSelectedAccounts}
+          />
+          <CategorySelect
+            categories={categories}
+            selected={selectedCategories}
+            onChange={setSelectedCategories}
           />
           <TimeGranularitySelect
             value={timeGranularity}

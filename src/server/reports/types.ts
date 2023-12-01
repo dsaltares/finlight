@@ -30,6 +30,11 @@ export const BalanceForecastBucket = z.object({
   balance: z.number().optional(),
   forecast: z.number().optional(),
 });
+export const CategoryBucket = z.object({
+  bucket: z.string(),
+  categories: z.record(z.number()),
+  total: z.number(),
+});
 
 export const GetCategoryReportInput = z.object({
   type: TransactionType,
@@ -41,6 +46,15 @@ export const GetCategoryReportOutput = z.object({
   categories: CategoryAggregate.array(),
   total: z.number(),
 });
+export const GetBucketedCategoryReportInput = z.object({
+  type: TransactionType,
+  date: DateFilter.optional(),
+  accounts: z.string().array().optional(),
+  categories: z.string().array().optional(),
+  currency: z.string().optional().default('EUR'),
+  granularity: TimeGranularity.optional().default('Monthly'),
+});
+export const GetBucketedCategoryReportOutput = CategoryBucket.array();
 export const GetIncomeVsExpensesReportInput = z.object({
   date: DateFilter.optional(),
   accounts: z.string().array().optional(),
@@ -66,10 +80,17 @@ export const GetBalanceForecastReportOutput = BalanceForecastBucket.array();
 export type BalanceForecastBucket = z.infer<typeof BalanceForecastBucket>;
 export type TimeGranularity = z.infer<typeof TimeGranularity>;
 export type CategoryAggregate = z.infer<typeof CategoryAggregate>;
+export type CategoryBucket = z.infer<typeof CategoryBucket>;
 export type IncomeVsExpensesBucket = z.infer<typeof IncomeVsExpensesBucket>;
 export type AccountPositionsBucket = z.infer<typeof AccountPositionsBucket>;
 export type GetCategoryReportInput = z.infer<typeof GetCategoryReportInput>;
 export type GetCategoryReportOutput = z.infer<typeof GetCategoryReportOutput>;
+export type GetBucketedCategoryReportInput = z.infer<
+  typeof GetBucketedCategoryReportInput
+>;
+export type GetBucketedCategoryReportOutput = z.infer<
+  typeof GetBucketedCategoryReportOutput
+>;
 export type GetIncomeVsExpensesReportInput = z.infer<
   typeof GetIncomeVsExpensesReportInput
 >;

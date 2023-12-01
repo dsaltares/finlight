@@ -12,10 +12,12 @@ import {
   isDateRange,
   isPeriod,
 } from '@server/types';
+import type { Category } from '@server/category/types';
 
 const ReportSettingsChips = () => {
   const { filtersByField, setFilters } = useFiltersFromUrl();
   const { data: accounts } = client.getAccounts.useQuery();
+  const { data: categories } = client.getCategories.useQuery();
 
   const accountsById = useMemo(
     () =>
@@ -25,8 +27,17 @@ const ReportSettingsChips = () => {
       ),
     [accounts],
   );
+  const categoriesById = useMemo(
+    () =>
+      (categories || []).reduce<Record<string, Category>>(
+        (acc, category) => ({ ...acc, [category.id]: category }),
+        {},
+      ),
+    [categories],
+  );
 
   const handleClearAccounts = () => setFilters({ accounts: undefined });
+  const handleClearCategories = () => setFilters({ categories: undefined });
   const handleClearPeriod = () => setFilters({ period: undefined });
   const handleClearDate = () =>
     setFilters({ from: undefined, until: undefined });
@@ -44,6 +55,7 @@ const ReportSettingsChips = () => {
   const onlyFrom = !!filtersByField.from && !filtersByField.until;
   const onlyUntil = !filtersByField.from && !!filtersByField.until;
   const selectedAccounts = filtersByField.accounts?.split(',') || [];
+  const selectedCategories = filtersByField.categories?.split(',') || [];
 
   return (
     <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
@@ -86,6 +98,19 @@ const ReportSettingsChips = () => {
                 } more`
           }
           onDelete={handleClearAccounts}
+        />
+      )}
+      {selectedCategories.length > 0 && (
+        <Chip
+          variant="outlined"
+          label={
+            selectedCategories.length === 1
+              ? categoriesById[selectedCategories[0]].name
+              : `${categoriesById[selectedCategories[0]].name} and ${
+                  selectedCategories.length - 1
+                } more`
+          }
+          onDelete={handleClearCategories}
         />
       )}
       {!!filtersByField.timeGranularity && (
