@@ -13,6 +13,7 @@ const useCreateTransactions = (options?: Options) => {
         options?.onSettled?.apply(this, args),
         queryClient.invalidateQueries(getQueryKey(client.getTransactions)),
         queryClient.invalidateQueries(getQueryKey(client.getBudget)),
+        queryClient.invalidateQueries(getQueryKey(client.getAccounts)),
       ]),
   });
 };
