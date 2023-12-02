@@ -105,8 +105,8 @@ const ReportSettingsChips = () => {
           variant="outlined"
           label={
             selectedCategories.length === 1
-              ? categoriesById[selectedCategories[0]].name
-              : `${categoriesById[selectedCategories[0]].name} and ${
+              ? categoriesById[selectedCategories[0]]?.name
+              : `${categoriesById[selectedCategories[0]]?.name} and ${
                   selectedCategories.length - 1
                 } more`
           }

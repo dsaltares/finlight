@@ -80,7 +80,7 @@ const ReportSettingsDialog = ({
           : undefined,
       categories:
         selectedCategories.length > 0 &&
-        selectedCategories.length < accounts.length
+        selectedCategories.length < categories.length
           ? selectedCategories.join(',')
           : undefined,
       currency: currency.id !== DefaultCurrency ? currency.id : undefined,
