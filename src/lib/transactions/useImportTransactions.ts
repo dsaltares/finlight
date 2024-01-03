@@ -1,6 +1,6 @@
 import { type ChangeEventHandler, useCallback, useMemo, useRef } from 'react';
 import { parse } from 'csv-parse/sync';
-import parseDate from 'date-fns/parse';
+import parseDateBase from 'date-fns/parse';
 import { useRouter } from 'next/router';
 import { enqueueSnackbar } from 'notistack';
 import { TRPCClientError } from '@trpc/client';
@@ -72,11 +72,7 @@ const useImportTransactions = (account: Account) => {
           const actualAmount = deposit || -Math.abs(withdrawal) || amount;
 
           return {
-            date: parseDate(
-              record[dateIndex],
-              preset.dateFormat,
-              createUTCDate(),
-            ),
+            date: parseDate(record[dateIndex], preset.dateFormat),
             description,
             amount: actualAmount - fee,
             categoryId:
@@ -139,4 +135,19 @@ const parseNumericField = (
     amountStr = amountStr.replace('.', '').replace(',', '.');
   }
   return parseFloat(amountStr);
+};
+
+const parseDate = (dateStr: string, dateFormat: string) => {
+  const date = parseDateBase(dateStr, dateFormat, createUTCDate());
+  return new Date(
+    Date.UTC(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds(),
+    ),
+  );
 };
