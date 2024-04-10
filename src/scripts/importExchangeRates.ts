@@ -33,6 +33,21 @@ const importExchangeRatesForFile = async (file: string) => {
   return rates.length;
 };
 
+const cleanUpOldRates = async () => {
+  console.log('Cleaning up old rates');
+  await prisma.$executeRaw`
+    delete from "ExchangeRate" e1
+    where
+      date < (
+        select
+          max(date)
+        from
+          "ExchangeRate" e2
+        where
+          e1.ticker = e2.ticker
+      );`;
+};
+
 const importExchangeRates = async () => {
   const files = getFiles();
   let totalRateCount = 0;
@@ -40,6 +55,7 @@ const importExchangeRates = async () => {
     totalRateCount += await importExchangeRatesForFile(file);
   }
   console.log(`Imported ${totalRateCount} rates`);
+  await cleanUpOldRates();
 };
 
 void importExchangeRates();

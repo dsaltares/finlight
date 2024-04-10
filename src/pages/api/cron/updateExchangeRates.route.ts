@@ -70,4 +70,16 @@ const importRates = async (date: Date) => {
     })),
     skipDuplicates: true,
   });
+  console.log('Cleaning up old rates');
+  await prisma.$executeRaw`
+    delete from "ExchangeRate" e1
+    where
+      date < (
+        select
+          max(date)
+        from
+          "ExchangeRate" e2
+        where
+          e1.ticker = e2.ticker
+      );`;
 };
