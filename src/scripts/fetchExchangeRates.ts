@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import fs from 'fs';
 import path from 'path';
-import startOfYear from 'date-fns/startOfYear';
-import addYears from 'date-fns/addYears';
-import addDays from 'date-fns/addDays';
-import isToday from 'date-fns/isToday';
-import format from 'date-fns/format';
+import { startOfYear } from 'date-fns/startOfYear';
+import { addYears } from 'date-fns/addYears';
+import { addDays } from 'date-fns/addDays';
+import { isToday } from 'date-fns/isToday';
+import { format } from 'date-fns/format';
 import chunk from 'lodash.chunk';
 import fetch from 'node-fetch';
 import createUTCDate from '@lib/createUTCDate';

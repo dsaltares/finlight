@@ -10,8 +10,8 @@ import { useMemo, useState } from 'react';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import startOfDay from 'date-fns/startOfDay';
-import endOfDay from 'date-fns/endOfDay';
+import { startOfDay } from 'date-fns/startOfDay';
+import { endOfDay } from 'date-fns/endOfDay';
 import createUTCDate from '@lib/createUTCDate';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
@@ -77,12 +77,12 @@ const TransactionFilterDialog = ({
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
       ? createUTCDate(filtersByField.from)
-      : null,
+      : undefined,
   );
   const [until, setUntil] = useState(
     typeof filtersByField.until === 'string'
       ? createUTCDate(filtersByField.until)
-      : null,
+      : undefined,
   );
   const [minAmount, setMinAmount] = useState(filtersByField.minAmount);
   const [maxAmount, setMaxAmount] = useState(filtersByField.maxAmount);
@@ -135,8 +135,8 @@ const TransactionFilterDialog = ({
               value={period}
               onChange={(period) => {
                 setPeriod(period);
-                setFrom(null);
-                setUntil(null);
+                setFrom(undefined);
+                setUntil(undefined);
               }}
             />
             <Stack direction="row" gap={1}>
@@ -144,7 +144,7 @@ const TransactionFilterDialog = ({
                 label="From"
                 value={from}
                 onChange={(date) => {
-                  setFrom(date);
+                  setFrom(date || undefined);
                   setPeriod('');
                 }}
                 maxDate={until}
@@ -154,7 +154,7 @@ const TransactionFilterDialog = ({
                 label="Until"
                 value={until}
                 onChange={(date) => {
-                  setUntil(date);
+                  setUntil(date || undefined);
                   setPeriod('');
                 }}
                 minDate={from}

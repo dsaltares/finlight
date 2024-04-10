@@ -1,6 +1,6 @@
-import format from 'date-fns/format';
+import { format } from 'date-fns/format';
 import groupBy from 'lodash.groupby';
-import parse from 'date-fns/parse';
+import { parse } from 'date-fns/parse';
 import type { BankAccount } from '@prisma/client';
 import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';

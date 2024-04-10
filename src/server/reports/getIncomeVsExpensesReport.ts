@@ -1,6 +1,6 @@
-import format from 'date-fns/format';
 import groupBy from 'lodash.groupby';
-import parse from 'date-fns/parse';
+import { parse } from 'date-fns/parse';
+import { format } from 'date-fns/format';
 import createUTCDate from '@lib/createUTCDate';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';

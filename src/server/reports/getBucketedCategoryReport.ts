@@ -1,6 +1,6 @@
 import groupBy from 'lodash.groupby';
-import parse from 'date-fns/parse';
-import format from 'date-fns/format';
+import { parse } from 'date-fns/parse';
+import { format } from 'date-fns/format';
 import { type Procedure, procedure } from '@server/trpc';
 import prisma from '@server/prisma';
 import { getDateWhereFromFilter } from '@server/transaction/utils';

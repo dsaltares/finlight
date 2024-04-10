@@ -11,7 +11,7 @@ import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
 import Stack from '@mui/material/Stack';
 import { useCallback, useMemo } from 'react';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import startOfToday from 'date-fns/startOfToday';
+import { startOfToday } from 'date-fns/startOfToday';
 import Autocomplete from '@mui/material/Autocomplete';
 import createUTCDate from '@lib/createUTCDate';
 import {

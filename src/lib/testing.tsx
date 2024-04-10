@@ -9,7 +9,6 @@ import { http, HttpResponse } from 'msw';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import type { TRPCError } from '@trpc/server';
-import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import client from './api';
 
 const customRender = (
@@ -22,47 +21,19 @@ type ProviderData = {
   router?: Partial<NextRouter>;
 };
 
-const createProviders = ({ session, router }: ProviderData) => {
+const createProviders = ({ session }: ProviderData) => {
   const Providers = ({ children }: PropsWithChildren) => (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <RouterContext.Provider value={{ ...mockRouter, ...(router || {}) }}>
-        <SessionProvider
-          session={session}
-          basePath="http://localhost:3000/api/auth"
-        >
-          {children}
-        </SessionProvider>
-      </RouterContext.Provider>
+      <SessionProvider
+        session={session}
+        basePath="http://localhost:3000/api/auth"
+      >
+        {children}
+      </SessionProvider>
     </LocalizationProvider>
   );
 
   return client.withTRPC(Providers);
-};
-
-export const mockRouter: NextRouter = {
-  basePath: '',
-  pathname: '/',
-  route: '/',
-  query: {},
-  asPath: '/',
-  back: jest.fn(),
-  beforePopState: jest.fn(),
-  prefetch: () => Promise.resolve(),
-  push: jest.fn(),
-  reload: jest.fn(),
-  replace: jest.fn(),
-  forward: jest.fn(),
-  events: {
-    on: jest.fn(),
-    off: jest.fn(),
-    emit: jest.fn(),
-  },
-  isFallback: false,
-  isLocaleDomain: false,
-  isReady: true,
-  defaultLocale: 'en',
-  domainLocales: [],
-  isPreview: false,
 };
 
 export const mockTrpcQuery = (name: string, result: object) =>

@@ -232,7 +232,10 @@ const VirtuosoTableComponents: TableComponents<Row<TransactionTableRow>> = {
       sx={{ borderCollapse: 'separate', tableLayout: 'fixed', minWidth: 900 }}
     />
   ),
-  TableHead,
+  // eslint-disable-next-line react/display-name
+  TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+    <TableHead {...props} ref={ref} />
+  )),
   TableRow: ({ item: _item, ...props }) => <TableRow {...props} hover />,
   // eslint-disable-next-line react/display-name
   TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (

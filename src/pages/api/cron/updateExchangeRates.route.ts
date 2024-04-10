@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-import format from 'date-fns/format';
-import startOfYesterday from 'date-fns/startOfYesterday';
+import { format } from 'date-fns/format';
+import { startOfYesterday } from 'date-fns/startOfYesterday';
 import type { NextApiHandler } from 'next';
-import isToday from 'date-fns/isToday';
-import addDays from 'date-fns/addDays';
+import { isToday } from 'date-fns/isToday';
+import { addDays } from 'date-fns/addDays';
 import chunk from 'lodash.chunk';
 import prisma from '@server/prisma';
 import { PolygonGroupedDailyFX } from '@lib/polygon';

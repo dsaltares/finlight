@@ -1,4 +1,4 @@
-import format from 'date-fns/format';
+import { format } from 'date-fns/format';
 import createUTCDate from '@lib/createUTCDate';
 import type { TimeGranularity } from '@server/reports/types';
 

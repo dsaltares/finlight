@@ -1,6 +1,6 @@
 import { type ChangeEventHandler, useCallback, useMemo, useRef } from 'react';
 import { parse } from 'csv-parse/sync';
-import parseDateBase from 'date-fns/parse';
+import { parse as parseDateBase } from 'date-fns/parse';
 import { useRouter } from 'next/router';
 import { enqueueSnackbar } from 'notistack';
 import { TRPCClientError } from '@trpc/client';

@@ -8,8 +8,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
-import startOfDay from 'date-fns/startOfDay';
-import endOfDay from 'date-fns/endOfDay';
+import { startOfDay } from 'date-fns/startOfDay';
+import { endOfDay } from 'date-fns/endOfDay';
 import createUTCDate from '@lib/createUTCDate';
 import useFiltersFromUrl from '@lib/useFiltersFromUrl';
 import type { Account } from '@server/account/types';
@@ -46,12 +46,12 @@ const ReportSettingsDialog = ({
   const [from, setFrom] = useState(
     typeof filtersByField.from === 'string'
       ? createUTCDate(filtersByField.from)
-      : null,
+      : undefined,
   );
   const [until, setUntil] = useState(
     typeof filtersByField.until === 'string'
       ? createUTCDate(filtersByField.until)
-      : null,
+      : undefined,
   );
   const [period, setPeriod] = useState<Period | ''>(
     isPeriod(filtersByField.period) ? filtersByField.period : '',
@@ -124,8 +124,8 @@ const ReportSettingsDialog = ({
               value={period}
               onChange={(period) => {
                 setPeriod(period);
-                setFrom(null);
-                setUntil(null);
+                setFrom(undefined);
+                setUntil(undefined);
               }}
             />
             <Stack direction="row" gap={1}>
@@ -133,7 +133,7 @@ const ReportSettingsDialog = ({
                 label="From"
                 value={from}
                 onChange={(date) => {
-                  setFrom(date);
+                  setFrom(date || undefined);
                   setPeriod('');
                 }}
                 maxDate={until}
@@ -144,7 +144,7 @@ const ReportSettingsDialog = ({
                 label="Until"
                 value={until}
                 onChange={(date) => {
-                  setUntil(date);
+                  setUntil(date || undefined);
                   setPeriod('');
                 }}
                 minDate={from}
