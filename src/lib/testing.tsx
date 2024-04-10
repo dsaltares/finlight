@@ -4,12 +4,12 @@ import React, { type PropsWithChildren } from 'react';
 import { render } from '@testing-library/react';
 import { SessionProvider } from 'next-auth/react';
 import type { NextRouter } from 'next/router';
-import { RouterContext } from 'next/dist/shared/lib/router-context';
 import type { Session } from 'next-auth';
 import { http, HttpResponse } from 'msw';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import type { TRPCError } from '@trpc/server';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import client from './api';
 
 const customRender = (
