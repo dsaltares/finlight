@@ -6,7 +6,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import type { RowSelectionState } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import TextField from '@mui/material/TextField';
@@ -28,6 +28,7 @@ import AppName from '@lib/appName';
 import TransactionFilterChips from '@components/TransactionFilterChips';
 import getDateFilter from '@lib/getDateFilter';
 import useIsMobile from '@lib/useIsMobile';
+import DownloadCSVButton from '@components/DownloadCSVButton';
 
 const TransactionsPage: NextPage = () => {
   const isMobile = useIsMobile();
@@ -99,6 +100,26 @@ const TransactionsPage: NextPage = () => {
     );
   }
 
+  const enrichedTransactions = useMemo(() => {
+    const categoriesById =
+      categories?.reduce<Record<string, string>>(
+        (acc, category) => ({ ...acc, [category.id]: category.name }),
+        {},
+      ) || {};
+    const accountsById =
+      data?.accounts?.reduce<Record<string, string>>(
+        (acc, account) => ({ ...acc, [account.id]: account.name }),
+        {},
+      ) || {};
+    return transactions?.map((transaction) => ({
+      ...transaction,
+      category: transaction.categoryId
+        ? categoriesById[transaction.categoryId]
+        : null,
+      account: accountsById[transaction.accountId],
+    }));
+  }, [transactions, categories, data?.accounts]);
+
   return (
     <>
       <Head>
@@ -153,6 +174,20 @@ const TransactionsPage: NextPage = () => {
                 <FilterAltIcon />
               </IconButton>
             </Badge>
+            <DownloadCSVButton
+              fileName="transactions.csv"
+              records={enrichedTransactions || []}
+              columns={[
+                { key: 'id', label: 'ID' },
+                { key: 'account', label: 'Account' },
+                { key: 'date', label: 'Date' },
+                { key: 'amount', label: 'Amount' },
+                { key: 'type', label: 'Type' },
+                { key: 'category', label: 'Category' },
+                { key: 'description', label: 'Description' },
+              ]}
+              headers
+            />
           </Stack>
         </Stack>
         <TransactionFilterChips />

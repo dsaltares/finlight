@@ -37,6 +37,7 @@
     "@trpc/react-query": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "csv-parse": "^5.5.5",
+    "csv-stringify": "^6.4.6",
     "currency-codes": "^2.1.0",
     "date-fns": "^3.6.0",
     "fuse.js": "^7.0.0",
