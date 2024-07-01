@@ -41,6 +41,7 @@ export const GetCategoryReportInput = z.object({
   date: DateFilter.optional(),
   accounts: z.string().array().optional(),
   currency: z.string().optional().default('EUR'),
+  categories: z.string().array().optional(),
 });
 export const GetCategoryReportOutput = z.object({
   categories: CategoryAggregate.array(),
