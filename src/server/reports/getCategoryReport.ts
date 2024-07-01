@@ -7,7 +7,10 @@ import { type TransactionResult, getRates, convertAmount } from './utils';
 export const getCategoryReport: Procedure<
   GetCategoryReportInput,
   GetCategoryReportOutput
-> = async ({ input: { type, date, accounts, currency }, ctx: { session } }) => {
+> = async ({
+  input: { type, date, accounts, currency, categories: selectedCategories },
+  ctx: { session },
+}) => {
   const transactions = await prisma.transaction.findMany({
     where: {
       deletedAt: null,
@@ -16,6 +19,7 @@ export const getCategoryReport: Procedure<
         id: accounts ? { in: accounts } : undefined,
         userId: session?.userId as string,
       },
+      categoryId: selectedCategories ? { in: selectedCategories } : undefined,
       date: getDateWhereFromFilter(date),
     },
     include: {

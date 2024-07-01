@@ -12,6 +12,7 @@ const CategorizedExpensesReport = () => {
     date: getDateFilter(filtersByField),
     accounts: filtersByField.accounts?.split(','),
     currency: filtersByField.currency,
+    categories: filtersByField.categories?.split(','),
   });
 
   if (isLoading) {
