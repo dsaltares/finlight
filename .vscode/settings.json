@@ -1,0 +1,27 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "editor.codeActionsOnSave": {
+    // Biome applies fixes; TypeScript organizes imports (removes unused)
+    "source.fixAll.biome": "always"
+  },
+  "editor.codeActionsOnSave.mode": "always",
+  "editor.formatOnSaveMode": "file",
+  "biome.lsp.bin": "/Users/david/repos/finlight-electron/next/node_modules/@biomejs/biome/bin/biome",
+  "biome.lspBin": "/Users/david/repos/finlight-electron/next/node_modules/@biomejs/biome/bin/biome",
+  "biome.lsp.cwd": "/Users/david/repos/finlight-electron",
+  "thunder-client.followRedirects": false
+}

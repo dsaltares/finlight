@@ -1,28 +1,21 @@
-version: '3.9'
+# 1. Copy env.example to .env and fill in:
+#    - BETTER_AUTH_SECRET (random string)
+#    - BETTER_AUTH_URL (your actual domain, e.g. https://finlight.example.com)
+#    - GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET (Google OAuth credentials)
+# 2. Run: docker compose up -d
 
 services:
-  db-local:
-    extends:
-      file: docker-compose.common.yml
-      service: db
-    container_name: dev-postgres
+  finlight:
+    image: ghcr.io/dsaltares/finlight:main
+    ports:
+      - '3010:3010'
     volumes:
-      - ./database:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+      - ${DATA_PATH:-finlight-data}:/data
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=/data/db.sqlite
+    restart: unless-stopped
 
-  db-tests:
-    extends:
-      file: docker-compose.common.yml
-      service: db
-    container_name: tests-postgres
-    ports:
-      - 5433:5432
-
-  mailhog:
-    image: mailhog/mailhog
-    logging:
-      driver: 'none' # disable saving logs
-    ports:
-      - 1025:1025 # smtp server
-      - 8025:8025 # web ui
+volumes:
+  finlight-data:
