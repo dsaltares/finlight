@@ -11,12 +11,14 @@ export default function SignInPage() {
 
   const handleGoogleSignIn = async () => {
     setIsSigningIn(true);
-    try {
-      await authClient.signIn.social({ provider: 'google' });
-    } catch (error) {
+    const { error } = await authClient.signIn.social({
+      provider: 'google',
+      callbackURL: '/dashboard',
+    });
+    if (error) {
       setIsSigningIn(false);
       toast.error('Failed to sign in with Google', {
-        description: error instanceof Error ? error.message : 'Unknown error',
+        description: error.message ?? 'Unknown error',
       });
     }
   };

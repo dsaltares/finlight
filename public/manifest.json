@@ -1,0 +1,58 @@
+{
+  "id": "/dashboard",
+  "name": "Finlight",
+  "short_name": "Finlight",
+  "description": "Personal finance management tool that helps you track your income, expenses, and investments.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "theme_color": "#6b21a8",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "3024x1636",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Accounts overview"
+    },
+    {
+      "src": "/screenshots/transactions.png",
+      "sizes": "3024x1636",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Transactions list"
+    },
+    {
+      "src": "/screenshots/mobile-accounts.png",
+      "sizes": "1052x1638",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Accounts overview"
+    },
+    {
+      "src": "/screenshots/mobile-insights.png",
+      "sizes": "1052x1638",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Financial insights"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { TrpcProvider } from '@/components/TrpcProvider';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -26,6 +27,15 @@ export const metadata: Metadata = {
   title: 'Finlight',
   description:
     'Finlight is a personal finance management tool that helps you track your income, expenses, and investments.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Finlight',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 };
 
 export default function RootLayout({
@@ -38,6 +48,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ServiceWorkerRegistrar />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
             <NuqsAdapter>
