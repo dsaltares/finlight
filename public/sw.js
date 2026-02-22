@@ -1,3 +1,15 @@
+self.addEventListener('install', function () {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', function (event) {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', function (event) {
+  event.respondWith(fetch(event.request));
+});
+
 self.addEventListener('push', function (event) {
   if (event.data) {
     const data = event.data.json();
