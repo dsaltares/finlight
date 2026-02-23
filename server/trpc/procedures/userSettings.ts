@@ -5,6 +5,7 @@ import { authedProcedure } from '@/server/trpc/trpc';
 
 const UserSettingsSchema = z.object({
   defaultCurrency: z.string().default('EUR'),
+  aiCategorization: z.boolean().default(false),
 });
 
 type UserSettings = z.infer<typeof UserSettingsSchema>;
@@ -64,16 +65,20 @@ const update = authedProcedure
     return merged;
   });
 
-export async function getUserDefaultCurrency(userId: string): Promise<string> {
+export async function getUserSettings(userId: string): Promise<UserSettings> {
   const row = await db
     .selectFrom('user_settings')
     .select('settings')
     .where('userId', '=', userId)
     .executeTakeFirst();
 
-  if (!row) return 'EUR';
-  const parsed = UserSettingsSchema.safeParse(row.settings);
-  return parsed.success ? parsed.data.defaultCurrency : 'EUR';
+  if (!row) return UserSettingsSchema.parse({});
+  return UserSettingsSchema.parse(row.settings);
+}
+
+export async function getUserDefaultCurrency(userId: string): Promise<string> {
+  const settings = await getUserSettings(userId);
+  return settings.defaultCurrency;
 }
 
 export default {

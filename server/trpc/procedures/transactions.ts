@@ -1,9 +1,11 @@
 import { TRPCError } from '@trpc/server';
 import z from 'zod';
+import { categorizeTransactions } from '@/server/ai';
 import { db } from '@/server/db';
+import { getDateWhereFromFilter } from '@/server/trpc/procedures/dateUtils';
+import { getUserSettings } from '@/server/trpc/procedures/userSettings';
 import { authedProcedure } from '../trpc';
 import { updateAccountBalance } from './accounts';
-import { getDateWhereFromFilter } from '@/server/trpc/procedures/dateUtils';
 import {
   DateFilterSchema,
   DateSchema,
@@ -168,10 +170,43 @@ const createTransactions = authedProcedure
     if (!account) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'Account not found' });
     }
+
+    const enriched = input.transactions.map((t) => ({
+      ...t,
+      type: undefined as string | undefined,
+    }));
+    const settings = await getUserSettings(userId);
+
+    if (settings.aiCategorization) {
+      const categories = await db
+        .selectFrom('category')
+        .select(['id', 'name'])
+        .where('userId', '=', userId)
+        .where('deletedAt', 'is', null)
+        .execute();
+
+      const descriptions = enriched.map((t) => t.description);
+      const results = await categorizeTransactions({
+        userId,
+        descriptions,
+        categories,
+        user: { email: ctx.user!.email, name: ctx.user!.name },
+      });
+
+      for (let i = 0; i < enriched.length; i++) {
+        const ai = results[i];
+        if (!ai) continue;
+        enriched[i].type = ai.type;
+        if (enriched[i].categoryId === null && ai.categoryId) {
+          enriched[i].categoryId = ai.categoryId;
+        }
+      }
+    }
+
     const transactions = await db
       .insertInto('account_transaction')
       .values(
-        input.transactions.map((transaction) => ({
+        enriched.map((transaction) => ({
           ...transaction,
           accountId: account.id,
         })),

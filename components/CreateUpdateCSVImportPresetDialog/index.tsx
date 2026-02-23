@@ -136,9 +136,11 @@ export default function CreateUpdateCSVImportPresetDialog({
     >
       <DialogContent
         id={id}
-        aria-labelledby={`${id}-title`}
         className="h-[calc(100dvh-2rem)] overflow-hidden max-w-[calc(100dvw-2rem)] sm:max-w-[calc(100dvw-2rem)]"
       >
+        <DialogTitle className="sr-only">
+          {preset ? 'Edit import preset' : 'Create import preset'}
+        </DialogTitle>
         <form
           onSubmit={(event) => {
             void handleSubmit(onSubmit)(event);
@@ -146,9 +148,9 @@ export default function CreateUpdateCSVImportPresetDialog({
           className="flex h-full min-h-0 min-w-0 flex-col gap-4"
         >
           <DialogHeader>
-            <DialogTitle id={`${id}-title`}>
+            <h2 className="text-sm font-medium">
               {preset ? 'Edit import preset' : 'Create import preset'}
-            </DialogTitle>
+            </h2>
           </DialogHeader>
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto">

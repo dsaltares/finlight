@@ -116,6 +116,18 @@ export interface ExchangeRate {
   updatedAt: Generated<string>;
 }
 
+export interface LlmUsage {
+  costUsdMicros: Generated<number>;
+  createdAt: Generated<string>;
+  id: Generated<number>;
+  inputCostUsdMicros: Generated<number>;
+  inputTokens: Generated<number>;
+  model: string;
+  outputCostUsdMicros: Generated<number>;
+  outputTokens: Generated<number>;
+  userId: string;
+}
+
 export interface Session {
   createdAt: Generated<string>;
   expiresAt: string;
@@ -164,6 +176,7 @@ export interface DB {
   category: Category;
   csv_import_preset: CsvImportPreset;
   exchange_rate: ExchangeRate;
+  llm_usage: LlmUsage;
   session: Session;
   user: User;
   user_settings: UserSettings;

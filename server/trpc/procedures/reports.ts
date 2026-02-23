@@ -621,6 +621,123 @@ const getBudgetOverTimeReport = authedProcedure
       });
   });
 
+async function getLlmUsageRows(
+  userId: string,
+  opts: {
+    date?: z.infer<typeof DateFilterSchema>;
+    timeZone?: string;
+  },
+) {
+  let query = db
+    .selectFrom('llm_usage')
+    .selectAll()
+    .where('userId', '=', userId);
+
+  const dateFilter = getDateWhereFromFilter({
+    filter: opts.date,
+    timeZone: opts.timeZone,
+  });
+  if (dateFilter.gte) query = query.where('createdAt', '>=', dateFilter.gte);
+  if (dateFilter.lte) query = query.where('createdAt', '<=', dateFilter.lte);
+
+  return query.execute();
+}
+
+const getLlmCostReport = authedProcedure
+  .input(
+    z.object({
+      date: DateFilterSchema.optional(),
+      accounts: z.number().array().optional(),
+      categories: z.number().array().optional(),
+      currency: z.string().optional(),
+      granularity: TimeGranularitySchema.optional().default('Monthly'),
+      timeZone: z.string().optional(),
+    }),
+  )
+  .output(
+    z.array(
+      z.object({
+        bucket: z.string(),
+        models: z.record(z.string(), z.number()),
+        total: z.number(),
+      }),
+    ),
+  )
+  .query(async ({ ctx, input }) => {
+    if (!ctx.user?.id) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    const rows = await getLlmUsageRows(ctx.user.id, input);
+    const granularity = input.granularity;
+    const dateFormat = getFormatForGranularity(granularity);
+    const displayFormat = getDisplayFormatForGranularity(granularity);
+    const buckets = groupBy(rows, (r) => format(r.createdAt, dateFormat));
+
+    return Object.keys(buckets)
+      .sort()
+      .map((key) => {
+        const byModel = groupBy(buckets[key], (r) => r.model);
+        const models = Object.fromEntries(
+          Object.entries(byModel).map(([model, entries]) => [
+            model,
+            entries.reduce((sum, r) => sum + r.costUsdMicros, 0),
+          ]),
+        );
+        return {
+          bucket: format(parse(key, dateFormat, new Date()), displayFormat),
+          models,
+          total: Object.values(models).reduce((sum, v) => sum + v, 0),
+        };
+      });
+  });
+
+const getLlmTokensReport = authedProcedure
+  .input(
+    z.object({
+      date: DateFilterSchema.optional(),
+      accounts: z.number().array().optional(),
+      categories: z.number().array().optional(),
+      currency: z.string().optional(),
+      granularity: TimeGranularitySchema.optional().default('Monthly'),
+      timeZone: z.string().optional(),
+    }),
+  )
+  .output(
+    z.array(
+      z.object({
+        bucket: z.string(),
+        inputTokens: z.number(),
+        outputTokens: z.number(),
+        total: z.number(),
+      }),
+    ),
+  )
+  .query(async ({ ctx, input }) => {
+    if (!ctx.user?.id) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    const rows = await getLlmUsageRows(ctx.user.id, input);
+    const granularity = input.granularity;
+    const dateFormat = getFormatForGranularity(granularity);
+    const displayFormat = getDisplayFormatForGranularity(granularity);
+    const buckets = groupBy(rows, (r) => format(r.createdAt, dateFormat));
+
+    return Object.keys(buckets)
+      .sort()
+      .map((key) => {
+        const inputTokens = buckets[key].reduce(
+          (sum, r) => sum + r.inputTokens,
+          0,
+        );
+        const outputTokens = buckets[key].reduce(
+          (sum, r) => sum + r.outputTokens,
+          0,
+        );
+        return {
+          bucket: format(parse(key, dateFormat, new Date()), displayFormat),
+          inputTokens,
+          outputTokens,
+          total: inputTokens + outputTokens,
+        };
+      });
+  });
+
 export default {
   getCategoryReport,
   getBucketedCategoryReport,
@@ -628,4 +745,6 @@ export default {
   getAccountBalancesReport,
   getBalanceForecastReport,
   getBudgetOverTimeReport,
+  getLlmCostReport,
+  getLlmTokensReport,
 };

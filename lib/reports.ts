@@ -8,6 +8,8 @@ import CategorizedIncomeReport from '@/components/reports/CategorizedIncomeRepor
 import ExpensesVsBudgetReport from '@/components/reports/ExpensesVsBudgetReport';
 import IncomeVsBudgetReport from '@/components/reports/IncomeVsBudgetReport';
 import IncomeVsExpensesReport from '@/components/reports/IncomeVsExpensesReport';
+import LlmCostReport from '@/components/reports/LlmCostReport';
+import LlmTokensReport from '@/components/reports/LlmTokensReport';
 
 type ReportDef = {
   key: string;
@@ -69,6 +71,18 @@ export const reportGroups: ReportDef[][] = [
       key: 'balanceForecast',
       label: 'Balance forecast',
       Component: BalanceForecastReport,
+    },
+  ],
+  [
+    {
+      key: 'llmCost',
+      label: 'LLM cost over time',
+      Component: LlmCostReport,
+    },
+    {
+      key: 'llmTokens',
+      label: 'LLM tokens over time',
+      Component: LlmTokensReport,
     },
   ],
 ];

@@ -231,10 +231,7 @@ export default function BudgetOverTimeSection({
     <div className="flex flex-col gap-4">
       <ChartContainer
         config={config}
-        className={cn(
-          'relative z-30 w-full',
-          compact ? 'h-48' : 'h-96',
-        )}
+        className={cn('relative z-30 w-full', compact ? 'h-48' : 'h-96')}
       >
         <ComposedChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />

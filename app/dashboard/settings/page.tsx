@@ -9,12 +9,19 @@ import CurrencyAutocomplete, {
   currencyOptionsById,
 } from '@/components/CurrencyAutocomplete';
 import type { Option as ComboboxOption } from '@/components/combobox';
-import { Label } from '@/components/ui/label';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
 import { useTRPC } from '@/lib/trpc';
 
 type SettingsFormValues = {
   defaultCurrency: ComboboxOption;
+  aiCategorization: boolean;
 };
 
 export default function SettingsPage() {
@@ -53,12 +60,16 @@ export default function SettingsPage() {
       defaultCurrency:
         currencyOptionsById[settings?.defaultCurrency ?? 'EUR'] ??
         currencyOptionsById.EUR,
+      aiCategorization: settings?.aiCategorization ?? false,
     },
   });
 
   const onSubmit = useCallback(
     (values: SettingsFormValues) => {
-      save({ defaultCurrency: values.defaultCurrency.value });
+      save({
+        defaultCurrency: values.defaultCurrency.value,
+        aiCategorization: values.aiCategorization,
+      });
     },
     [save],
   );
@@ -84,7 +95,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-6 h-full">
       <div className="flex shrink-0 flex-row items-center justify-end">
         <div className="flex size-5 shrink-0 items-center justify-center">
           {isSaving ? (
@@ -94,24 +105,46 @@ export default function SettingsPage() {
           ) : null}
         </div>
       </div>
-      <div className="flex flex-col gap-1 max-w-sm">
-        <Label htmlFor="default-currency">Default currency</Label>
-        <Controller
-          control={control}
-          name="defaultCurrency"
-          render={({ field: { value, onChange } }) => (
-            <div id="default-currency">
-              <CurrencyAutocomplete
-                value={value}
-                onChange={(v) => {
-                  isDirtyRef.current = true;
-                  onChange(v);
-                }}
-              />
-            </div>
-          )}
-        />
-      </div>
+      <Controller
+        control={control}
+        name="defaultCurrency"
+        render={({ field: { value, onChange } }) => (
+          <Field className="max-w-sm">
+            <FieldLabel htmlFor="default-currency">Default currency</FieldLabel>
+            <CurrencyAutocomplete
+              value={value}
+              onChange={(v) => {
+                isDirtyRef.current = true;
+                onChange(v);
+              }}
+            />
+          </Field>
+        )}
+      />
+      <Controller
+        control={control}
+        name="aiCategorization"
+        render={({ field: { value, onChange } }) => (
+          <Field orientation="horizontal" className="max-w-sm">
+            <Switch
+              id="ai-categorization"
+              checked={value}
+              onCheckedChange={(checked) => {
+                isDirtyRef.current = true;
+                onChange(checked);
+              }}
+            />
+            <FieldContent>
+              <FieldLabel htmlFor="ai-categorization">
+                AI categorization
+              </FieldLabel>
+              <FieldDescription>
+                Use AI to categorize imported transactions
+              </FieldDescription>
+            </FieldContent>
+          </Field>
+        )}
+      />
     </div>
   );
 }

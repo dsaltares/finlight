@@ -46,6 +46,17 @@
       "suspicious": {
         "noConsole": "error",
         "noUnknownAtRules": "off"
+      },
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "ai": "Import from @/server/llm instead for automatic cost tracking.",
+              "@ai-sdk/openai": "Import from @/server/llm instead for automatic cost tracking."
+            }
+          }
+        }
       }
     },
     "domains": {
