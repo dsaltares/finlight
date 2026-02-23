@@ -78,9 +78,7 @@ export default function LlmTokensReport({
         header: d.bucket,
         meta: { align: 'right' } satisfies ColumnMeta,
         cell: ({ row, getValue }) => (
-          <span
-            className={cn(row.original.key === 'total' && 'font-medium')}
-          >
+          <span className={cn(row.original.key === 'total' && 'font-medium')}>
             {tokenFormatter.format(getValue<number>())}
           </span>
         ),

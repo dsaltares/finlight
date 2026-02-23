@@ -68,7 +68,10 @@ async function recordLlmUsage({
         model,
         inputTokens,
         outputTokens,
-        costUsd: ((inputCostUsdMicros + outputCostUsdMicros) / 1_000_000).toFixed(6),
+        costUsd: (
+          (inputCostUsdMicros + outputCostUsdMicros) /
+          1_000_000
+        ).toFixed(6),
       },
       'AI usage tracked',
     );

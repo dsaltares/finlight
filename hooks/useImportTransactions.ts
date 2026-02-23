@@ -4,11 +4,24 @@ import { parse as parseDate } from 'date-fns/parse';
 import Papa from 'papaparse';
 import { type ChangeEventHandler, useCallback, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
+import { arrayBufferToBase64, isSpreadsheetFile } from '@/lib/fileImport';
 import type { CSVImportField } from '@/lib/importPresets';
 import { type RouterOutput, useTRPC } from '@/lib/trpc';
 import type { CSVImportPreset } from '@/server/trpc/procedures/importPresets';
 
 type Account = RouterOutput['accounts']['list']['accounts'][number];
+type Category = RouterOutput['categories']['list'][number];
+
+type HandleFileUploadedArgs = {
+  buffer: ArrayBuffer;
+  fileName: string;
+};
+
+type MapRecordsArgs = {
+  records: string[][];
+  preset: CSVImportPreset;
+  categories: Category[] | undefined;
+};
 
 export default function useImportTransactions(account: Account) {
   const trpc = useTRPC();
@@ -22,6 +35,9 @@ export default function useImportTransactions(account: Account) {
       },
     }),
   );
+  const { mutateAsync: parseSpreadsheetMutation } = useMutation(
+    trpc.importPresets.parseSpreadsheet.mutationOptions(),
+  );
   const { data: presets } = useQuery(trpc.importPresets.list.queryOptions());
   const { data: categories } = useQuery(trpc.categories.list.queryOptions());
   const preset = useMemo(
@@ -32,52 +48,59 @@ export default function useImportTransactions(account: Account) {
   const handleUploadClick = () => fileInputRef.current?.click();
 
   const handleFileUploaded = useCallback(
-    async (csv: string) => {
+    async ({ buffer, fileName }: HandleFileUploadedArgs) => {
       if (!preset) return;
 
       try {
-        const lines = csv.split('\n');
-        const trimmed = lines
-          .slice(preset.rowsToSkipStart, lines.length - preset.rowsToSkipEnd)
-          .join('\n');
-        const { data: records } = Papa.parse<string[]>(trimmed, {
-          delimiter: preset.delimiter || ',',
-          skipEmptyLines: true,
-        });
+        let records: string[][];
 
-        const dateIndex = preset.fields.indexOf('Date');
-        const descriptionIndex = preset.fields.indexOf('Description');
+        if (isSpreadsheetFile(fileName)) {
+          const fileBase64 = arrayBufferToBase64(buffer);
+          const allRows = await parseSpreadsheetMutation({
+            fileBase64,
+            fileName,
+          });
+          const endSlice =
+            preset.rowsToSkipEnd > 0
+              ? allRows.length - preset.rowsToSkipEnd
+              : allRows.length;
+          records = allRows.slice(preset.rowsToSkipStart, endSlice);
+        } else {
+          const csv = new TextDecoder('utf-8').decode(buffer);
+          const lines = csv.split('\n');
+          const trimmed = lines
+            .slice(preset.rowsToSkipStart, lines.length - preset.rowsToSkipEnd)
+            .join('\n');
+          const { data } = Papa.parse<string[]>(trimmed, {
+            delimiter: preset.delimiter || ',',
+            skipEmptyLines: true,
+          });
+          records = data;
+        }
 
-        const transactions = records.map((record) => {
-          const description = record[descriptionIndex] || '';
-          const amount = parseNumericField(record, preset, 'Amount');
-          const fee = parseNumericField(record, preset, 'Fee');
-          const deposit = parseNumericField(record, preset, 'Deposit');
-          const withdrawal = parseNumericField(record, preset, 'Withdrawal');
-          const actualAmount = deposit || -Math.abs(withdrawal) || amount;
-
-          return {
-            date: formatDateISO(record[dateIndex], preset.dateFormat),
-            description,
-            amount: actualAmount - fee,
-            categoryId:
-              categories?.find((category) =>
-                category.importPatterns.some((pattern) =>
-                  description.toLowerCase().includes(pattern.toLowerCase()),
-                ),
-              )?.id ?? null,
-          };
+        const transactions = mapRecordsToTransactions({
+          records,
+          preset,
+          categories,
         });
 
         await createTransactions({
           accountId: account.id,
           transactions,
         });
-      } catch {
-        toast.error('Failed to import transactions.');
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Unknown error';
+        toast.error(`Failed to import transactions. ${message}`);
       }
     },
-    [preset, categories, createTransactions, account.id],
+    [
+      preset,
+      categories,
+      createTransactions,
+      account.id,
+      parseSpreadsheetMutation,
+    ],
   );
 
   const handleFileSelected: ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -85,8 +108,13 @@ export default function useImportTransactions(account: Account) {
       const file = event.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onloadend = () => handleFileUploaded(reader.result as string);
-      reader.readAsText(file);
+      reader.onloadend = () => {
+        void handleFileUploaded({
+          buffer: reader.result as ArrayBuffer,
+          fileName: file.name,
+        });
+      };
+      reader.readAsArrayBuffer(file);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -101,6 +129,36 @@ export default function useImportTransactions(account: Account) {
     handleFileSelected,
     canImport: !!preset,
   };
+}
+
+function mapRecordsToTransactions({
+  records,
+  preset,
+  categories,
+}: MapRecordsArgs) {
+  const dateIndex = preset.fields.indexOf('Date');
+  const descriptionIndex = preset.fields.indexOf('Description');
+
+  return records.map((record) => {
+    const description = record[descriptionIndex] || '';
+    const amount = parseNumericField(record, preset, 'Amount');
+    const fee = parseNumericField(record, preset, 'Fee');
+    const deposit = parseNumericField(record, preset, 'Deposit');
+    const withdrawal = parseNumericField(record, preset, 'Withdrawal');
+    const actualAmount = deposit || -Math.abs(withdrawal) || amount;
+
+    return {
+      date: formatDateISO(record[dateIndex], preset.dateFormat),
+      description,
+      amount: actualAmount - fee,
+      categoryId:
+        categories?.find((category) =>
+          category.importPatterns.some((pattern) =>
+            description.toLowerCase().includes(pattern.toLowerCase()),
+          ),
+        )?.id ?? null,
+    };
+  });
 }
 
 function parseNumericField(

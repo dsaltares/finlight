@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import useImportTransactions from '@/hooks/useImportTransactions';
 import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
+import { IMPORT_ACCEPT } from '@/lib/fileImport';
 import flags from '@/lib/flags';
 import { formatAmount } from '@/lib/format';
 import type { RouterOutput } from '@/lib/trpc';
@@ -106,7 +107,7 @@ export default function AccountListItem({
         ref={fileInputRef}
         hidden
         type="file"
-        accept="text/csv"
+        accept={IMPORT_ACCEPT}
         onChange={handleFileSelected}
       />
     </Card>

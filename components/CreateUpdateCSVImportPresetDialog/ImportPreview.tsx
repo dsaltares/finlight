@@ -1,5 +1,6 @@
 'use client';
 
+import { useMutation } from '@tanstack/react-query';
 import { FileUp } from 'lucide-react';
 import Papa from 'papaparse';
 import {
@@ -22,6 +23,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  arrayBufferToBase64,
+  IMPORT_ACCEPT,
+  isSpreadsheetFile,
+} from '@/lib/fileImport';
+import { useTRPC } from '@/lib/trpc';
 import type { CSVImportPresetFormValues } from './types';
 
 type PreviewType = 'import' | 'raw';
@@ -37,54 +44,75 @@ export default function ImportPreview({ watch }: Props) {
     'rowsToSkipStart',
     'rowsToSkipEnd',
   ]);
-  const [csv, setCSV] = useState('');
+  const [csvText, setCsvText] = useState('');
+  const [spreadsheetRows, setSpreadsheetRows] = useState<string[][]>([]);
   const [previewType, setPreviewType] = useState<PreviewType>('import');
   const ref = useRef<HTMLInputElement>(null);
+
+  const trpc = useTRPC();
+  const { mutateAsync: parseSpreadsheet } = useMutation(
+    trpc.importPresets.parseSpreadsheet.mutationOptions(),
+  );
 
   const handleUploadClick = () => {
     ref.current?.click();
   };
 
   const handleFileUpload: ChangeEventHandler<HTMLInputElement> = useCallback(
-    (event) => {
+    async (event) => {
       const file = event.target.files?.[0];
-      if (!file) {
-        return;
+      if (!file) return;
+
+      const buffer = await file.arrayBuffer();
+
+      if (isSpreadsheetFile(file.name)) {
+        const fileBase64 = arrayBufferToBase64(buffer);
+        const rows = await parseSpreadsheet({
+          fileBase64,
+          fileName: file.name,
+        });
+        setSpreadsheetRows(rows);
+        setCsvText(rows.map((row) => row.join('\t')).join('\n'));
+      } else {
+        const text = new TextDecoder('utf-8').decode(buffer);
+        setCsvText(text);
+        setSpreadsheetRows([]);
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          setCSV(reader.result);
-        }
-      };
-      reader.readAsText(file);
     },
-    [],
+    [parseSpreadsheet],
   );
 
+  const isSpreadsheet = spreadsheetRows.length > 0;
+
   const { headers, rows } = useMemo(() => {
-    if (csv === '') {
-      return {
-        headers: [] as string[],
-        rows: [] as string[][],
-      };
+    if (!csvText && !isSpreadsheet) {
+      return { headers: [] as string[], rows: [] as string[][] };
     }
+
     try {
       const start = Number.parseInt(rowsToSkipStart, 10) || 0;
       const end = Number.parseInt(rowsToSkipEnd, 10) || 0;
-      const lines = csv.split('\n');
-      const trimmed = lines.slice(start, lines.length - end).join('\n');
-      const { data: records } = Papa.parse<string[]>(trimmed, {
-        delimiter: delimiter || ',',
-        skipEmptyLines: true,
-      });
-      const numCSVColumns = records[0]?.length ?? 0;
+
+      let records: string[][];
+
+      if (isSpreadsheet) {
+        const endSlice =
+          end > 0 ? spreadsheetRows.length - end : spreadsheetRows.length;
+        records = spreadsheetRows.slice(start, endSlice);
+      } else {
+        const lines = csvText.split('\n');
+        const trimmed = lines.slice(start, lines.length - end).join('\n');
+        const { data } = Papa.parse<string[]>(trimmed, {
+          delimiter: delimiter || ',',
+          skipEmptyLines: true,
+        });
+        records = data;
+      }
+
+      const numColumns = records[0]?.length ?? 0;
       const extraHeaders =
-        fields.length < numCSVColumns
-          ? Array.from(
-              { length: numCSVColumns - fields.length },
-              () => 'Unknown',
-            )
+        fields.length < numColumns
+          ? Array.from({ length: numColumns - fields.length }, () => 'Unknown')
           : [];
 
       return {
@@ -92,18 +120,24 @@ export default function ImportPreview({ watch }: Props) {
         rows: records,
       };
     } catch {
-      return {
-        headers: [] as string[],
-        rows: [] as string[][],
-      };
+      return { headers: [] as string[], rows: [] as string[][] };
     }
-  }, [csv, delimiter, fields, rowsToSkipStart, rowsToSkipEnd]);
+  }, [
+    csvText,
+    delimiter,
+    fields,
+    rowsToSkipStart,
+    rowsToSkipEnd,
+    isSpreadsheet,
+    spreadsheetRows,
+  ]);
+
   const headerEntries = useMemo(() => withStableKeys(headers), [headers]);
   const rowEntries = useMemo(() => withStableKeys(rows), [rows]);
 
   const rawCSVText = useMemo(
-    () => csv.split('\n').filter(Boolean).join('\n'),
-    [csv],
+    () => csvText.split('\n').filter(Boolean).join('\n'),
+    [csvText],
   );
 
   const handlePreviewTypeChange = (
@@ -143,7 +177,7 @@ export default function ImportPreview({ watch }: Props) {
               ref={ref}
               hidden
               type="file"
-              accept="text/csv"
+              accept={IMPORT_ACCEPT}
               onChange={handleFileUpload}
             />
           </Button>
@@ -177,7 +211,7 @@ export default function ImportPreview({ watch }: Props) {
           </div>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Upload a CSV to preview.
+            Upload a file to preview.
           </p>
         )
       ) : (

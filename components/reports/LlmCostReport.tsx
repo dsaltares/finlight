@@ -46,11 +46,7 @@ type ModelRow = {
   amounts: Record<string, number>;
 };
 
-export default function LlmCostReport({
-  compact,
-}: {
-  compact?: boolean;
-} = {}) {
+export default function LlmCostReport({ compact }: { compact?: boolean } = {}) {
   const trpc = useTRPC();
   const { queryInput } = useInsightsFilters();
   const { data, isLoading } = useQuery(
@@ -108,9 +104,7 @@ export default function LlmCostReport({
         header: 'Model',
         meta: { isSticky: true } satisfies ColumnMeta,
         cell: ({ row }) => (
-          <span
-            className={cn(row.original.model === 'Total' && 'font-medium')}
-          >
+          <span className={cn(row.original.model === 'Total' && 'font-medium')}>
             {row.original.model}
           </span>
         ),
@@ -121,9 +115,7 @@ export default function LlmCostReport({
         header: d.bucket,
         meta: { align: 'right' } satisfies ColumnMeta,
         cell: ({ row, getValue }) => (
-          <span
-            className={cn(row.original.model === 'Total' && 'font-medium')}
-          >
+          <span className={cn(row.original.model === 'Total' && 'font-medium')}>
             {formatCost(getValue<number>())}
           </span>
         ),

@@ -3,6 +3,7 @@ import lodash from 'lodash';
 import z from 'zod';
 import { CSVImportFields } from '@/lib/importPresets';
 import { db } from '@/server/db';
+import { parseSpreadsheet } from '@/server/spreadsheet';
 import { authedProcedure } from '../trpc';
 
 const CSVImportFieldSchema = z.enum(CSVImportFields);
@@ -160,9 +161,23 @@ const updatePreset = authedProcedure
       .executeTakeFirstOrThrow();
   });
 
+const parseSpreadsheetProcedure = authedProcedure
+  .input(
+    z.object({
+      fileBase64: z.string().max(14_000_000),
+      fileName: z.string(),
+    }),
+  )
+  .output(z.array(z.array(z.string())))
+  .mutation(({ input }) => {
+    const buffer = Buffer.from(input.fileBase64, 'base64');
+    return parseSpreadsheet({ buffer, fileName: input.fileName });
+  });
+
 export default {
   list: listPresets,
   create: createPreset,
   delete: deletePreset,
   update: updatePreset,
+  parseSpreadsheet: parseSpreadsheetProcedure,
 };
