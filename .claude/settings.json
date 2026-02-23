@@ -1,4 +1,14 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(yarn *)",
+      "Bash(npx *)",
+      "Bash(git *)",
+      "Edit",
+      "Write",
+      "NotebookEdit"
+    ]
+  },
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true
@@ -23,6 +33,11 @@
             "type": "command",
             "command": "yarn format --write $CLAUDE_FILE_PATH",
             "statusMessage": "Formatting..."
+          },
+          {
+            "type": "command",
+            "command": "npx tsc --noEmit 2>&1 | grep -E 'deprecated|error TS' | head -20 || true",
+            "statusMessage": "Type checking..."
           }
         ]
       }
