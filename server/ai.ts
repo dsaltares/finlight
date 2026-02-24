@@ -1,7 +1,7 @@
 import { PromisePool } from '@supercharge/promise-pool';
 import chunk from 'lodash/chunk';
 import z from 'zod';
-import { generateText, Output, openai } from '@/server/llm';
+import { generateText, Output, openai, recordCustomUsage } from '@/server/llm';
 import { getLogger } from '@/server/logger';
 import { TransactionTypeSchema } from '@/server/trpc/procedures/schema';
 
@@ -125,4 +125,99 @@ async function categorizeChunk({
       r.categoryId && validCategoryIds.has(r.categoryId) ? r.categoryId : null,
     type: r.type,
   }));
+}
+
+const MISTRAL_OCR_URL = 'https://api.mistral.ai/v1/ocr';
+const MISTRAL_OCR_MODEL = 'mistral-ocr-latest';
+const OCR_COST_USD_MICROS_PER_PAGE = 1000;
+
+const ExtractedTransactionSchema = z.object({
+  date: z.string(),
+  description: z.string(),
+  amount: z.number(),
+});
+
+export type ParsedPdfTransaction = z.infer<typeof ExtractedTransactionSchema>;
+
+type ParsePdfTransactionsArgs = {
+  userId: string;
+  fileBase64: string;
+  currency: string;
+};
+
+export async function parsePdfTransactions({
+  userId,
+  fileBase64,
+  currency,
+}: ParsePdfTransactionsArgs): Promise<ParsedPdfTransaction[]> {
+  const apiKey = process.env.MISTRAL_API_KEY;
+  if (!apiKey) {
+    throw new Error('MISTRAL_API_KEY is not configured');
+  }
+
+  const response = await fetch(MISTRAL_OCR_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: MISTRAL_OCR_MODEL,
+      document: {
+        type: 'document_url',
+        document_url: `data:application/pdf;base64,${fileBase64}`,
+      },
+      include_image_base64: false,
+    }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    logger.error({ status: response.status, body: text }, 'Mistral OCR failed');
+    throw new Error(`Mistral OCR failed with status ${response.status}`);
+  }
+
+  const data = await response.json();
+  const markdown = data.pages
+    .map((page: { markdown: string }) => page.markdown)
+    .join('\n\n');
+  const pagesProcessed = data.usage_info?.pages_processed ?? data.pages.length;
+
+  const costUsdMicros = pagesProcessed * OCR_COST_USD_MICROS_PER_PAGE;
+  await recordCustomUsage({ userId, model: MISTRAL_OCR_MODEL, costUsdMicros });
+
+  logger.info(
+    { pagesProcessed, markdownLength: markdown.length },
+    'PDF OCR completed',
+  );
+
+  const result = await generateText({
+    userId,
+    model: openai('gpt-5-mini'),
+    output: Output.object({
+      schema: z.object({
+        transactions: z.array(ExtractedTransactionSchema),
+      }),
+    }),
+    prompt: `
+      You are a financial data extractor. Extract all transactions from this bank statement.
+
+      The statement currency is ${currency}.
+      For each transaction, return:
+      - date: in YYYY-MM-DD format
+      - description: the transaction description or narrative
+      - amount: the transaction amount as a decimal number in ${currency}.
+        Use negative values for debits, expenses, and withdrawals.
+        Use positive values for credits, income, and deposits.
+
+      Return all transactions found in the statement, in chronological order.
+      If no transactions are found, return an empty array.
+
+      Bank statement (in Markdown format):
+      ${markdown}
+    `,
+  });
+
+  if (!result.output) return [];
+  return result.output.transactions;
 }

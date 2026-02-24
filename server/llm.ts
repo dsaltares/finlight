@@ -109,4 +109,38 @@ function usdToMicros(usd: number): number {
   return Math.round(usd * 1_000_000);
 }
 
+type RecordCustomUsageArgs = {
+  userId: string;
+  model: string;
+  costUsdMicros: number;
+};
+
+export async function recordCustomUsage({
+  userId,
+  model,
+  costUsdMicros,
+}: RecordCustomUsageArgs): Promise<void> {
+  try {
+    await db
+      .insertInto('llm_usage')
+      .values({
+        userId,
+        model,
+        inputTokens: 0,
+        outputTokens: 0,
+        inputCostUsdMicros: 0,
+        outputCostUsdMicros: 0,
+        costUsdMicros,
+      })
+      .execute();
+
+    logger.info(
+      { userId, model, costUsd: (costUsdMicros / 1_000_000).toFixed(6) },
+      'AI usage tracked',
+    );
+  } catch (error) {
+    logger.error({ error }, 'Failed to persist LLM usage');
+  }
+}
+
 export { openai, Output };
