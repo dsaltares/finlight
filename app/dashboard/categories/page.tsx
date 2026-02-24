@@ -17,7 +17,7 @@ import { useTRPC } from '@/lib/trpc';
 export default function CategoriesPage() {
   const trpc = useTRPC();
   const [search, setSearch] = useQueryState('q', { defaultValue: '' });
-  const { data: categories, isLoading } = useQuery(
+  const { data: categories, isPending: isLoading } = useQuery(
     trpc.categories.list.queryOptions(),
   );
   const {

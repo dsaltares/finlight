@@ -36,7 +36,7 @@ export default function BalanceForecastReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getBalanceForecastReport.queryOptions(queryInput),
   );
   const currency = displayCurrency;

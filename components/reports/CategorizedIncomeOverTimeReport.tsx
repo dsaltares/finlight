@@ -16,7 +16,7 @@ export default function CategorizedIncomeOverTimeReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getBucketedCategoryReport.queryOptions({
       ...queryInput,
       type: 'Income',

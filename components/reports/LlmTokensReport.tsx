@@ -44,7 +44,7 @@ export default function LlmTokensReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getLlmTokensReport.queryOptions(queryInput),
   );
   const { sorting, onSortingChange } = useSortFromUrl();

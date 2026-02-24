@@ -14,7 +14,7 @@ import { useTRPC } from '@/lib/trpc';
 
 export default function AccountsPage() {
   const trpc = useTRPC();
-  const { data, isLoading: isLoadingAccounts } = useQuery(
+  const { data, isPending: isLoadingAccounts } = useQuery(
     trpc.accounts.list.queryOptions({}),
   );
   const {

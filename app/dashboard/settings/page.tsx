@@ -27,7 +27,7 @@ type SettingsFormValues = {
 export default function SettingsPage() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { data: settings, isLoading } = useQuery(
+  const { data: settings, isPending: isLoading } = useQuery(
     trpc.userSettings.get.queryOptions(),
   );
 

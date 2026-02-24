@@ -41,7 +41,7 @@ export default function IncomeVsExpensesReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getIncomeVsExpensesReport.queryOptions(queryInput),
   );
   const currency = displayCurrency;

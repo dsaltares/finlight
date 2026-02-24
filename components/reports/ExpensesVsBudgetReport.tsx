@@ -16,7 +16,7 @@ export default function ExpensesVsBudgetReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getBudgetOverTimeReport.queryOptions({
       ...queryInput,
       type: 'Expense',

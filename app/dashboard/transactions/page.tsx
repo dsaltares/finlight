@@ -38,13 +38,13 @@ export default function TransactionsPage() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { queryInput, hasFilters, clearFilters } = useTransactionFilters();
 
-  const { data: transactions, isLoading: isLoadingTransactions } = useQuery(
+  const { data: transactions, isPending: isLoadingTransactions } = useQuery(
     trpc.transactions.list.queryOptions(queryInput),
   );
-  const { data: accountsData, isLoading: isLoadingAccounts } = useQuery(
+  const { data: accountsData, isPending: isLoadingAccounts } = useQuery(
     trpc.accounts.list.queryOptions({}),
   );
-  const { data: categories, isLoading: isLoadingCategories } = useQuery(
+  const { data: categories, isPending: isLoadingCategories } = useQuery(
     trpc.categories.list.queryOptions(),
   );
   const {

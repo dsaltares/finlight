@@ -16,7 +16,7 @@ export default function CategorizedIncomeReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getCategoryReport.queryOptions({
       ...queryInput,
       type: 'Income',

@@ -47,7 +47,7 @@ export default function AccountBalancesReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getAccountBalancesReport.queryOptions(queryInput),
   );
   const currency = displayCurrency;

@@ -21,7 +21,7 @@ export default function ExchangeRatesPage() {
   } = useDialog();
   const { rateFilter, setRateFilter } = useRateFilter();
   const trpc = useTRPC();
-  const { data: rates, isLoading } = useQuery(
+  const { data: rates, isPending: isLoading } = useQuery(
     trpc.exchangeRates.list.queryOptions(),
   );
   const { mutate: refreshRates, isPending: isRefreshing } = useMutation(

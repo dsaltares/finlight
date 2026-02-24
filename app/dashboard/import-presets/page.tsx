@@ -13,7 +13,7 @@ import { useTRPC } from '@/lib/trpc';
 
 export default function ImportPresetsPage() {
   const trpc = useTRPC();
-  const { data: presets, isLoading } = useQuery(
+  const { data: presets, isPending: isLoading } = useQuery(
     trpc.importPresets.list.queryOptions(),
   );
   const {

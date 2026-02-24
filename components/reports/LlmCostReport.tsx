@@ -49,7 +49,7 @@ type ModelRow = {
 export default function LlmCostReport({ compact }: { compact?: boolean } = {}) {
   const trpc = useTRPC();
   const { queryInput } = useInsightsFilters();
-  const { data, isLoading } = useQuery(
+  const { data, isPending: isLoading } = useQuery(
     trpc.reports.getLlmCostReport.queryOptions(queryInput),
   );
   const { sorting, onSortingChange } = useSortFromUrl();
