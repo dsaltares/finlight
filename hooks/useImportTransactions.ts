@@ -4,7 +4,11 @@ import { parse as parseDate } from 'date-fns/parse';
 import Papa from 'papaparse';
 import { type ChangeEventHandler, useCallback, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
-import { arrayBufferToBase64, isSpreadsheetFile } from '@/lib/fileImport';
+import {
+  arrayBufferToBase64,
+  isPdfFile,
+  isSpreadsheetFile,
+} from '@/lib/fileImport';
 import type { CSVImportField } from '@/lib/importPresets';
 import { type RouterOutput, useTRPC } from '@/lib/trpc';
 import type { CSVImportPreset } from '@/server/trpc/procedures/importPresets';
@@ -38,6 +42,9 @@ export default function useImportTransactions(account: Account) {
   const { mutateAsync: parseSpreadsheetMutation } = useMutation(
     trpc.importPresets.parseSpreadsheet.mutationOptions(),
   );
+  const { mutateAsync: parsePdfMutation } = useMutation(
+    trpc.importPresets.parsePdf.mutationOptions(),
+  );
   const { data: presets } = useQuery(trpc.importPresets.list.queryOptions());
   const { data: categories } = useQuery(trpc.categories.list.queryOptions());
   const preset = useMemo(
@@ -49,40 +56,65 @@ export default function useImportTransactions(account: Account) {
 
   const handleFileUploaded = useCallback(
     async ({ buffer, fileName }: HandleFileUploadedArgs) => {
-      if (!preset) return;
-
       try {
-        let records: string[][];
+        let transactions: {
+          date: string;
+          description: string;
+          amount: number;
+          categoryId: number | null;
+        }[];
 
-        if (isSpreadsheetFile(fileName)) {
+        if (isPdfFile(fileName)) {
           const fileBase64 = arrayBufferToBase64(buffer);
-          const allRows = await parseSpreadsheetMutation({
+          const parsed = await parsePdfMutation({
             fileBase64,
-            fileName,
+            currency: account.currency,
           });
-          const endSlice =
-            preset.rowsToSkipEnd > 0
-              ? allRows.length - preset.rowsToSkipEnd
-              : allRows.length;
-          records = allRows.slice(preset.rowsToSkipStart, endSlice);
+          transactions = parsed.map((t) => ({
+            ...t,
+            categoryId: matchCategoryByPattern(t.description, categories),
+          }));
         } else {
-          const csv = new TextDecoder('utf-8').decode(buffer);
-          const lines = csv.split('\n');
-          const trimmed = lines
-            .slice(preset.rowsToSkipStart, lines.length - preset.rowsToSkipEnd)
-            .join('\n');
-          const { data } = Papa.parse<string[]>(trimmed, {
-            delimiter: preset.delimiter || ',',
-            skipEmptyLines: true,
-          });
-          records = data;
-        }
+          if (!preset) {
+            toast.error('No import preset configured for this account.');
+            return;
+          }
 
-        const transactions = mapRecordsToTransactions({
-          records,
-          preset,
-          categories,
-        });
+          let records: string[][];
+
+          if (isSpreadsheetFile(fileName)) {
+            const fileBase64 = arrayBufferToBase64(buffer);
+            const allRows = await parseSpreadsheetMutation({
+              fileBase64,
+              fileName,
+            });
+            const endSlice =
+              preset.rowsToSkipEnd > 0
+                ? allRows.length - preset.rowsToSkipEnd
+                : allRows.length;
+            records = allRows.slice(preset.rowsToSkipStart, endSlice);
+          } else {
+            const csv = new TextDecoder('utf-8').decode(buffer);
+            const lines = csv.split('\n');
+            const trimmed = lines
+              .slice(
+                preset.rowsToSkipStart,
+                lines.length - preset.rowsToSkipEnd,
+              )
+              .join('\n');
+            const { data } = Papa.parse<string[]>(trimmed, {
+              delimiter: preset.delimiter || ',',
+              skipEmptyLines: true,
+            });
+            records = data;
+          }
+
+          transactions = mapRecordsToTransactions({
+            records,
+            preset,
+            categories,
+          });
+        }
 
         await createTransactions({
           accountId: account.id,
@@ -98,7 +130,9 @@ export default function useImportTransactions(account: Account) {
       preset,
       categories,
       createTransactions,
+      parsePdfMutation,
       account.id,
+      account.currency,
       parseSpreadsheetMutation,
     ],
   );
@@ -127,7 +161,7 @@ export default function useImportTransactions(account: Account) {
     isPending,
     handleUploadClick,
     handleFileSelected,
-    canImport: !!preset,
+    canImport: true,
   };
 }
 
@@ -151,12 +185,7 @@ function mapRecordsToTransactions({
       date: formatDateISO(record[dateIndex], preset.dateFormat),
       description,
       amount: actualAmount - fee,
-      categoryId:
-        categories?.find((category) =>
-          category.importPatterns.some((pattern) =>
-            description.toLowerCase().includes(pattern.toLowerCase()),
-          ),
-        )?.id ?? null,
+      categoryId: matchCategoryByPattern(description, categories),
     };
   });
 }
@@ -174,6 +203,20 @@ function parseNumericField(
     str = str.replace('.', '').replace(',', '.');
   }
   return Number.parseFloat(str);
+}
+
+function matchCategoryByPattern(
+  description: string,
+  categories: Category[] | undefined,
+): number | null {
+  const lower = description.toLowerCase();
+  return (
+    categories?.find((category) =>
+      category.importPatterns.some((pattern) =>
+        lower.includes(pattern.toLowerCase()),
+      ),
+    )?.id ?? null
+  );
 }
 
 function formatDateISO(dateStr: string, dateFormat: string) {

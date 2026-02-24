@@ -1,11 +1,15 @@
 const SPREADSHEET_EXTENSIONS = new Set(['.xls', '.xlsx']);
 
 export const IMPORT_ACCEPT =
-  '.csv,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  '.csv,.xls,.xlsx,.pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf';
 
 export function isSpreadsheetFile(fileName: string): boolean {
   const ext = fileName.slice(fileName.lastIndexOf('.')).toLowerCase();
   return SPREADSHEET_EXTENSIONS.has(ext);
+}
+
+export function isPdfFile(fileName: string): boolean {
+  return fileName.slice(fileName.lastIndexOf('.')).toLowerCase() === '.pdf';
 }
 
 export function arrayBufferToBase64(buffer: ArrayBuffer): string {
