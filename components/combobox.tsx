@@ -70,16 +70,12 @@ export default function Combobox({
       <PopoverContent
         align="start"
         className="p-0"
+        portal={false}
         style={{ width: 'var(--radix-popover-trigger-width)' }}
       >
         <Command>
           <CommandInput placeholder={placeholder} className="h-9" />
-          <CommandList
-            className="max-h-72 overflow-y-auto overscroll-contain"
-            onWheelCapture={(event) => {
-              event.stopPropagation();
-            }}
-          >
+          <CommandList className="max-h-72 overflow-y-auto overscroll-contain">
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (

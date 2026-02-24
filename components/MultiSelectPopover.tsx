@@ -63,6 +63,7 @@ export default function MultiSelectPopover({
       <PopoverContent
         align="start"
         className="p-0"
+        portal={false}
         style={{ width: 'var(--radix-popover-trigger-width)' }}
       >
         <Command>
