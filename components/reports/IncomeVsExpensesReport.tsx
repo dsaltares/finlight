@@ -7,11 +7,11 @@ import { useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { type ColumnMeta, DataTable } from '@/components/DataTable';
 import EmptyState from '@/components/EmptyState';
+import ReportTooltipContent from '@/components/reports/ReportTooltipContent';
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Spinner } from '@/components/ui/spinner';
 import useInsightsFilters from '@/hooks/useInsightsFilters';
@@ -121,24 +121,9 @@ export default function IncomeVsExpensesReport({
           {!compact && <YAxis />}
           <ChartTooltip
             content={
-              <ChartTooltipContent
-                formatter={(value, _name, item) => (
-                  <>
-                    <div
-                      className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-                      style={{
-                        backgroundColor:
-                          item.payload?.fill || item.color || undefined,
-                      }}
-                    />
-                    <div className="flex flex-1 items-center justify-between gap-4">
-                      <span className="text-muted-foreground">{item.name}</span>
-                      <span className="text-foreground font-mono font-medium tabular-nums">
-                        {formatAmount(value as number, currency)}
-                      </span>
-                    </div>
-                  </>
-                )}
+              <ReportTooltipContent
+                formatValue={(v) => formatAmount(v, currency)}
+                footer={{ label: 'Difference', valueKey: 'difference' }}
               />
             }
           />
