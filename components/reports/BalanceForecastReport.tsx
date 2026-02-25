@@ -56,13 +56,14 @@ export default function BalanceForecastReport({
   return (
     <ChartContainer
       config={chartConfig}
-      className={compact ? 'h-48 w-full' : 'h-96 w-full'}
+      className={compact ? 'h-48 w-full overflow-visible' : 'h-96 w-full'}
     >
       <ComposedChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         {!compact && <XAxis dataKey="bucket" />}
         {!compact && <YAxis />}
         <ChartTooltip
+          wrapperStyle={{ zIndex: 50 }}
           content={
             <ChartTooltipContent
               formatter={(value, _name, item) => (

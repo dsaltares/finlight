@@ -12,7 +12,7 @@ export default function InsightsPage() {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
       {allReports.map((report) => (
-        <Card key={report.key}>
+        <Card key={report.key} className="overflow-visible">
           <CardHeader>
             <CardTitle>
               <Link

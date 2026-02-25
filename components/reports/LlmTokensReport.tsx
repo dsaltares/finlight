@@ -7,13 +7,13 @@ import { useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { type ColumnMeta, DataTable } from '@/components/DataTable';
 import EmptyState from '@/components/EmptyState';
+import ReportTooltipContent from '@/components/reports/ReportTooltipContent';
 import {
   type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Spinner } from '@/components/ui/spinner';
 import useInsightsFilters from '@/hooks/useInsightsFilters';
@@ -103,32 +103,18 @@ export default function LlmTokensReport({
     <div className="flex flex-col gap-4">
       <ChartContainer
         config={chartConfig}
-        className={compact ? 'h-48 w-full' : 'h-96 w-full'}
+        className={compact ? 'h-48 w-full overflow-visible' : 'h-96 w-full'}
       >
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           {!compact && <XAxis dataKey="bucket" />}
           {!compact && <YAxis />}
           <ChartTooltip
+            wrapperStyle={{ zIndex: 50 }}
             content={
-              <ChartTooltipContent
-                formatter={(value, _name, item) => (
-                  <>
-                    <div
-                      className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-                      style={{
-                        backgroundColor:
-                          item.payload?.fill || item.color || undefined,
-                      }}
-                    />
-                    <div className="flex flex-1 items-center justify-between gap-4">
-                      <span className="text-muted-foreground">{item.name}</span>
-                      <span className="text-foreground font-mono font-medium tabular-nums">
-                        {tokenFormatter.format(value as number)}
-                      </span>
-                    </div>
-                  </>
-                )}
+              <ReportTooltipContent
+                formatValue={(v) => tokenFormatter.format(v)}
+                footer={{ label: 'Total', valueKey: 'total' }}
               />
             }
           />
