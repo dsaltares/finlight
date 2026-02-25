@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Landmark, Plus } from 'lucide-react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import AccountList from '@/components/AccountList';
 import BalanceCard from '@/components/BalanceCard';
@@ -10,6 +11,7 @@ import EmptyState from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import useDialog from '@/hooks/use-dialog';
+import { isDialogOpen } from '@/lib/keyboard';
 import { useTRPC } from '@/lib/trpc';
 
 export default function AccountsPage() {
@@ -22,6 +24,11 @@ export default function AccountsPage() {
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
   } = useDialog();
+
+  useHotkeys('n', () => {
+    if (isDialogOpen()) return;
+    onCreateDialogOpen();
+  });
 
   const { mutateAsync: createAccount, isPending: isCreating } = useMutation(
     trpc.accounts.create.mutationOptions({
@@ -85,7 +92,7 @@ export default function AccountsPage() {
         ) : null}
         <Button onClick={onCreateDialogOpen} className="ml-auto">
           <Plus className="size-4" />
-          New account
+          New account (N)
         </Button>
       </div>
 

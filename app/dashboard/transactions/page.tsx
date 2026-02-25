@@ -11,7 +11,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useQueryState } from 'nuqs';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import BulkEditTransactionsDialog from '@/components/BulkEditTransactionsDialog';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -30,6 +31,7 @@ import {
 } from '@/components/ui/tooltip';
 import useDialog from '@/hooks/use-dialog';
 import useTransactionFilters from '@/hooks/useTransactionFilters';
+import { isDialogOpen } from '@/lib/keyboard';
 import { useTRPC } from '@/lib/trpc';
 
 export default function TransactionsPage() {
@@ -159,6 +161,40 @@ export default function TransactionsPage() {
     );
   }, [transactions, search]);
 
+  const handleSelectAll = useCallback(() => {
+    if (!filteredTransactions.length) return;
+    const all: RowSelectionState = {};
+    for (const t of filteredTransactions) {
+      all[`${t.id}`] = true;
+    }
+    setRowSelection(all);
+  }, [filteredTransactions, setRowSelection]);
+
+  const handleDeselectAll = useCallback(() => {
+    setRowSelection({});
+  }, [setRowSelection]);
+
+  useHotkeys('n', () => {
+    if (isDialogOpen()) return;
+    onCreateDialogOpen();
+  });
+  useHotkeys('e', () => {
+    if (isDialogOpen() || selectedCount === 0) return;
+    onBulkEditDialogOpen();
+  });
+  useHotkeys('delete, backspace', () => {
+    if (isDialogOpen() || selectedCount === 0) return;
+    onBulkDeleteDialogOpen();
+  });
+  useHotkeys('mod+a', () => {
+    if (isDialogOpen()) return;
+    handleSelectAll();
+  }, { preventDefault: true });
+  useHotkeys('escape', () => {
+    if (isDialogOpen() || selectedCount === 0) return;
+    handleDeselectAll();
+  });
+
   let content = null;
   if (isLoading) {
     content = (
@@ -231,7 +267,7 @@ export default function TransactionsPage() {
                   </span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Edit selected</TooltipContent>
+              <TooltipContent>Edit selected (E)</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -247,7 +283,7 @@ export default function TransactionsPage() {
                   </span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete selected</TooltipContent>
+              <TooltipContent>Delete selected (Del)</TooltipContent>
             </Tooltip>
           </>
         ) : null}
@@ -289,7 +325,7 @@ export default function TransactionsPage() {
               <Plus className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>New transaction</TooltipContent>
+          <TooltipContent>New transaction (N)</TooltipContent>
         </Tooltip>
       </div>
 

@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus, Tag } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import { useMemo } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import CategoryList from '@/components/CategoryList';
 import CreateUpdateCategoryDialog from '@/components/CreateUpdateCategoryDialog';
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import useDialog from '@/hooks/use-dialog';
+import { isDialogOpen } from '@/lib/keyboard';
 import { useTRPC } from '@/lib/trpc';
 
 export default function CategoriesPage() {
@@ -25,6 +27,11 @@ export default function CategoriesPage() {
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
   } = useDialog();
+
+  useHotkeys('n', () => {
+    if (isDialogOpen()) return;
+    onCreateDialogOpen();
+  });
 
   const { mutateAsync: createCategory, isPending: isCreating } = useMutation(
     trpc.categories.create.mutationOptions({
@@ -90,7 +97,7 @@ export default function CategoriesPage() {
         />
         <Button onClick={onCreateDialogOpen}>
           <Plus className="size-4" />
-          New category
+          New category (N)
         </Button>
       </div>
 

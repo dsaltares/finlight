@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FileUp, Plus } from 'lucide-react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import CreateUpdateCSVImportPresetDialog from '@/components/CreateUpdateCSVImportPresetDialog';
 import CSVImportPresetList from '@/components/CSVImportPresetList';
@@ -9,6 +10,7 @@ import EmptyState from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import useDialog from '@/hooks/use-dialog';
+import { isDialogOpen } from '@/lib/keyboard';
 import { useTRPC } from '@/lib/trpc';
 
 export default function ImportPresetsPage() {
@@ -21,6 +23,11 @@ export default function ImportPresetsPage() {
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
   } = useDialog();
+
+  useHotkeys('n', () => {
+    if (isDialogOpen()) return;
+    onCreateDialogOpen();
+  });
 
   const { mutateAsync: createPreset, isPending: isCreating } = useMutation(
     trpc.importPresets.create.mutationOptions({
@@ -64,7 +71,7 @@ export default function ImportPresetsPage() {
       <div className="flex shrink-0 items-center justify-end">
         <Button onClick={onCreateDialogOpen}>
           <Plus className="size-4" />
-          New preset
+          New preset (N)
         </Button>
       </div>
 
