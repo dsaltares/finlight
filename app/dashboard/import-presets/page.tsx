@@ -67,7 +67,7 @@ export default function ImportPresetsPage() {
       <div className="flex shrink-0 items-center justify-end">
         <Button onClick={onCreateDialogOpen}>
           <Plus className="size-4" />
-          New preset
+          New preset (N)
         </Button>
       </div>
 

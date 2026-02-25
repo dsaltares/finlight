@@ -260,7 +260,7 @@ export default function TransactionsPage() {
                   </span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Edit selected</TooltipContent>
+              <TooltipContent>Edit selected (E)</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -276,7 +276,7 @@ export default function TransactionsPage() {
                   </span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete selected</TooltipContent>
+              <TooltipContent>Delete selected (Del)</TooltipContent>
             </Tooltip>
           </>
         ) : null}
@@ -318,7 +318,7 @@ export default function TransactionsPage() {
               <Plus className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>New transaction</TooltipContent>
+          <TooltipContent>New transaction (N)</TooltipContent>
         </Tooltip>
       </div>
 

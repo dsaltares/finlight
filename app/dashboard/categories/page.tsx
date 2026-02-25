@@ -95,7 +95,7 @@ export default function CategoriesPage() {
         />
         <Button onClick={onCreateDialogOpen}>
           <Plus className="size-4" />
-          New category
+          New category (N)
         </Button>
       </div>
 
