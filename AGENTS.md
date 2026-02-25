@@ -55,6 +55,7 @@ migrations/       # Kysely migrations
 - Always check user authorization (`ctx.user`)
 - Standard CRUD naming: `list`, `create`, `update`, `delete`
 - Soft deletes via `deletedAt` field — always filter `.where('deletedAt', 'is', null)`
+- Avoid `mutateAsync` and prefer using `onSuccess`, `onError` like handlers.
 
 ## Data Patterns
 

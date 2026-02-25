@@ -25,27 +25,33 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import {
   arrayBufferToBase64,
+  decodeTextBuffer,
   IMPORT_ACCEPT,
   isSpreadsheetFile,
 } from '@/lib/fileImport';
 import { useTRPC } from '@/lib/trpc';
-import type { CSVImportPresetFormValues } from './types';
+import type { CSVImportPresetFormValues, FileData } from './types';
 
 type PreviewType = 'import' | 'raw';
 
 type Props = {
   watch: UseFormWatch<CSVImportPresetFormValues>;
+  fileData: FileData;
+  onFileDataChange: (data: FileData) => void;
 };
 
-export default function ImportPreview({ watch }: Props) {
+export default function ImportPreview({
+  watch,
+  fileData,
+  onFileDataChange,
+}: Props) {
   const [delimiter, fields, rowsToSkipStart, rowsToSkipEnd] = watch([
     'delimiter',
     'fields',
     'rowsToSkipStart',
     'rowsToSkipEnd',
   ]);
-  const [csvText, setCsvText] = useState('');
-  const [spreadsheetRows, setSpreadsheetRows] = useState<string[][]>([]);
+  const { csvText, spreadsheetRows } = fileData;
   const [previewType, setPreviewType] = useState<PreviewType>('import');
   const ref = useRef<HTMLInputElement>(null);
 
@@ -71,15 +77,19 @@ export default function ImportPreview({ watch }: Props) {
           fileBase64,
           fileName: file.name,
         });
-        setSpreadsheetRows(rows);
-        setCsvText(rows.map((row) => row.join('\t')).join('\n'));
+        onFileDataChange({
+          spreadsheetRows: rows,
+          csvText: rows.map((row) => row.join('\t')).join('\n'),
+        });
       } else {
-        const text = new TextDecoder('utf-8').decode(buffer);
-        setCsvText(text);
-        setSpreadsheetRows([]);
+        const text = decodeTextBuffer(buffer);
+        onFileDataChange({
+          csvText: text,
+          spreadsheetRows: [],
+        });
       }
     },
-    [parseSpreadsheet],
+    [parseSpreadsheet, onFileDataChange],
   );
 
   const isSpreadsheet = spreadsheetRows.length > 0;

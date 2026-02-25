@@ -1,10 +1,15 @@
 import { format as formatDate } from 'date-fns/format';
 import { parse as parseDate } from 'date-fns/parse';
 import Papa from 'papaparse';
+import { decodeTextBuffer } from '@/lib/fileImport';
 import type { CSVImportField, ImportPresetConfig } from '@/lib/importPresets';
 import { generateImportPreset, parsePdfTransactions } from '@/server/ai';
 import { getLogger } from '@/server/logger';
-import { parseSpreadsheet } from '@/server/spreadsheet';
+import {
+  parseSpreadsheet,
+  rowsToCsv,
+  stripEmptyColumnsForAi,
+} from '@/server/spreadsheet';
 
 const logger = getLogger('importFile');
 
@@ -91,15 +96,33 @@ async function resolvePreset({
   fileName,
 }: ResolvePresetArgs): Promise<ImportPresetConfig> {
   let csvContent: string;
+  let emptyColumns: number[] = [];
+  let totalColumns = 0;
 
   if (isSpreadsheetFile(fileName)) {
     const rows = parseSpreadsheet({ buffer, fileName });
-    csvContent = rowsToCsv(rows);
+    const stripped = stripEmptyColumnsForAi({ rows });
+    csvContent = rowsToCsv({ rows: stripped.rows });
+    emptyColumns = stripped.emptyColumns;
+    totalColumns = stripped.totalColumns;
   } else {
-    csvContent = buffer.toString('utf-8');
+    csvContent = decodeTextBuffer(buffer);
   }
 
-  return generateImportPreset({ userId, csvContent });
+  const preset = await generateImportPreset({ userId, csvContent });
+
+  if (emptyColumns.length === 0) {
+    return preset;
+  }
+
+  return {
+    ...preset,
+    fields: expandFieldsWithEmptyColumns({
+      fields: preset.fields,
+      emptyColumns,
+      totalColumns,
+    }),
+  };
 }
 
 type ParseRecordsArgs = {
@@ -122,7 +145,7 @@ function parseRecords({
     return allRows.slice(preset.rowsToSkipStart, endSlice);
   }
 
-  const csv = buffer.toString('utf-8');
+  const csv = decodeTextBuffer(buffer);
   const lines = csv.split('\n');
   const trimmed = lines
     .slice(preset.rowsToSkipStart, lines.length - preset.rowsToSkipEnd)
@@ -134,18 +157,36 @@ function parseRecords({
   return data;
 }
 
-function rowsToCsv(rows: string[][]): string {
-  return rows
-    .map((row) =>
-      row
-        .map((cell) =>
-          cell.includes(',') || cell.includes('"') || cell.includes('\n')
-            ? `"${cell.replace(/"/g, '""')}"`
-            : cell,
-        )
-        .join(','),
-    )
-    .join('\n');
+type ExpandFieldsArgs = {
+  fields: CSVImportField[];
+  emptyColumns: number[];
+  totalColumns: number;
+};
+
+function expandFieldsWithEmptyColumns({
+  fields,
+  emptyColumns,
+  totalColumns,
+}: ExpandFieldsArgs): CSVImportField[] {
+  if (emptyColumns.length === 0) return fields;
+
+  const nonEmptyColumns = totalColumns - emptyColumns.length;
+  if (fields.length !== nonEmptyColumns) return fields;
+
+  const emptySet = new Set(emptyColumns);
+  const expanded: CSVImportField[] = [];
+  let fieldIndex = 0;
+
+  for (let col = 0; col < totalColumns; col++) {
+    if (emptySet.has(col)) {
+      expanded.push('Ignore');
+    } else {
+      expanded.push(fields[fieldIndex] ?? 'Ignore');
+      fieldIndex += 1;
+    }
+  }
+
+  return expanded;
 }
 
 type MapRecordsArgs = {

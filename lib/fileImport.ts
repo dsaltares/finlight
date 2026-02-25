@@ -3,6 +3,14 @@ const SPREADSHEET_EXTENSIONS = new Set(['.xls', '.xlsx']);
 export const IMPORT_ACCEPT =
   '.csv,.xls,.xlsx,.pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf';
 
+export function decodeTextBuffer(buffer: ArrayBuffer | Uint8Array): string {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+  } catch {
+    return new TextDecoder('windows-1252').decode(buffer);
+  }
+}
+
 export function isSpreadsheetFile(fileName: string): boolean {
   const ext = fileName.slice(fileName.lastIndexOf('.')).toLowerCase();
   return SPREADSHEET_EXTENSIONS.has(ext);
