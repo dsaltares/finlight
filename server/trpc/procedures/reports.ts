@@ -19,6 +19,7 @@ import {
   type TimeGranularity,
   TimeGranularitySchema,
   TransactionTypeSchema,
+  UncategorizedFilterValue,
 } from '@/server/trpc/procedures/schema';
 import { getUserDefaultCurrency } from '@/server/trpc/procedures/userSettings';
 import { authedProcedure } from '@/server/trpc/trpc';
@@ -121,8 +122,26 @@ async function getTransactions(
   if (opts.type) query = query.where('t.type', '=', opts.type);
   if (opts.accounts && opts.accounts.length > 0)
     query = query.where('t.accountId', 'in', opts.accounts);
-  if (opts.categories && opts.categories.length > 0)
-    query = query.where('t.categoryId', 'in', opts.categories);
+  if (opts.categories && opts.categories.length > 0) {
+    const includeUncategorized = opts.categories.includes(
+      UncategorizedFilterValue,
+    );
+    const categoryIds = opts.categories.filter(
+      (id) => id !== UncategorizedFilterValue,
+    );
+    if (includeUncategorized && categoryIds.length > 0) {
+      query = query.where((eb) =>
+        eb.or([
+          eb('t.categoryId', 'is', null),
+          eb('t.categoryId', 'in', categoryIds),
+        ]),
+      );
+    } else if (includeUncategorized) {
+      query = query.where('t.categoryId', 'is', null);
+    } else {
+      query = query.where('t.categoryId', 'in', categoryIds);
+    }
+  }
 
   const dateFilter = getDateWhereFromFilter({
     filter: opts.date,

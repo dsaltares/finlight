@@ -26,6 +26,7 @@ import {
   PeriodLabels,
   Periods,
   TransactionTypes,
+  UncategorizedFilterValue,
 } from '@/server/trpc/procedures/schema';
 
 type Props = {
@@ -257,11 +258,14 @@ export default function TransactionFilterDialog({ open, onClose }: Props) {
           <div className="flex flex-col gap-1">
             <Label>Categories</Label>
             <MultiSelectPopover
-              items={(categories ?? []).map((c) => ({
-                id: c.id,
-                label: c.name,
-                color: c.color,
-              }))}
+              items={[
+                { id: UncategorizedFilterValue, label: 'Uncategorized' },
+                ...(categories ?? []).map((c) => ({
+                  id: c.id,
+                  label: c.name,
+                  color: c.color,
+                })),
+              ]}
               selected={local.categories}
               onToggle={toggleCategory}
               placeholder="All categories"

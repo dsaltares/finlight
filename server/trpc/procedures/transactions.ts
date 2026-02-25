@@ -11,6 +11,7 @@ import {
   DateSchema,
   type TransactionType,
   TransactionTypeSchema,
+  UncategorizedFilterValue,
 } from './schema';
 
 export const TransactionSchema = z.object({
@@ -90,7 +91,24 @@ const listTransactions = authedProcedure
       }
 
       if (categories && categories.length > 0) {
-        query = query.where('categoryId', 'in', categories);
+        const includeUncategorized = categories.includes(
+          UncategorizedFilterValue,
+        );
+        const categoryIds = categories.filter(
+          (id) => id !== UncategorizedFilterValue,
+        );
+        if (includeUncategorized && categoryIds.length > 0) {
+          query = query.where((eb) =>
+            eb.or([
+              eb('categoryId', 'is', null),
+              eb('categoryId', 'in', categoryIds),
+            ]),
+          );
+        } else if (includeUncategorized) {
+          query = query.where('categoryId', 'is', null);
+        } else {
+          query = query.where('categoryId', 'in', categoryIds);
+        }
       }
 
       if (description) {

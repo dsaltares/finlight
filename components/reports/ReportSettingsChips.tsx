@@ -1,14 +1,18 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X } from 'lucide-react';
+import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import useInsightsFilters from '@/hooks/useInsightsFilters';
 import { formatDate } from '@/lib/format';
 import { useTRPC } from '@/lib/trpc';
-import { PeriodLabels, PeriodSchema } from '@/server/trpc/procedures/schema';
-import type { Period } from '@/server/trpc/procedures/schema';
+import {
+  type Period,
+  PeriodLabels,
+  PeriodSchema,
+  UncategorizedFilterValue,
+} from '@/server/trpc/procedures/schema';
 
 type Chip = {
   key: string;
@@ -70,6 +74,14 @@ export default function ReportSettingsChips() {
   if (filters.categories && filters.categories.length > 0) {
     const onRemove = () => clearFilter('categories');
     for (const id of filters.categories) {
+      if (id === UncategorizedFilterValue) {
+        chips.push({
+          key: 'category-uncategorized',
+          label: 'Uncategorized',
+          onRemove,
+        });
+        continue;
+      }
       const cat = categoriesById[id];
       if (cat) {
         chips.push({

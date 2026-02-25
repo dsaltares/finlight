@@ -52,3 +52,5 @@ export type TransactionType = z.infer<typeof TransactionTypeSchema>;
 export type Period = z.infer<typeof PeriodSchema>;
 export type DateRange = z.infer<typeof DateRangeSchema>;
 export type TimeGranularity = z.infer<typeof TimeGranularitySchema>;
+
+export const UncategorizedFilterValue = 0;

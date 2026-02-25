@@ -38,6 +38,7 @@ import { useTRPC } from '@/lib/trpc';
 import {
   PeriodLabels,
   TimeGranularities,
+  UncategorizedFilterValue,
 } from '@/server/trpc/procedures/schema';
 
 type Props = {
@@ -62,7 +63,10 @@ export default function ReportSettingsDialog({ open, onClose }: Props) {
   );
 
   const categoryOptions: Option[] = useMemo(
-    () => categories.map((c) => ({ value: String(c.id), label: c.name })),
+    () => [
+      { value: String(UncategorizedFilterValue), label: 'Uncategorized' },
+      ...categories.map((c) => ({ value: String(c.id), label: c.name })),
+    ],
     [categories],
   );
 
@@ -97,7 +101,7 @@ export default function ReportSettingsDialog({ open, onClose }: Props) {
           ? accountIds
           : null,
       categories:
-        categoryIds.length > 0 && categoryIds.length < categories.length
+        categoryIds.length > 0 && categoryIds.length < categoryOptions.length
           ? categoryIds
           : null,
       granularity:

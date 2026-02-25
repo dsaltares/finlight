@@ -9,9 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import useTransactionFilters from '@/hooks/useTransactionFilters';
 import { useTRPC } from '@/lib/trpc';
 import {
-  PeriodLabels,
   type Period,
+  PeriodLabels,
   type TransactionType,
+  UncategorizedFilterValue,
 } from '@/server/trpc/procedures/schema';
 
 export default function TransactionFilterChips() {
@@ -75,6 +76,15 @@ export default function TransactionFilterChips() {
         />
       ) : null}
       {filters.categories?.map((categoryId) => {
+        if (categoryId === UncategorizedFilterValue) {
+          return (
+            <FilterChip
+              key="category-uncategorized"
+              label="Uncategorized"
+              onRemove={() => removeCategory(categoryId)}
+            />
+          );
+        }
         const category = categoriesById.get(categoryId);
         if (!category) return null;
         return (
