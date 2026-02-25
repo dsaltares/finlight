@@ -39,7 +39,7 @@ export default function TransactionTable(props: UseTransactionTableArgs) {
 
   return (
     <>
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto [&_[data-slot=table-container]]:overflow-visible">
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
