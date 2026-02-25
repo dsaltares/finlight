@@ -52,14 +52,14 @@ export function NavUser() {
               <div className="grid flex-1 text-left text-sm leading-tight">
                 {name ? (
                   <>
-                    <span className="truncate font-medium">Demo User</span>
+                    <span className="truncate font-medium">{user.name}</span>
                     <span className="text-muted-foreground truncate text-xs">
-                      demo@saltares.dev
+                      {user.email}
                     </span>
                   </>
                 ) : (
                   <span className="font-medium text-muted-foreground">
-                    demo@saltares.dev
+                    {user.email}
                   </span>
                 )}
               </div>
