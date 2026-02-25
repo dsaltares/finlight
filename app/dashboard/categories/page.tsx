@@ -3,8 +3,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus, Tag } from 'lucide-react';
 import { useQueryState } from 'nuqs';
-import { useMemo } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 import CategoryList from '@/components/CategoryList';
 import CreateUpdateCategoryDialog from '@/components/CreateUpdateCategoryDialog';
@@ -13,11 +12,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import useDialog from '@/hooks/use-dialog';
-import { isDialogOpen } from '@/lib/keyboard';
+import useCategoriesKeyboardShortcuts from '@/hooks/useCategoriesKeyboardShortcuts';
 import { useTRPC } from '@/lib/trpc';
 
 export default function CategoriesPage() {
   const trpc = useTRPC();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useQueryState('q', { defaultValue: '' });
   const { data: categories, isPending: isLoading } = useQuery(
     trpc.categories.list.queryOptions(),
@@ -28,10 +28,7 @@ export default function CategoriesPage() {
     onClose: onCreateDialogClose,
   } = useDialog();
 
-  useHotkeys('n', () => {
-    if (isDialogOpen()) return;
-    onCreateDialogOpen();
-  }, { preventDefault: true });
+  useCategoriesKeyboardShortcuts({ onCreateDialogOpen, searchInputRef });
 
   const { mutateAsync: createCategory, isPending: isCreating } = useMutation(
     trpc.categories.create.mutationOptions({
@@ -90,6 +87,7 @@ export default function CategoriesPage() {
     >
       <div className="flex shrink-0 flex-row items-center gap-3">
         <Input
+          ref={searchInputRef}
           placeholder="Search..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}

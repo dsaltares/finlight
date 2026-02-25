@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FileUp, Plus } from 'lucide-react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import CreateUpdateCSVImportPresetDialog from '@/components/CreateUpdateCSVImportPresetDialog';
 import CSVImportPresetList from '@/components/CSVImportPresetList';
@@ -10,7 +9,7 @@ import EmptyState from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import useDialog from '@/hooks/use-dialog';
-import { isDialogOpen } from '@/lib/keyboard';
+import useImportPresetsKeyboardShortcuts from '@/hooks/useImportPresetsKeyboardShortcuts';
 import { useTRPC } from '@/lib/trpc';
 
 export default function ImportPresetsPage() {
@@ -24,10 +23,7 @@ export default function ImportPresetsPage() {
     onClose: onCreateDialogClose,
   } = useDialog();
 
-  useHotkeys('n', () => {
-    if (isDialogOpen()) return;
-    onCreateDialogOpen();
-  }, { preventDefault: true });
+  useImportPresetsKeyboardShortcuts(onCreateDialogOpen);
 
   const { mutateAsync: createPreset, isPending: isCreating } = useMutation(
     trpc.importPresets.create.mutationOptions({

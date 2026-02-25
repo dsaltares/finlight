@@ -11,8 +11,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useQueryState } from 'nuqs';
-import { useCallback, useMemo, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import BulkEditTransactionsDialog from '@/components/BulkEditTransactionsDialog';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -31,11 +30,12 @@ import {
 } from '@/components/ui/tooltip';
 import useDialog from '@/hooks/use-dialog';
 import useTransactionFilters from '@/hooks/useTransactionFilters';
-import { isDialogOpen } from '@/lib/keyboard';
+import useTransactionsKeyboardShortcuts from '@/hooks/useTransactionsKeyboardShortcuts';
 import { useTRPC } from '@/lib/trpc';
 
 export default function TransactionsPage() {
   const trpc = useTRPC();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useQueryState('q', { defaultValue: '' });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { queryInput, hasFilters, clearFilters } = useTransactionFilters();
@@ -174,29 +174,17 @@ export default function TransactionsPage() {
     setRowSelection({});
   }, [setRowSelection]);
 
-  useHotkeys('n', () => {
-    if (isDialogOpen()) return;
-    onCreateDialogOpen();
-  }, { preventDefault: true });
-  useHotkeys('f', () => {
-    if (isDialogOpen()) return;
-    onFilterDialogOpen();
-  }, { preventDefault: true });
-  useHotkeys('e', () => {
-    if (isDialogOpen() || selectedCount === 0) return;
-    onBulkEditDialogOpen();
-  }, { preventDefault: true });
-  useHotkeys('delete, backspace', () => {
-    if (isDialogOpen() || selectedCount === 0) return;
-    onBulkDeleteDialogOpen();
-  });
-  useHotkeys('mod+a', () => {
-    if (isDialogOpen()) return;
-    handleSelectAll();
-  }, { preventDefault: true });
-  useHotkeys('escape', () => {
-    if (isDialogOpen() || selectedCount === 0) return;
-    handleDeselectAll();
+  useTransactionsKeyboardShortcuts({
+    onCreateDialogOpen,
+    onFilterDialogOpen,
+    onBulkEditDialogOpen,
+    onBulkDeleteDialogOpen,
+    selectedCount,
+    handleSelectAll,
+    handleDeselectAll,
+    clearFilters,
+    hasFilters,
+    searchInputRef,
   });
 
   let content = null;
@@ -250,6 +238,7 @@ export default function TransactionsPage() {
           <Spinner className="size-4 shrink-0 text-muted-foreground" />
         )}
         <Input
+          ref={searchInputRef}
           placeholder="Search..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}

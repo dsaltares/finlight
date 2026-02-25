@@ -11,14 +11,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import useDialog from '@/hooks/use-dialog';
+import useNavigationKeyboardShortcuts from '@/hooks/useNavigationKeyboardShortcuts';
 import { formatKey, getShortcutsForPath, isDialogOpen } from '@/lib/keyboard';
 
-function ShortcutKeys({ keys }: { keys: string[] }) {
+function ShortcutKeys({ keys, sequence }: { keys: string[]; sequence?: boolean }) {
   return (
     <span className="flex items-center gap-1">
       {keys.map((key, i) => (
         <span key={key} className="flex items-center gap-1">
-          {i > 0 && <span className="text-muted-foreground">+</span>}
+          {i > 0 && (
+            <span className="text-muted-foreground text-[11px]">
+              {sequence ? 'then' : '+'}
+            </span>
+          )}
           <kbd className="inline-flex h-6 min-w-6 items-center justify-center border bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">
             {formatKey(key)}
           </kbd>
@@ -35,6 +40,8 @@ export default function KeyboardShortcutsDialog() {
     () => getShortcutsForPath(pathname),
     [pathname],
   );
+
+  useNavigationKeyboardShortcuts();
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -75,7 +82,7 @@ export default function KeyboardShortcutsDialog() {
                 <span className="text-muted-foreground">
                   {shortcut.description}
                 </span>
-                <ShortcutKeys keys={shortcut.keys} />
+                <ShortcutKeys keys={shortcut.keys} sequence={shortcut.sequence} />
               </div>
             ))}
           </div>
