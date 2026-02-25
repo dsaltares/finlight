@@ -3,14 +3,21 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Landmark, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import AccountList from '@/components/AccountList';
+import AccountTable from '@/components/AccountTable';
 import BalanceCard from '@/components/BalanceCard';
 import CreateUpdateAccountDialog from '@/components/CreateUpdateAccountDialog';
 import EmptyState from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import useDialog from '@/hooks/use-dialog';
 import useAccountsKeyboardShortcuts from '@/hooks/useAccountsKeyboardShortcuts';
+import { useAccountFilter } from '@/hooks/useFilters';
 import { useTRPC } from '@/lib/trpc';
 
 export default function AccountsPage() {
@@ -25,6 +32,8 @@ export default function AccountsPage() {
   } = useDialog();
 
   useAccountsKeyboardShortcuts(onCreateDialogOpen);
+
+  const { accountFilter, setAccountFilter } = useAccountFilter();
 
   const { mutateAsync: createAccount, isPending: isCreating } = useMutation(
     trpc.accounts.create.mutationOptions({
@@ -62,11 +71,10 @@ export default function AccountsPage() {
     );
   } else {
     content = (
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <AccountList accounts={accounts} />
-        </div>
-      </div>
+      <AccountTable
+        accounts={accounts}
+        baseCurrency={total?.currency ?? 'EUR'}
+      />
     );
   }
 
@@ -77,19 +85,38 @@ export default function AccountsPage() {
         height: 'calc(100dvh - var(--header-height) - 2rem)',
       }}
     >
-      <div className="flex flex-wrap items-start gap-3">
-        {hasAccounts && total ? (
+      {hasAccounts && total ? (
+        <div className="flex shrink-0 flex-wrap items-start gap-3">
           <BalanceCard
             balanceInCents={total.value}
             currency={total.currency}
             accountsCount={accounts.length}
             currenciesCount={currenciesCount}
           />
+        </div>
+      ) : null}
+      <div className="flex shrink-0 flex-row items-center gap-3">
+        {hasAccounts ? (
+          <Input
+            placeholder="Search..."
+            value={accountFilter ?? ''}
+            onChange={(e) => setAccountFilter(e.target.value || null)}
+            className="w-full"
+          />
         ) : null}
-        <Button onClick={onCreateDialogOpen} className="ml-auto">
-          <Plus className="size-4" />
-          New account
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              onClick={onCreateDialogOpen}
+              className="ml-auto shrink-0"
+              aria-label="New account"
+            >
+              <Plus className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>New account</TooltipContent>
+        </Tooltip>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">

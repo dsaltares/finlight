@@ -26,7 +26,7 @@ export default function useExchangeRatesTable(rates: ExchangeRate[]): {
   globalFilter: string | undefined;
 } {
   const { debouncedRateFilter } = useRateFilter();
-  const { sorting, toggleSort, onSortingChange } = useSortFromUrl(DefaultSort);
+  const { sorting, onSortingChange } = useSortFromUrl(DefaultSort);
 
   const columns = useMemo(
     () => [
@@ -47,47 +47,17 @@ export default function useExchangeRatesTable(rates: ExchangeRate[]): {
         ),
       }),
       columnHelper.accessor('ticker', {
-        header: ({ column }) => (
-          <button
-            type="button"
-            className="flex items-center gap-1 hover:underline"
-            onClick={() => toggleSort(column.id)}
-          >
-            Ticker
-            {column.getIsSorted() === 'asc' ? ' ↑' : null}
-            {column.getIsSorted() === 'desc' ? ' ↓' : null}
-          </button>
-        ),
-        cell: (info) => <span className="text-sm">{info.getValue()}</span>,
+        header: 'Ticker',
+        cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('currency', {
-        header: ({ column }) => (
-          <button
-            type="button"
-            className="flex items-center gap-1 hover:underline"
-            onClick={() => toggleSort(column.id)}
-          >
-            Currency
-            {column.getIsSorted() === 'asc' ? ' ↑' : null}
-            {column.getIsSorted() === 'desc' ? ' ↓' : null}
-          </button>
-        ),
-        cell: (info) => <span className="text-sm">{info.getValue()}</span>,
+        header: 'Currency',
+        cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('close', {
-        header: ({ column }) => (
-          <button
-            type="button"
-            className="flex items-center gap-1 hover:underline"
-            onClick={() => toggleSort(column.id)}
-          >
-            Rate
-            {column.getIsSorted() === 'asc' ? ' ↑' : null}
-            {column.getIsSorted() === 'desc' ? ' ↓' : null}
-          </button>
-        ),
+        header: 'Rate',
         cell: (info) => (
-          <span className="text-right text-sm tabular-nums">
+          <span className="text-right tabular-nums">
             {formatCurrencyValue(info.getValue() ?? 1.0)}{' '}
             {info.row.original.code}
           </span>
@@ -95,22 +65,9 @@ export default function useExchangeRatesTable(rates: ExchangeRate[]): {
         meta: { align: 'right' as const },
       }),
       columnHelper.accessor('date', {
-        header: ({ column }) => (
-          <button
-            type="button"
-            className="flex items-center gap-1 hover:underline"
-            onClick={() => toggleSort(column.id)}
-          >
-            Date
-            {column.getIsSorted() === 'asc' ? ' ↑' : null}
-            {column.getIsSorted() === 'desc' ? ' ↓' : null}
-          </button>
-        ),
-        cell: (info) => (
-          <span className="text-sm">{formatDate(info.getValue())}</span>
-        ),
+        header: 'Date',
+        cell: (info) => formatDate(info.getValue()),
       }),
-      // Hidden column so global filter can search by code
       columnHelper.accessor('code', {
         header: '',
         cell: () => null,
@@ -118,7 +75,7 @@ export default function useExchangeRatesTable(rates: ExchangeRate[]): {
         enableSorting: false,
       }),
     ],
-    [toggleSort],
+    [],
   );
 
   return {

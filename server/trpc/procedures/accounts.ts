@@ -23,8 +23,12 @@ const AmountSchema = z.object({
   currency: z.string(),
 });
 
+const ListAccountSchema = AccountSchema.extend({
+  balanceInBaseCurrency: z.number().int(),
+});
+
 const ListAccountsOutputSchema = z.object({
-  accounts: z.array(AccountSchema),
+  accounts: z.array(ListAccountSchema),
   total: AmountSchema,
 });
 
@@ -90,8 +94,18 @@ const listAccounts = authedProcedure
       0,
     );
 
+    const accountsWithConvertedBalance = accounts.map((account) => ({
+      ...account,
+      balanceInBaseCurrency: convertAmount(
+        account.balance,
+        account.currency,
+        baseCurrency,
+        rates,
+      ),
+    }));
+
     return {
-      accounts,
+      accounts: accountsWithConvertedBalance,
       total: {
         value: Math.round(total),
         currency: baseCurrency,

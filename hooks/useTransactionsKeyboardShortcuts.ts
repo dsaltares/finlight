@@ -28,33 +28,53 @@ export default function useTransactionsKeyboardShortcuts({
   hasFilters,
   searchInputRef,
 }: UseTransactionsKeyboardShortcutsArgs) {
-  useHotkeys('n', () => {
-    if (isDialogOpen()) return;
-    onCreateDialogOpen();
-  }, { preventDefault: true });
-  useHotkeys('f', () => {
-    if (isDialogOpen()) return;
-    onFilterDialogOpen();
-  }, { preventDefault: true });
-  useHotkeys('e', () => {
-    if (isDialogOpen() || selectedCount === 0) return;
-    onBulkEditDialogOpen();
-  }, { preventDefault: true });
+  useHotkeys(
+    'n',
+    () => {
+      if (isDialogOpen()) return;
+      onCreateDialogOpen();
+    },
+    { preventDefault: true },
+  );
+  useHotkeys(
+    'f',
+    () => {
+      if (isDialogOpen()) return;
+      onFilterDialogOpen();
+    },
+    { preventDefault: true },
+  );
+  useHotkeys(
+    'e',
+    () => {
+      if (isDialogOpen() || selectedCount === 0) return;
+      onBulkEditDialogOpen();
+    },
+    { preventDefault: true },
+  );
   useHotkeys('delete, backspace', () => {
     if (isDialogOpen() || selectedCount === 0) return;
     onBulkDeleteDialogOpen();
   });
-  useHotkeys('mod+a', () => {
-    if (isDialogOpen()) return;
-    handleSelectAll();
-  }, { preventDefault: true });
+  useHotkeys(
+    'mod+a',
+    () => {
+      if (isDialogOpen()) return;
+      handleSelectAll();
+    },
+    { preventDefault: true },
+  );
   useHotkeys('escape', () => {
     if (isDialogOpen() || selectedCount === 0) return;
     handleDeselectAll();
   });
   useFocusSearch(searchInputRef);
-  useHotkeys('x', () => {
-    if (isDialogOpen() || !hasFilters) return;
-    clearFilters();
-  }, { preventDefault: true });
+  useHotkeys(
+    'x',
+    () => {
+      if (isDialogOpen() || !hasFilters) return;
+      clearFilters();
+    },
+    { preventDefault: true },
+  );
 }

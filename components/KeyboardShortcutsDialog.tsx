@@ -14,7 +14,13 @@ import useDialog from '@/hooks/use-dialog';
 import useNavigationKeyboardShortcuts from '@/hooks/useNavigationKeyboardShortcuts';
 import { formatKey, getShortcutsForPath, isDialogOpen } from '@/lib/keyboard';
 
-function ShortcutKeys({ keys, sequence }: { keys: string[]; sequence?: boolean }) {
+function ShortcutKeys({
+  keys,
+  sequence,
+}: {
+  keys: string[];
+  sequence?: boolean;
+}) {
   return (
     <span className="flex items-center gap-1">
       {keys.map((key, i) => (
@@ -36,10 +42,7 @@ function ShortcutKeys({ keys, sequence }: { keys: string[]; sequence?: boolean }
 export default function KeyboardShortcutsDialog() {
   const pathname = usePathname();
   const { open, onOpen, onClose } = useDialog();
-  const shortcuts = useMemo(
-    () => getShortcutsForPath(pathname),
-    [pathname],
-  );
+  const shortcuts = useMemo(() => getShortcutsForPath(pathname), [pathname]);
 
   useNavigationKeyboardShortcuts();
 
@@ -68,7 +71,12 @@ export default function KeyboardShortcutsDialog() {
       >
         <Keyboard className="h-5 w-5" />
       </Button>
-      <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) onClose();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Keyboard shortcuts</DialogTitle>
@@ -82,7 +90,10 @@ export default function KeyboardShortcutsDialog() {
                 <span className="text-muted-foreground">
                   {shortcut.description}
                 </span>
-                <ShortcutKeys keys={shortcut.keys} sequence={shortcut.sequence} />
+                <ShortcutKeys
+                  keys={shortcut.keys}
+                  sequence={shortcut.sequence}
+                />
               </div>
             ))}
           </div>

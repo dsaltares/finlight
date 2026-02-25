@@ -58,7 +58,8 @@ export const getShortcutsForPath = (pathname: string) => {
 
 export const formatKey = (key: string) => {
   const isMac =
-    typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent);
+    typeof navigator !== 'undefined' &&
+    /Mac|iPhone|iPad/.test(navigator.userAgent);
   if (key === 'mod') return isMac ? '\u2318' : 'Ctrl';
   if (key === 'Del') return isMac ? '\u232B' : 'Del';
   return key;

@@ -10,3 +10,13 @@ export function useRateFilter() {
     debouncedRateFilter,
   };
 }
+
+export function useAccountFilter() {
+  const [accountFilter, setAccountFilter] = useQueryState('accountFilter');
+  const debouncedAccountFilter = useDebounce(accountFilter, 500);
+  return {
+    accountFilter,
+    setAccountFilter,
+    debouncedAccountFilter,
+  };
+}

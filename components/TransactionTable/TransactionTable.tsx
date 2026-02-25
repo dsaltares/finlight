@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  type RowSelectionState,
-  flexRender,
-} from '@tanstack/react-table';
+import { type RowSelectionState, flexRender } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import CreateUpdateTransactionDialog from '@/components/CreateUpdateTransactionDialog';
@@ -39,7 +36,10 @@ export default function TransactionTable(props: UseTransactionTableArgs) {
 
   return (
     <>
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto [&_[data-slot=table-container]]:overflow-visible">
+      <div
+        ref={scrollRef}
+        className="min-h-0 flex-1 overflow-auto [&_[data-slot=table-container]]:overflow-visible"
+      >
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-background">
             {table.getHeaderGroups().map((headerGroup) => (

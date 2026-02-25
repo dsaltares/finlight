@@ -12,9 +12,13 @@ export default function useCategoriesKeyboardShortcuts({
   onCreateDialogOpen,
   searchInputRef,
 }: UseCategoriesKeyboardShortcutsArgs) {
-  useHotkeys('n', () => {
-    if (isDialogOpen()) return;
-    onCreateDialogOpen();
-  }, { preventDefault: true });
+  useHotkeys(
+    'n',
+    () => {
+      if (isDialogOpen()) return;
+      onCreateDialogOpen();
+    },
+    { preventDefault: true },
+  );
   useFocusSearch(searchInputRef);
 }

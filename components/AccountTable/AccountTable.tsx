@@ -3,22 +3,25 @@
 import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
+import CreateUpdateAccountDialog from '@/components/CreateUpdateAccountDialog';
+import { DataTable } from '@/components/DataTable';
 import useDialogForId from '@/hooks/useDialogForId';
 import { type RouterOutput, useTRPC } from '@/lib/trpc';
-import AccountListItem from './AccountListItem';
-import ConfirmationDialog from './ConfirmationDialog';
-import CreateUpdateAccountDialog from './CreateUpdateAccountDialog';
+import useAccountTable from './useAccountTable';
 
 type Account = RouterOutput['accounts']['list']['accounts'][number];
 
 type Props = {
   accounts: Account[];
+  baseCurrency: string;
 };
 
-export default function AccountList({ accounts }: Props) {
+export default function AccountTable({ accounts, baseCurrency }: Props) {
   const trpc = useTRPC();
+
   const {
-    openFor,
+    openFor: deleteAccountId,
     open: deleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
@@ -40,8 +43,8 @@ export default function AccountList({ accounts }: Props) {
   );
 
   const handleDelete = async () => {
-    if (!openFor) return;
-    await deleteAccount({ id: openFor });
+    if (!deleteAccountId) return;
+    await deleteAccount({ id: deleteAccountId });
   };
 
   const {
@@ -71,19 +74,23 @@ export default function AccountList({ accounts }: Props) {
     }),
   );
 
+  const { columns, data, sorting, onSortingChange, globalFilter } =
+    useAccountTable({
+      accounts,
+      baseCurrency,
+      onUpdate: onUpdateDialogOpen,
+      onDelete: onDeleteOpen,
+    });
+
   return (
     <>
-      <ul className="m-0 list-none space-y-2 p-0">
-        {accounts.map((account) => (
-          <li key={account.id}>
-            <AccountListItem
-              account={account}
-              onUpdate={onUpdateDialogOpen}
-              onDelete={onDeleteOpen}
-            />
-          </li>
-        ))}
-      </ul>
+      <DataTable
+        columns={columns}
+        data={data}
+        sorting={sorting}
+        onSortingChange={onSortingChange}
+        globalFilter={globalFilter}
+      />
 
       <ConfirmationDialog
         id="delete-account"

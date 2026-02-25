@@ -2,7 +2,9 @@ import type { RefObject } from 'react';
 import { useEffect } from 'react';
 import { isDialogOpen } from '@/lib/keyboard';
 
-export default function useFocusSearch(ref: RefObject<HTMLInputElement | null>) {
+export default function useFocusSearch(
+  ref: RefObject<HTMLInputElement | null>,
+) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key !== '/') return;

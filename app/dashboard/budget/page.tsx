@@ -1,7 +1,12 @@
 'use client';
 
 import { IconAdjustments } from '@tabler/icons-react';
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { addMonths, addQuarters, addYears, format } from 'date-fns';
 import { Check, Loader2, Search } from 'lucide-react';
 import { useQueryState } from 'nuqs';
@@ -41,7 +46,11 @@ export default function BudgetPage() {
   const isDirtyRef = useRef(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const savedTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const { data, isPending: isLoading, isFetching } = useQuery({
+  const {
+    data,
+    isPending: isLoading,
+    isFetching,
+  } = useQuery({
     ...trpc.budget.get.queryOptions(queryInput),
     placeholderData: keepPreviousData,
   });
@@ -65,18 +74,25 @@ export default function BudgetPage() {
   const navigatePeriod = useCallback(
     (delta: number) => {
       const d = new Date(selectedDate);
-      const shift = granularity === 'Yearly'
-        ? addYears(d, delta)
-        : granularity === 'Quarterly'
-          ? addQuarters(d, delta)
-          : addMonths(d, delta);
+      const shift =
+        granularity === 'Yearly'
+          ? addYears(d, delta)
+          : granularity === 'Quarterly'
+            ? addQuarters(d, delta)
+            : addMonths(d, delta);
       applySettings({
         date: format(shift, 'yyyy-MM-dd'),
         granularity: filters.granularity,
         currency: filters.currency,
       });
     },
-    [selectedDate, granularity, applySettings, filters.granularity, filters.currency],
+    [
+      selectedDate,
+      granularity,
+      applySettings,
+      filters.granularity,
+      filters.currency,
+    ],
   );
 
   useBudgetKeyboardShortcuts({
