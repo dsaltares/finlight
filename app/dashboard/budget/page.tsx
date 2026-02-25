@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, Loader2, Search } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import BudgetOptionsDialog from '@/components/BudgetOptionsDialog';
 import BudgetTable, { type BudgetEntry } from '@/components/BudgetTable';
@@ -19,6 +20,7 @@ import {
 import useDialog from '@/hooks/use-dialog';
 import useBudgetFilters from '@/hooks/useBudgetFilters';
 import { formatDateWithGranularity } from '@/lib/format';
+import { isDialogOpen } from '@/lib/keyboard';
 import { useTRPC } from '@/lib/trpc';
 
 export default function BudgetPage() {
@@ -29,6 +31,12 @@ export default function BudgetPage() {
     onOpen: onSettingsOpen,
     onClose: onSettingsClose,
   } = useDialog();
+
+  useHotkeys('o', () => {
+    if (isDialogOpen()) return;
+    onSettingsOpen();
+  }, { preventDefault: true });
+
   const { queryInput, displayCurrency, selectedDate } = useBudgetFilters();
   const [search, setSearch] = useQueryState('q', { defaultValue: '' });
   const [localEntries, setLocalEntries] = useState<BudgetEntry[] | null>(null);

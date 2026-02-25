@@ -12,11 +12,22 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import useDialog from '@/hooks/use-dialog';
-import {
-  formatShortcutKey,
-  getShortcutsForPath,
-  isDialogOpen,
-} from '@/lib/keyboard';
+import { formatKey, getShortcutsForPath, isDialogOpen } from '@/lib/keyboard';
+
+function ShortcutKeys({ keys }: { keys: string[] }) {
+  return (
+    <span className="flex items-center gap-1">
+      {keys.map((key, i) => (
+        <span key={key} className="flex items-center gap-1">
+          {i > 0 && <span className="text-muted-foreground">+</span>}
+          <kbd className="inline-flex h-6 min-w-6 items-center justify-center border bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">
+            {formatKey(key)}
+          </kbd>
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export default function KeyboardShortcutsDialog() {
   const pathname = usePathname();
@@ -26,7 +37,7 @@ export default function KeyboardShortcutsDialog() {
     [pathname],
   );
 
-  useHotkeys('shift+/', () => {
+  useHotkeys('?', () => {
     if (isDialogOpen()) return;
     onOpen();
   }, { preventDefault: true });
@@ -51,15 +62,13 @@ export default function KeyboardShortcutsDialog() {
           <div className="grid gap-2">
             {shortcuts.map((shortcut) => (
               <div
-                key={shortcut.key}
+                key={shortcut.description}
                 className="flex items-center justify-between"
               >
                 <span className="text-muted-foreground">
                   {shortcut.description}
                 </span>
-                <kbd className="inline-flex h-6 min-w-6 items-center justify-center border bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">
-                  {formatShortcutKey(shortcut.key)}
-                </kbd>
+                <ShortcutKeys keys={shortcut.keys} />
               </div>
             ))}
           </div>
