@@ -1,7 +1,8 @@
 'use client';
 
 import { IconAdjustments } from '@tabler/icons-react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addMonths, addQuarters, addYears, format } from 'date-fns';
 import { Check, Loader2, Search } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -10,6 +11,7 @@ import BudgetOptionsDialog from '@/components/BudgetOptionsDialog';
 import BudgetTable, { type BudgetEntry } from '@/components/BudgetTable';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +20,7 @@ import {
 } from '@/components/ui/tooltip';
 import useDialog from '@/hooks/use-dialog';
 import useBudgetFilters from '@/hooks/useBudgetFilters';
+import useBudgetKeyboardShortcuts from '@/hooks/useBudgetKeyboardShortcuts';
 import { formatDateWithGranularity } from '@/lib/format';
 import { useTRPC } from '@/lib/trpc';
 
@@ -29,16 +32,19 @@ export default function BudgetPage() {
     onOpen: onSettingsOpen,
     onClose: onSettingsClose,
   } = useDialog();
-  const { queryInput, displayCurrency, selectedDate } = useBudgetFilters();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const { queryInput, displayCurrency, selectedDate, filters, applySettings } =
+    useBudgetFilters();
   const [search, setSearch] = useQueryState('q', { defaultValue: '' });
   const [localEntries, setLocalEntries] = useState<BudgetEntry[] | null>(null);
   const [showSaved, setShowSaved] = useState(false);
   const isDirtyRef = useRef(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const savedTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const { data, isPending: isLoading } = useQuery(
-    trpc.budget.get.queryOptions(queryInput),
-  );
+  const { data, isPending: isLoading, isFetching } = useQuery({
+    ...trpc.budget.get.queryOptions(queryInput),
+    placeholderData: keepPreviousData,
+  });
 
   useEffect(() => {
     if (data) {
@@ -49,11 +55,36 @@ export default function BudgetPage() {
 
   const entries = localEntries ?? data?.entries ?? [];
 
-  const periodLabel = useMemo(() => {
-    const granularity =
-      queryInput.granularity || data?.granularity || 'Monthly';
-    return formatDateWithGranularity(selectedDate, granularity);
-  }, [selectedDate, queryInput.granularity, data?.granularity]);
+  const granularity = queryInput.granularity || data?.granularity || 'Monthly';
+
+  const periodLabel = useMemo(
+    () => formatDateWithGranularity(selectedDate, granularity),
+    [selectedDate, granularity],
+  );
+
+  const navigatePeriod = useCallback(
+    (delta: number) => {
+      const d = new Date(selectedDate);
+      const shift = granularity === 'Yearly'
+        ? addYears(d, delta)
+        : granularity === 'Quarterly'
+          ? addQuarters(d, delta)
+          : addMonths(d, delta);
+      applySettings({
+        date: format(shift, 'yyyy-MM-dd'),
+        granularity: filters.granularity,
+        currency: filters.currency,
+      });
+    },
+    [selectedDate, granularity, applySettings, filters.granularity, filters.currency],
+  );
+
+  useBudgetKeyboardShortcuts({
+    onSettingsOpen,
+    onPreviousPeriod: () => navigatePeriod(-1),
+    onNextPeriod: () => navigatePeriod(1),
+    searchInputRef,
+  });
 
   const { mutate: save, isPending: isSaving } = useMutation(
     trpc.budget.update.mutationOptions({
@@ -130,9 +161,13 @@ export default function BudgetPage() {
     >
       <div className="flex shrink-0 flex-row items-center gap-2">
         <span className="shrink-0 text-sm font-medium">{periodLabel}</span>
+        {isFetching && !isLoading && (
+          <Spinner className="size-4 shrink-0 text-muted-foreground" />
+        )}
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
+            ref={searchInputRef}
             placeholder="Search categories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}

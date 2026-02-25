@@ -10,6 +10,7 @@ import EmptyState from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import useDialog from '@/hooks/use-dialog';
+import useAccountsKeyboardShortcuts from '@/hooks/useAccountsKeyboardShortcuts';
 import { useTRPC } from '@/lib/trpc';
 
 export default function AccountsPage() {
@@ -22,6 +23,8 @@ export default function AccountsPage() {
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
   } = useDialog();
+
+  useAccountsKeyboardShortcuts(onCreateDialogOpen);
 
   const { mutateAsync: createAccount, isPending: isCreating } = useMutation(
     trpc.accounts.create.mutationOptions({

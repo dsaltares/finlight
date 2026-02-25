@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import KeyboardShortcutsDialog from './KeyboardShortcutsDialog';
 import { ThemeToggle } from './ThemeToggle';
 
 const RouteTitleMap: Record<string, string> = {
@@ -41,6 +42,7 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">{pageTitle}</h1>
         <div className="ml-auto flex items-center gap-2">
+          <KeyboardShortcutsDialog />
           <ThemeToggle />
         </div>
       </div>

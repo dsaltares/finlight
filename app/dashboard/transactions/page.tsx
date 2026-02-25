@@ -11,7 +11,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useQueryState } from 'nuqs';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import BulkEditTransactionsDialog from '@/components/BulkEditTransactionsDialog';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -30,10 +30,12 @@ import {
 } from '@/components/ui/tooltip';
 import useDialog from '@/hooks/use-dialog';
 import useTransactionFilters from '@/hooks/useTransactionFilters';
+import useTransactionsKeyboardShortcuts from '@/hooks/useTransactionsKeyboardShortcuts';
 import { useTRPC } from '@/lib/trpc';
 
 export default function TransactionsPage() {
   const trpc = useTRPC();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useQueryState('q', { defaultValue: '' });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { queryInput, hasFilters, clearFilters } = useTransactionFilters();
@@ -159,6 +161,32 @@ export default function TransactionsPage() {
     );
   }, [transactions, search]);
 
+  const handleSelectAll = useCallback(() => {
+    if (!filteredTransactions.length) return;
+    const all: RowSelectionState = {};
+    for (const t of filteredTransactions) {
+      all[`${t.id}`] = true;
+    }
+    setRowSelection(all);
+  }, [filteredTransactions, setRowSelection]);
+
+  const handleDeselectAll = useCallback(() => {
+    setRowSelection({});
+  }, [setRowSelection]);
+
+  useTransactionsKeyboardShortcuts({
+    onCreateDialogOpen,
+    onFilterDialogOpen,
+    onBulkEditDialogOpen,
+    onBulkDeleteDialogOpen,
+    selectedCount,
+    handleSelectAll,
+    handleDeselectAll,
+    clearFilters,
+    hasFilters,
+    searchInputRef,
+  });
+
   let content = null;
   if (isLoading) {
     content = (
@@ -210,6 +238,7 @@ export default function TransactionsPage() {
           <Spinner className="size-4 shrink-0 text-muted-foreground" />
         )}
         <Input
+          ref={searchInputRef}
           placeholder="Search..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}

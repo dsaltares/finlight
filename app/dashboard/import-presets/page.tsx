@@ -9,6 +9,7 @@ import EmptyState from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import useDialog from '@/hooks/use-dialog';
+import useImportPresetsKeyboardShortcuts from '@/hooks/useImportPresetsKeyboardShortcuts';
 import { useTRPC } from '@/lib/trpc';
 
 export default function ImportPresetsPage() {
@@ -21,6 +22,8 @@ export default function ImportPresetsPage() {
     onOpen: onCreateDialogOpen,
     onClose: onCreateDialogClose,
   } = useDialog();
+
+  useImportPresetsKeyboardShortcuts(onCreateDialogOpen);
 
   const { mutateAsync: createPreset, isPending: isCreating } = useMutation(
     trpc.importPresets.create.mutationOptions({
