@@ -5,35 +5,21 @@ import {
   type ColumnDef,
   type RowSelectionState,
   type SortingState,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { type MouseEvent, useCallback, useMemo, useRef, useState } from 'react';
+import type { MouseEvent } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import CategoryPill from '@/components/CategoryPill';
-import ConfirmationDialog from '@/components/ConfirmationDialog';
-import CreateUpdateTransactionDialog from '@/components/CreateUpdateTransactionDialog';
+import DescriptionCell from '@/components/TransactionTable/DescriptionCell';
 import TransactionTypePill from '@/components/TransactionTypePill';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import useDialogForId from '@/hooks/useDialogForId';
 import useTransactionFilters, {
   serializeTransactionFilters,
@@ -46,14 +32,14 @@ type Transaction = RouterOutput['transactions']['list'][number];
 type Account = RouterOutput['accounts']['list']['accounts'][number];
 type Category = RouterOutput['categories']['list'][number];
 
-type TransactionRow = Transaction & {
+export type TransactionRow = Transaction & {
   accountName: string;
   currency: string;
   categoryName: string | null;
   categoryColor: string | null;
 };
 
-type Props = {
+export type UseTransactionTableArgs = {
   transactions: Transaction[];
   accounts: Account[];
   categories: Category[];
@@ -64,13 +50,13 @@ type Props = {
 const ROW_HEIGHT = 36;
 const DEFAULT_SORT: SortingState = [{ id: 'date', desc: true }];
 
-export default function TransactionTable({
+export default function useTransactionTable({
   transactions,
   accounts,
   categories,
   rowSelection,
   onRowSelectionChange,
-}: Props) {
+}: UseTransactionTableArgs) {
   const trpc = useTRPC();
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastSelectedId = useRef<string | null>(null);
@@ -368,157 +354,21 @@ export default function TransactionTable({
     overscan: 20,
   });
 
-  return (
-    <>
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-background">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: header.getSize() }}
-                    className={
-                      header.column.getCanSort()
-                        ? 'cursor-pointer select-none'
-                        : ''
-                    }
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <span className="flex items-center gap-1">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                      {header.column.getIsSorted() === 'asc' ? (
-                        <ArrowUp className="size-3" />
-                      ) : header.column.getIsSorted() === 'desc' ? (
-                        <ArrowDown className="size-3" />
-                      ) : null}
-                    </span>
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {virtualizer.getVirtualItems().length > 0 ? (
-              <>
-                {virtualizer.getVirtualItems()[0]?.start > 0 && (
-                  <tr key="spacer-top">
-                    <td
-                      colSpan={columns.length}
-                      style={{
-                        height: virtualizer.getVirtualItems()[0]?.start ?? 0,
-                        padding: 0,
-                      }}
-                    />
-                  </tr>
-                )}
-                {virtualizer.getVirtualItems().map((virtualRow) => {
-                  const row = rows[virtualRow.index];
-                  return (
-                    <TableRow
-                      key={virtualRow.index}
-                      data-index={virtualRow.index}
-                      data-state={row.getIsSelected() ? 'selected' : undefined}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  );
-                })}
-                {virtualizer.getTotalSize() -
-                  (virtualizer.getVirtualItems().at(-1)?.end ?? 0) >
-                  0 && (
-                  <tr key="spacer-bottom">
-                    <td
-                      colSpan={columns.length}
-                      style={{
-                        height:
-                          virtualizer.getTotalSize() -
-                          (virtualizer.getVirtualItems().at(-1)?.end ?? 0),
-                        padding: 0,
-                      }}
-                    />
-                  </tr>
-                )}
-              </>
-            ) : null}
-          </TableBody>
-        </Table>
-      </div>
-
-      <ConfirmationDialog
-        id="delete-transaction"
-        title="Delete transaction"
-        open={isDeleteDialogOpen}
-        loading={isDeleting}
-        onClose={onDeleteDialogClose}
-        onConfirm={handleDelete}
-      >
-        <p>
-          Are you sure you want to delete this transaction? This action cannot
-          be undone.
-        </p>
-      </ConfirmationDialog>
-
-      {transactionToUpdate ? (
-        <CreateUpdateTransactionDialog
-          transaction={transactionToUpdate}
-          open={isUpdateDialogOpen}
-          loading={isUpdating}
-          accounts={accounts}
-          onClose={onUpdateDialogClose}
-          onUpdate={updateTransaction}
-        />
-      ) : null}
-    </>
-  );
-}
-
-function DescriptionCell({
-  value,
-  onCopy,
-}: {
-  value: string;
-  onCopy: (text: string) => void;
-}) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const [isTruncated, setIsTruncated] = useState(false);
-
-  const handleMouseEnter = useCallback(() => {
-    const el = ref.current;
-    if (el) {
-      setIsTruncated(el.scrollWidth > el.clientWidth);
-    }
-  }, []);
-
-  const trigger = (
-    <button
-      ref={ref}
-      type="button"
-      className="block max-w-[200px] cursor-pointer truncate"
-      onMouseEnter={handleMouseEnter}
-      onClick={() => onCopy(value)}
-    >
-      {value}
-    </button>
-  );
-
-  if (!isTruncated) return trigger;
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-      <TooltipContent>{value}</TooltipContent>
-    </Tooltip>
-  );
+  return {
+    scrollRef,
+    table,
+    columns,
+    rows,
+    virtualizer,
+    isDeleteDialogOpen,
+    isDeleting,
+    onDeleteDialogClose,
+    handleDelete,
+    transactionToUpdate,
+    isUpdateDialogOpen,
+    isUpdating,
+    accounts,
+    onUpdateDialogClose,
+    updateTransaction,
+  };
 }
