@@ -59,80 +59,84 @@ export default function PresetForm({
   } = fieldArray;
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-x-hidden pb-1">
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="name">Name</Label>
-        <Input id="name" {...register('name', { required: true })} />
-        {errors.name ? (
-          <p className="text-xs text-destructive">Name is required.</p>
-        ) : null}
-      </div>
+    <div className="grid min-h-0 min-w-0 gap-3 overflow-x-hidden pb-1 xl:grid-cols-[20rem_minmax(0,1fr)]">
+      <div className="min-h-0 space-y-3 overflow-y-auto pr-1">
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="name">Name</Label>
+          <Input id="name" {...register('name', { required: true })} />
+          {errors.name ? (
+            <p className="text-xs text-destructive">Name is required.</p>
+          ) : null}
+        </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="decimal">Decimal character</Label>
-          <Input id="decimal" {...register('decimal', { required: true })} />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="delimiter">CSV delimiter</Label>
-          <Input
-            id="delimiter"
-            {...register('delimiter', { required: true })}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="rowsToSkipStart">Skip rows start</Label>
-          <Input
-            id="rowsToSkipStart"
-            type="number"
-            step={1}
-            {...register('rowsToSkipStart', { required: true })}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="rowsToSkipEnd">Skip rows end</Label>
-          <Input
-            id="rowsToSkipEnd"
-            type="number"
-            step={1}
-            {...register('rowsToSkipEnd', { required: true })}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="dateFormat">Date format</Label>
-        <Controller
-          control={control}
-          name="dateFormat"
-          render={({ field }) => (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-1">
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="decimal">Decimal character</Label>
+            <Input id="decimal" {...register('decimal', { required: true })} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="delimiter">CSV delimiter</Label>
             <Input
-              {...field}
-              id="dateFormat"
-              list="date-format-options"
-              placeholder="yyyy-MM-dd"
+              id="delimiter"
+              {...register('delimiter', { required: true })}
             />
-          )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="rowsToSkipStart">Skip rows start</Label>
+            <Input
+              id="rowsToSkipStart"
+              type="number"
+              step={1}
+              {...register('rowsToSkipStart', { required: true })}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="rowsToSkipEnd">Skip rows end</Label>
+            <Input
+              id="rowsToSkipEnd"
+              type="number"
+              step={1}
+              {...register('rowsToSkipEnd', { required: true })}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="dateFormat">Date format</Label>
+          <Controller
+            control={control}
+            name="dateFormat"
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="dateFormat"
+                list="date-format-options"
+                placeholder="yyyy-MM-dd"
+              />
+            )}
+          />
+          <datalist id="date-format-options">
+            {dateFormats.map((dateFormat) => (
+              <option key={dateFormat} value={dateFormat} />
+            ))}
+          </datalist>
+        </div>
+
+        <ImportFields
+          fields={fields.map((field) => field.value)}
+          onAppend={(value) => appendItem({ id: value, value })}
+          onRemove={removeItem}
+          onMove={moveItem}
         />
-        <datalist id="date-format-options">
-          {dateFormats.map((dateFormat) => (
-            <option key={dateFormat} value={dateFormat} />
-          ))}
-        </datalist>
       </div>
 
-      <ImportFields
-        fields={fields.map((field) => field.value)}
-        onAppend={(value) => appendItem({ id: value, value })}
-        onRemove={removeItem}
-        onMove={moveItem}
-      />
-
-      <ImportPreview
-        watch={watch}
-        fileData={fileData}
-        onFileDataChange={onFileDataChange}
-      />
+      <div className="min-w-0">
+        <ImportPreview
+          watch={watch}
+          fileData={fileData}
+          onFileDataChange={onFileDataChange}
+        />
+      </div>
     </div>
   );
 }

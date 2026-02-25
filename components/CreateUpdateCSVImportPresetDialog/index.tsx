@@ -139,7 +139,7 @@ export default function CreateUpdateCSVImportPresetDialog({
     >
       <DialogContent
         id={id}
-        className="flex h-[calc(100dvh-2rem)] flex-col overflow-hidden max-w-[calc(100dvw-2rem)] sm:max-w-[calc(100dvw-2rem)]"
+        className="flex h-[calc(100dvh-2rem)] max-h-[56rem] w-[calc(100dvw-2rem)] max-w-[calc(100dvw-2rem)] flex-col overflow-hidden sm:max-w-[calc(100dvw-2rem)] xl:max-w-7xl"
       >
         <DialogTitle className="sr-only">{title}</DialogTitle>
         <form
@@ -152,7 +152,13 @@ export default function CreateUpdateCSVImportPresetDialog({
             <h2 className="text-sm font-medium">{title}</h2>
           </DialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
+          <div
+            className={
+              step === 'ai-detect'
+                ? 'min-h-0 flex flex-1 items-center justify-center overflow-y-auto'
+                : 'min-h-0 flex-1 overflow-y-auto'
+            }
+          >
             {step === 'ai-detect' ? (
               <AIPresetDetector
                 onDetected={handleDetected}
