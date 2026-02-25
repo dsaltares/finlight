@@ -18,7 +18,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  serverExternalPackages: ['better-sqlite3'],
+  serverExternalPackages: ['better-sqlite3', 'xlsx'],
   async headers() {
     return [
       { source: '/(.*)', headers: securityHeaders },

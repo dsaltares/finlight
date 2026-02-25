@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import * as XLSX from 'xlsx';
+import { decodeTextBuffer } from '@/lib/fileImport';
 import { getLogger } from '@/server/logger';
 
 const logger = getLogger('spreadsheet');
@@ -45,15 +46,17 @@ function detectFormat(buffer: Buffer): SpreadsheetFormat {
   return 'unknown';
 }
 
-function detectCharset(buffer: Buffer): string {
+function detectCharset(buffer: Buffer): string | null {
   const head = buffer.subarray(0, 1024).toString('ascii').toLowerCase();
   const match = head.match(/charset[= ]*([a-z0-9_-]+)/);
-  return match?.[1] ?? 'utf-8';
+  return match?.[1] ?? null;
 }
 
 function parseHtmlTable(buffer: Buffer): string[][] {
   const charset = detectCharset(buffer);
-  const html = new TextDecoder(charset).decode(buffer);
+  const html = charset
+    ? new TextDecoder(charset).decode(buffer)
+    : decodeTextBuffer(buffer);
   const $ = cheerio.load(html);
   const rows: string[][] = [];
 
@@ -119,4 +122,61 @@ export function parseSpreadsheet({
   );
 
   return nonEmptyRows;
+}
+
+type StripEmptyColumnsResult = {
+  rows: string[][];
+  emptyColumns: number[];
+  totalColumns: number;
+};
+
+export function stripEmptyColumnsForAi({
+  rows,
+}: {
+  rows: string[][];
+}): StripEmptyColumnsResult {
+  if (rows.length === 0) {
+    return { rows, emptyColumns: [], totalColumns: 0 };
+  }
+
+  const totalColumns = Math.max(...rows.map((row) => row.length));
+  const emptyColumns: number[] = [];
+
+  for (let col = 0; col < totalColumns; col++) {
+    if (!rows.some((row) => row[col]?.trim())) {
+      emptyColumns.push(col);
+    }
+  }
+
+  if (emptyColumns.length === 0) {
+    return { rows, emptyColumns, totalColumns };
+  }
+
+  const emptySet = new Set(emptyColumns);
+  const strippedRows = rows.map((row) => {
+    const next: string[] = [];
+    for (let col = 0; col < totalColumns; col++) {
+      if (!emptySet.has(col)) {
+        next.push(row[col] ?? '');
+      }
+    }
+    return next;
+  });
+
+  return { rows: strippedRows, emptyColumns, totalColumns };
+}
+
+export function rowsToCsv({ rows }: { rows: string[][] }): string {
+  return rows
+    .map((row) =>
+      row
+        .map((cell) => {
+          const sanitized = cell.replace(/[\n\r]/g, ' ');
+          return sanitized.includes(',') || sanitized.includes('"')
+            ? `"${sanitized.replace(/"/g, '""')}"`
+            : sanitized;
+        })
+        .join(','),
+    )
+    .join('\n');
 }

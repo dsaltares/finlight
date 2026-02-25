@@ -9,3 +9,8 @@ export type CSVImportPresetFormValues = {
   rowsToSkipStart: string;
   rowsToSkipEnd: string;
 };
+
+export type FileData = {
+  csvText: string;
+  spreadsheetRows: string[][];
+};

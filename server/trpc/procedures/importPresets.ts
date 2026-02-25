@@ -1,9 +1,18 @@
 import { TRPCError } from '@trpc/server';
 import lodash from 'lodash';
 import z from 'zod';
-import { CsvImportFieldSchema } from '@/lib/importPresets';
+import { decodeTextBuffer } from '@/lib/fileImport';
+import {
+  CsvImportFieldSchema,
+  ImportPresetConfigSchema,
+} from '@/lib/importPresets';
+import { generateImportPreset } from '@/server/ai';
 import { db } from '@/server/db';
-import { parseSpreadsheet } from '@/server/spreadsheet';
+import {
+  parseSpreadsheet,
+  rowsToCsv,
+  stripEmptyColumnsForAi,
+} from '@/server/spreadsheet';
 import { authedProcedure } from '../trpc';
 
 const CSVImportPresetSchema = z.object({
@@ -172,10 +181,111 @@ const parseSpreadsheetProcedure = authedProcedure
     return parseSpreadsheet({ buffer, fileName: input.fileName });
   });
 
+const generateFromFileProcedure = authedProcedure
+  .input(
+    z.object({
+      fileBase64: z.string().max(14_000_000),
+      fileName: z.string(),
+    }),
+  )
+  .output(
+    z.object({
+      preset: ImportPresetConfigSchema,
+      rows: z.array(z.array(z.string())),
+      csvText: z.string(),
+    }),
+  )
+  .mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    const buffer = Buffer.from(input.fileBase64, 'base64');
+    const ext = input.fileName
+      .slice(input.fileName.lastIndexOf('.'))
+      .toLowerCase();
+    const isSpreadsheet = ext === '.xls' || ext === '.xlsx';
+
+    let rows: string[][] = [];
+    let csvText: string;
+    let emptyColumns: number[] = [];
+    let totalColumns = 0;
+
+    if (isSpreadsheet) {
+      rows = parseSpreadsheet({ buffer, fileName: input.fileName });
+      const stripped = stripEmptyColumnsForAi({ rows });
+      emptyColumns = stripped.emptyColumns;
+      totalColumns = stripped.totalColumns;
+      csvText = rowsToCsv({ rows: stripped.rows });
+    } else {
+      csvText = decodeTextBuffer(buffer);
+    }
+
+    const preset = await generateImportPreset({
+      userId: ctx.user.id,
+      csvContent: csvText,
+    });
+
+    const expandedPreset =
+      emptyColumns.length > 0
+        ? {
+            ...preset,
+            fields: expandFieldsWithEmptyColumns({
+              fields: preset.fields,
+              emptyColumns,
+              totalColumns,
+            }),
+          }
+        : preset;
+
+    const previewText = isSpreadsheet
+      ? rows
+          .map((row) =>
+            row.map((cell) => cell.replace(/[\n\r]/g, ' ')).join('\t'),
+          )
+          .join('\n')
+      : csvText;
+
+    return { preset: expandedPreset, rows, csvText: previewText };
+  });
+
 export default {
   list: listPresets,
   create: createPreset,
   delete: deletePreset,
   update: updatePreset,
   parseSpreadsheet: parseSpreadsheetProcedure,
+  generateFromFile: generateFromFileProcedure,
 };
+
+type ExpandFieldsArgs = {
+  fields: z.infer<typeof CsvImportFieldSchema>[];
+  emptyColumns: number[];
+  totalColumns: number;
+};
+
+function expandFieldsWithEmptyColumns({
+  fields,
+  emptyColumns,
+  totalColumns,
+}: ExpandFieldsArgs) {
+  if (emptyColumns.length === 0) return fields;
+
+  const nonEmptyColumns = totalColumns - emptyColumns.length;
+  if (fields.length !== nonEmptyColumns) return fields;
+
+  const emptySet = new Set(emptyColumns);
+  const expanded: z.infer<typeof CsvImportFieldSchema>[] = [];
+  let fieldIndex = 0;
+
+  for (let col = 0; col < totalColumns; col++) {
+    if (emptySet.has(col)) {
+      expanded.push('Ignore');
+    } else {
+      expanded.push(fields[fieldIndex] ?? 'Ignore');
+      fieldIndex += 1;
+    }
+  }
+
+  return expanded;
+}

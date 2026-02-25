@@ -1,12 +1,7 @@
 'use client';
 
-import {
-  Controller,
-  type SubmitHandler,
-  useFieldArray,
-  useForm,
-} from 'react-hook-form';
-import ImportFields from '@/components/ImportFields';
+import { useEffect, useState } from 'react';
+import { type SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,12 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import type { ImportPresetConfig } from '@/lib/importPresets';
 import type { RouterInput, RouterOutput } from '@/lib/trpc';
-import ImportPreview from './ImportPreview';
-import type { CSVImportPresetFormValues } from './types';
+import AIPresetDetector from './AIPresetDetector';
+import PresetForm from './PresetForm';
+import type { CSVImportPresetFormValues, FileData } from './types';
 
 type BaseProps = {
   open: boolean;
@@ -44,25 +39,9 @@ type Props = BaseProps & (CreateProps | EditProps);
 
 const id = 'create-update-csv-import-preset-dialog';
 
-const dateFormats = [
-  'dd MM yy',
-  'dd,MM,yy',
-  'dd-MM-yy',
-  'dd.MM.yy',
-  "dd/MM'yy",
-  'dd/MM/yy',
-  'dd MM yyyy',
-  'dd,MM,yyyy',
-  'dd-MM-yyyy',
-  'dd.MM.yyyy',
-  "dd/MM'yyyy",
-  'dd/MM/yyyy',
-  'dd MMM yy',
-  'dd-MMM-yy',
-  'yyyy-MM-dd',
-  'yyyy/MM/dd',
-  'yyyy-MM-dd HH:mm:ss',
-];
+type Step = 'ai-detect' | 'manual';
+
+const emptyFileData: FileData = { csvText: '', spreadsheetRows: [] };
 
 export default function CreateUpdateCSVImportPresetDialog({
   open,
@@ -72,13 +51,18 @@ export default function CreateUpdateCSVImportPresetDialog({
   onCreate,
   onUpdate,
 }: Props) {
-  const {
-    watch,
-    control,
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<CSVImportPresetFormValues>({
+  const isEditing = !!preset;
+  const [step, setStep] = useState<Step>(isEditing ? 'manual' : 'ai-detect');
+  const [fileData, setFileData] = useState<FileData>(emptyFileData);
+
+  useEffect(() => {
+    if (open && !isEditing) {
+      setStep('ai-detect');
+      setFileData(emptyFileData);
+    }
+  }, [open, isEditing]);
+
+  const form = useForm<CSVImportPresetFormValues>({
     mode: 'onBlur',
     defaultValues: {
       name: preset?.name,
@@ -92,15 +76,32 @@ export default function CreateUpdateCSVImportPresetDialog({
     },
   });
 
-  const {
-    fields,
-    append: appendItem,
-    remove: removeItem,
-    move: moveItem,
-  } = useFieldArray({
-    control,
+  const fieldArray = useFieldArray({
+    control: form.control,
     name: 'fields',
   });
+
+  type HandleDetectedArgs = {
+    preset: ImportPresetConfig;
+    fileData: FileData;
+  };
+
+  const handleDetected = ({
+    preset: detected,
+    fileData: newFileData,
+  }: HandleDetectedArgs) => {
+    form.reset({
+      name: form.getValues('name') || '',
+      decimal: detected.decimal,
+      delimiter: detected.delimiter,
+      dateFormat: detected.dateFormat,
+      fields: detected.fields.map((field) => ({ id: field, value: field })),
+      rowsToSkipStart: detected.rowsToSkipStart.toString(),
+      rowsToSkipEnd: detected.rowsToSkipEnd.toString(),
+    });
+    setFileData(newFileData);
+    setStep('manual');
+  };
 
   const onSubmit: SubmitHandler<CSVImportPresetFormValues> = async (values) => {
     const rowsToSkipStart = Number.parseInt(values.rowsToSkipStart, 10);
@@ -125,6 +126,8 @@ export default function CreateUpdateCSVImportPresetDialog({
     onClose();
   };
 
+  const title = preset ? 'Edit import preset' : 'Create import preset';
+
   return (
     <Dialog
       open={open}
@@ -136,106 +139,57 @@ export default function CreateUpdateCSVImportPresetDialog({
     >
       <DialogContent
         id={id}
-        className="h-[calc(100dvh-2rem)] overflow-hidden max-w-[calc(100dvw-2rem)] sm:max-w-[calc(100dvw-2rem)]"
+        className="flex h-[calc(100dvh-2rem)] flex-col overflow-hidden max-w-[calc(100dvw-2rem)] sm:max-w-[calc(100dvw-2rem)]"
       >
-        <DialogTitle className="sr-only">
-          {preset ? 'Edit import preset' : 'Create import preset'}
-        </DialogTitle>
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         <form
           onSubmit={(event) => {
-            void handleSubmit(onSubmit)(event);
+            void form.handleSubmit(onSubmit)(event);
           }}
-          className="flex h-full min-h-0 min-w-0 flex-col gap-4"
+          className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden"
         >
-          <DialogHeader>
-            <h2 className="text-sm font-medium">
-              {preset ? 'Edit import preset' : 'Create import preset'}
-            </h2>
+          <DialogHeader className="shrink-0">
+            <h2 className="text-sm font-medium">{title}</h2>
           </DialogHeader>
 
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto">
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" {...register('name', { required: true })} />
-              {errors.name ? (
-                <p className="text-xs text-destructive">Name is required.</p>
-              ) : null}
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="decimal">Decimal character</Label>
-                <Input
-                  id="decimal"
-                  {...register('decimal', { required: true })}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="delimiter">CSV delimiter</Label>
-                <Input
-                  id="delimiter"
-                  {...register('delimiter', { required: true })}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="rowsToSkipStart">Skip rows start</Label>
-                <Input
-                  id="rowsToSkipStart"
-                  type="number"
-                  step={1}
-                  {...register('rowsToSkipStart', { required: true })}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="rowsToSkipEnd">Skip rows end</Label>
-                <Input
-                  id="rowsToSkipEnd"
-                  type="number"
-                  step={1}
-                  {...register('rowsToSkipEnd', { required: true })}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="dateFormat">Date format</Label>
-              <Controller
-                control={control}
-                name="dateFormat"
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="dateFormat"
-                    list="date-format-options"
-                    placeholder="yyyy-MM-dd"
-                  />
-                )}
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {step === 'ai-detect' ? (
+              <AIPresetDetector
+                onDetected={handleDetected}
+                onSkip={() => setStep('manual')}
               />
-              <datalist id="date-format-options">
-                {dateFormats.map((dateFormat) => (
-                  <option key={dateFormat} value={dateFormat} />
-                ))}
-              </datalist>
-            </div>
-
-            <ImportFields
-              fields={fields.map((field) => field.value)}
-              onAppend={(value) => appendItem({ id: value, value })}
-              onRemove={removeItem}
-              onMove={moveItem}
-            />
-
-            <ImportPreview watch={watch} />
+            ) : (
+              <PresetForm
+                form={form}
+                fieldArray={fieldArray}
+                fileData={fileData}
+                onFileDataChange={setFileData}
+              />
+            )}
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="shrink-0">
+            {step === 'manual' && !isEditing ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStep('ai-detect')}
+              >
+                Back
+              </Button>
+            ) : null}
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !isValid}>
-              {loading ? <Spinner className="mr-1" /> : null}
-              Save
-            </Button>
+            {step === 'manual' ? (
+              <Button
+                type="submit"
+                disabled={loading || !form.formState.isValid}
+              >
+                {loading ? <Spinner className="mr-1" /> : null}
+                Save
+              </Button>
+            ) : null}
           </DialogFooter>
         </form>
       </DialogContent>
