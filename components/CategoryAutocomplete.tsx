@@ -11,12 +11,14 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   fullWidth?: boolean;
+  disabled?: boolean;
 };
 
 export default function CategoryAutocomplete({
   value,
   onChange,
   fullWidth = true,
+  disabled = false,
 }: Props) {
   const trpc = useTRPC();
   const { data: categories } = useQuery(trpc.categories.list.queryOptions());
@@ -39,6 +41,7 @@ export default function CategoryAutocomplete({
       placeholder="Select category..."
       emptyMessage="No categories found."
       fullWidth={fullWidth}
+      disabled={disabled}
       renderOption={(option) => (
         <CategoryOptionContent option={option} categories={categories ?? []} />
       )}

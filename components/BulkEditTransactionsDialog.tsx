@@ -58,20 +58,21 @@ export default function BulkEditTransactionsDialog({
   onClose,
   onUpdate,
 }: Props) {
-  const { control, register, handleSubmit, watch } = useForm<FormValues>({
-    defaultValues: {
-      amountEnabled: false,
-      amount: '',
-      dateEnabled: false,
-      date: format(new Date(), 'yyyy-MM-dd'),
-      descriptionEnabled: false,
-      description: '',
-      typeEnabled: false,
-      type: 'Expense',
-      categoryEnabled: false,
-      categoryId: '',
-    },
-  });
+  const { control, register, handleSubmit, watch, setValue } =
+    useForm<FormValues>({
+      defaultValues: {
+        amountEnabled: false,
+        amount: '',
+        dateEnabled: false,
+        date: format(new Date(), 'yyyy-MM-dd'),
+        descriptionEnabled: false,
+        description: '',
+        typeEnabled: false,
+        type: 'Expense',
+        categoryEnabled: false,
+        categoryId: '',
+      },
+    });
 
   const amountEnabled = watch('amountEnabled');
   const dateEnabled = watch('dateEnabled');
@@ -136,7 +137,13 @@ export default function BulkEditTransactionsDialog({
               control={control}
               name="amountEnabled"
               render={({ field: { value, onChange } }) => (
-                <Checkbox checked={value} onCheckedChange={onChange} />
+                <Checkbox
+                  checked={value}
+                  onCheckedChange={(checked) => {
+                    onChange(checked);
+                    if (!checked) setValue('amount', '');
+                  }}
+                />
               )}
             />
             <Label htmlFor="bulk-amount" className="w-24 shrink-0">
@@ -156,7 +163,13 @@ export default function BulkEditTransactionsDialog({
               control={control}
               name="dateEnabled"
               render={({ field: { value, onChange } }) => (
-                <Checkbox checked={value} onCheckedChange={onChange} />
+                <Checkbox
+                  checked={value}
+                  onCheckedChange={(checked) => {
+                    onChange(checked);
+                    if (!checked) setValue('date', '');
+                  }}
+                />
               )}
             />
             <Label htmlFor="bulk-date" className="w-24 shrink-0">
@@ -175,7 +188,13 @@ export default function BulkEditTransactionsDialog({
               control={control}
               name="descriptionEnabled"
               render={({ field: { value, onChange } }) => (
-                <Checkbox checked={value} onCheckedChange={onChange} />
+                <Checkbox
+                  checked={value}
+                  onCheckedChange={(checked) => {
+                    onChange(checked);
+                    if (!checked) setValue('description', '');
+                  }}
+                />
               )}
             />
             <Label htmlFor="bulk-description" className="w-24 shrink-0">
@@ -193,7 +212,13 @@ export default function BulkEditTransactionsDialog({
               control={control}
               name="typeEnabled"
               render={({ field: { value, onChange } }) => (
-                <Checkbox checked={value} onCheckedChange={onChange} />
+                <Checkbox
+                  checked={value}
+                  onCheckedChange={(checked) => {
+                    onChange(checked);
+                    if (!checked) setValue('type', 'Expense');
+                  }}
+                />
               )}
             />
             <Label className="w-24 shrink-0">Type</Label>
@@ -226,7 +251,13 @@ export default function BulkEditTransactionsDialog({
               control={control}
               name="categoryEnabled"
               render={({ field: { value, onChange } }) => (
-                <Checkbox checked={value} onCheckedChange={onChange} />
+                <Checkbox
+                  checked={value}
+                  onCheckedChange={(checked) => {
+                    onChange(checked);
+                    if (!checked) setValue('categoryId', '');
+                  }}
+                />
               )}
             />
             <Label className="w-24 shrink-0">Category</Label>
@@ -235,7 +266,11 @@ export default function BulkEditTransactionsDialog({
                 control={control}
                 name="categoryId"
                 render={({ field: { value, onChange } }) => (
-                  <CategoryAutocomplete value={value} onChange={onChange} />
+                  <CategoryAutocomplete
+                    value={value}
+                    onChange={onChange}
+                    disabled={!categoryEnabled}
+                  />
                 )}
               />
             </div>
