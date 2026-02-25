@@ -18,15 +18,20 @@ export default function useNavigationKeyboardShortcuts() {
     }, 1000);
   });
 
-  const navigate = useCallback((e: KeyboardEvent, path: string) => {
-    if (!gPressedRef.current) return;
-    e.preventDefault();
-    gPressedRef.current = false;
-    clearTimeout(timeoutRef.current);
-    router.push(path);
-  }, [router]);
+  const navigate = useCallback(
+    (e: KeyboardEvent, path: string) => {
+      if (!gPressedRef.current) return;
+      e.preventDefault();
+      gPressedRef.current = false;
+      clearTimeout(timeoutRef.current);
+      router.push(path);
+    },
+    [router],
+  );
 
-  useHotkeys('t', (e) => navigate(e, '/dashboard/transactions?period=lastMonth'));
+  useHotkeys('t', (e) =>
+    navigate(e, '/dashboard/transactions?period=lastMonth'),
+  );
   useHotkeys('a', (e) => navigate(e, '/dashboard/accounts'));
   useHotkeys('c', (e) => navigate(e, '/dashboard/categories'));
   useHotkeys('b', (e) => navigate(e, '/dashboard/budget'));

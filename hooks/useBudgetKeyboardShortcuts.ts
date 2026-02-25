@@ -16,10 +16,14 @@ export default function useBudgetKeyboardShortcuts({
   onNextPeriod,
   searchInputRef,
 }: UseBudgetKeyboardShortcutsArgs) {
-  useHotkeys('o', () => {
-    if (isDialogOpen()) return;
-    onSettingsOpen();
-  }, { preventDefault: true });
+  useHotkeys(
+    'o',
+    () => {
+      if (isDialogOpen()) return;
+      onSettingsOpen();
+    },
+    { preventDefault: true },
+  );
   useHotkeys('left', () => {
     if (isDialogOpen()) return;
     onPreviousPeriod();

@@ -168,11 +168,11 @@ export default function TransactionsPage() {
       all[`${t.id}`] = true;
     }
     setRowSelection(all);
-  }, [filteredTransactions, setRowSelection]);
+  }, [filteredTransactions]);
 
   const handleDeselectAll = useCallback(() => {
     setRowSelection({});
-  }, [setRowSelection]);
+  }, []);
 
   useTransactionsKeyboardShortcuts({
     onCreateDialogOpen,

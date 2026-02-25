@@ -139,7 +139,7 @@ export function DataTable<TData, TValue>({
         wrapperClassName,
       )}
     >
-      <table className={cn('w-full caption-bottom text-sm', tableClassName)}>
+      <table className={cn('w-full caption-bottom text-xs', tableClassName)}>
         <TableHeader className="sticky top-0 z-20 bg-background shadow-sm after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-border">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
