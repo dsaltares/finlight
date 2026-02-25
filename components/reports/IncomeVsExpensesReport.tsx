@@ -123,7 +123,7 @@ export default function IncomeVsExpensesReport({
             content={
               <ReportTooltipContent
                 formatValue={(v) => formatAmount(v, currency)}
-                footer={{ label: 'Difference', valueKey: 'difference' }}
+                footer={{ label: 'Net', valueKey: 'difference' }}
               />
             }
           />
