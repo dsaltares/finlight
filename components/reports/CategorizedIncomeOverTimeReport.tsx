@@ -1,10 +1,10 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { SearchX } from 'lucide-react';
 import { useMemo } from 'react';
-import CategoryOverTimeReport from '@/components/reports/CategoryOverTimeReport';
 import EmptyState from '@/components/EmptyState';
+import CategoryOverTimeReport from '@/components/reports/CategoryOverTimeReport';
 import { Spinner } from '@/components/ui/spinner';
 import useInsightsFilters from '@/hooks/useInsightsFilters';
 import { useTRPC } from '@/lib/trpc';
@@ -16,12 +16,13 @@ export default function CategorizedIncomeOverTimeReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isPending: isLoading } = useQuery(
-    trpc.reports.getBucketedCategoryReport.queryOptions({
+  const { data, isPending: isLoading } = useQuery({
+    ...trpc.reports.getBucketedCategoryReport.queryOptions({
       ...queryInput,
       type: 'Income',
     }),
-  );
+    placeholderData: keepPreviousData,
+  });
   const { data: categories } = useQuery(trpc.categories.list.queryOptions());
   const colorMap = useMemo(
     () => Object.fromEntries((categories ?? []).map((c) => [c.name, c.color])),

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import type { RowSelectionState } from '@tanstack/react-table';
 import {
   FilterX,
@@ -38,9 +38,14 @@ export default function TransactionsPage() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const { queryInput, hasFilters, clearFilters } = useTransactionFilters();
 
-  const { data: transactions, isPending: isLoadingTransactions } = useQuery(
-    trpc.transactions.list.queryOptions(queryInput),
-  );
+  const {
+    data: transactions,
+    isPending: isLoadingTransactions,
+    isFetching: isFetchingTransactions,
+  } = useQuery({
+    ...trpc.transactions.list.queryOptions(queryInput),
+    placeholderData: keepPreviousData,
+  });
   const { data: accountsData, isPending: isLoadingAccounts } = useQuery(
     trpc.accounts.list.queryOptions({}),
   );
@@ -201,6 +206,9 @@ export default function TransactionsPage() {
             {filteredTransactions.length === 1 ? 'transaction' : 'transactions'}
           </span>
         ) : null}
+        {isFetchingTransactions && !isLoadingTransactions && (
+          <Spinner className="size-4 shrink-0 text-muted-foreground" />
+        )}
         <Input
           placeholder="Search..."
           value={search}

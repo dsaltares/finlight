@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { SearchX } from 'lucide-react';
 import { useMemo } from 'react';
@@ -49,9 +49,10 @@ type ModelRow = {
 export default function LlmCostReport({ compact }: { compact?: boolean } = {}) {
   const trpc = useTRPC();
   const { queryInput } = useInsightsFilters();
-  const { data, isPending: isLoading } = useQuery(
-    trpc.reports.getLlmCostReport.queryOptions(queryInput),
-  );
+  const { data, isPending: isLoading } = useQuery({
+    ...trpc.reports.getLlmCostReport.queryOptions(queryInput),
+    placeholderData: keepPreviousData,
+  });
   const { sorting, onSortingChange } = useSortFromUrl();
 
   const modelNames = useMemo(() => {

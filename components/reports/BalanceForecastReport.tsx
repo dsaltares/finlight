@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { SearchX } from 'lucide-react';
 import {
   Area,
@@ -36,9 +36,10 @@ export default function BalanceForecastReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput, displayCurrency } = useInsightsFilters();
-  const { data, isPending: isLoading } = useQuery(
-    trpc.reports.getBalanceForecastReport.queryOptions(queryInput),
-  );
+  const { data, isPending: isLoading } = useQuery({
+    ...trpc.reports.getBalanceForecastReport.queryOptions(queryInput),
+    placeholderData: keepPreviousData,
+  });
   const currency = displayCurrency;
 
   if (isLoading) {

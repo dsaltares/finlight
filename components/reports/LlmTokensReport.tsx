@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { SearchX } from 'lucide-react';
 import { useMemo } from 'react';
@@ -44,9 +44,10 @@ export default function LlmTokensReport({
 } = {}) {
   const trpc = useTRPC();
   const { queryInput } = useInsightsFilters();
-  const { data, isPending: isLoading } = useQuery(
-    trpc.reports.getLlmTokensReport.queryOptions(queryInput),
-  );
+  const { data, isPending: isLoading } = useQuery({
+    ...trpc.reports.getLlmTokensReport.queryOptions(queryInput),
+    placeholderData: keepPreviousData,
+  });
   const { sorting, onSortingChange } = useSortFromUrl();
 
   const rows = useMemo<TransposedRow[]>(
