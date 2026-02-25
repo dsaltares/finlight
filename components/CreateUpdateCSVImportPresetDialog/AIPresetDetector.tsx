@@ -69,7 +69,7 @@ export default function AIPresetDetector({ onDetected, onSkip }: Props) {
   );
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6">
+    <div className="flex min-h-full w-full flex-col items-center justify-center gap-6">
       <Card className="flex w-full max-w-md flex-col items-center gap-4 p-8">
         <Sparkles className="size-10 text-muted-foreground" />
         <div>

@@ -17,6 +17,9 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.30",
     "@base-ui/react": "^1.1.0",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@supercharge/promise-pool": "^3.2.0",
     "@tabler/icons-react": "^3.36.1",
     "@tanstack/react-query": "^5.90.20",
