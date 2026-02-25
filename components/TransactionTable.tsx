@@ -13,7 +13,7 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { type MouseEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import CategoryPill from '@/components/CategoryPill';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
@@ -73,6 +73,7 @@ export default function TransactionTable({
 }: Props) {
   const trpc = useTRPC();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastSelectedId = useRef<string | null>(null);
   const [sorting, onSortingChange] = useState<SortingState>(DEFAULT_SORT);
   const { setAccount, setCategory, setType } = useTransactionFilters();
 
@@ -190,9 +191,32 @@ export default function TransactionTable({
             }
           />
         ),
-        cell: ({ row }) => (
+        cell: ({ row, table }) => (
           <Checkbox
             checked={row.getIsSelected()}
+            onClick={(e: MouseEvent) => {
+              const rows = table.getRowModel().rows;
+              const currentIndex = rows.findIndex((r) => r.id === row.id);
+              if (e.shiftKey && lastSelectedId.current !== null) {
+                const anchorIndex = rows.findIndex(
+                  (r) => r.id === lastSelectedId.current,
+                );
+                if (anchorIndex !== -1 && currentIndex !== -1) {
+                  e.preventDefault();
+                  const start = Math.min(anchorIndex, currentIndex);
+                  const end = Math.max(anchorIndex, currentIndex);
+                  const next: RowSelectionState = {
+                    ...table.getState().rowSelection,
+                  };
+                  for (let i = start; i <= end; i++) {
+                    next[rows[i].id] = true;
+                  }
+                  table.setRowSelection(next);
+                  return;
+                }
+              }
+              lastSelectedId.current = row.id;
+            }}
             onCheckedChange={(value: boolean | 'indeterminate') =>
               row.toggleSelected(!!value)
             }
