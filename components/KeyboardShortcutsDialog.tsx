@@ -2,7 +2,8 @@
 
 import { Keyboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -36,18 +37,10 @@ export default function KeyboardShortcutsDialog() {
     [pathname],
   );
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== '?') return;
-      const tag = (e.target as HTMLElement).tagName;
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
-      if (isDialogOpen()) return;
-      e.preventDefault();
-      onOpen();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [onOpen]);
+  useHotkeys('mod+/', () => {
+    if (isDialogOpen()) return;
+    onOpen();
+  }, { preventDefault: true });
 
   if (shortcuts.length <= 1) return null;
 

@@ -7,7 +7,7 @@ type Shortcut = {
 };
 
 const commonShortcuts: Shortcut[] = [
-  { keys: ['?'], description: 'Keyboard shortcuts' },
+  { keys: ['mod', '/'], description: 'Keyboard shortcuts' },
 ];
 
 const transactionShortcuts: Shortcut[] = [
