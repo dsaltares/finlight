@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import z from 'zod';
 import { categorizeTransactions } from '@/server/ai';
 import { db } from '@/server/db';
+import { importFile } from '@/server/importFile';
 import { getDateWhereFromFilter } from '@/server/trpc/procedures/dateUtils';
 import { getUserSettings } from '@/server/trpc/procedures/userSettings';
 import { authedProcedure } from '../trpc';
@@ -405,6 +406,95 @@ const deleteManyTransactions = authedProcedure
     return owned.length;
   });
 
+const importTransactions = authedProcedure
+  .input(
+    z.object({
+      accountId: z.number(),
+      fileBase64: z.string().max(14_000_000),
+      fileName: z.string(),
+    }),
+  )
+  .output(z.number())
+  .mutation(async ({ ctx, input }) => {
+    const userId = ctx.user?.id;
+    if (!userId) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    const account = await db
+      .selectFrom('bank_account')
+      .selectAll()
+      .where('userId', '=', userId)
+      .where('id', '=', input.accountId)
+      .executeTakeFirst();
+    if (!account) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Account not found' });
+    }
+
+    const categories = await db
+      .selectFrom('category')
+      .select(['id', 'name', 'importPatterns'])
+      .where('userId', '=', userId)
+      .where('deletedAt', 'is', null)
+      .execute();
+
+    const preset = account.csvImportPresetId
+      ? ((await db
+          .selectFrom('csv_import_preset')
+          .selectAll()
+          .where('id', '=', account.csvImportPresetId)
+          .where('deletedAt', 'is', null)
+          .executeTakeFirst()) ?? null)
+      : null;
+
+    const parsed = await importFile({
+      userId,
+      fileBase64: input.fileBase64,
+      fileName: input.fileName,
+      currency: account.currency,
+      preset,
+      categories,
+    });
+
+    const enriched = parsed.map((t) => ({
+      ...t,
+      type: undefined as string | undefined,
+    }));
+    const settings = await getUserSettings(userId);
+
+    if (settings.aiCategorization) {
+      const descriptions = enriched.map((t) => t.description);
+      const results = await categorizeTransactions({
+        userId,
+        descriptions,
+        categories,
+        user: { email: ctx.user!.email, name: ctx.user!.name },
+      });
+
+      for (let i = 0; i < enriched.length; i++) {
+        const ai = results[i];
+        if (!ai) continue;
+        enriched[i].type = ai.type;
+        if (enriched[i].categoryId === null && ai.categoryId) {
+          enriched[i].categoryId = ai.categoryId;
+        }
+      }
+    }
+
+    const transactions = await db
+      .insertInto('account_transaction')
+      .values(
+        enriched.map((transaction) => ({
+          ...transaction,
+          accountId: account.id,
+        })),
+      )
+      .returningAll()
+      .execute();
+    await updateAccountBalance(account.id);
+    return transactions.length;
+  });
+
 export default {
   list: listTransactions,
   create: createTransaction,
@@ -413,4 +503,5 @@ export default {
   updateMany: updateManyTransactions,
   delete: deleteTransaction,
   deleteMany: deleteManyTransactions,
+  importFile: importTransactions,
 };

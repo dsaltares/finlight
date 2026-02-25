@@ -93,7 +93,7 @@ const listAccounts = authedProcedure
     return {
       accounts,
       total: {
-        value: total,
+        value: Math.round(total),
         currency: baseCurrency,
       },
     };
@@ -232,9 +232,11 @@ export async function updateAccountBalance(accountId: number) {
   return db
     .updateTable('bank_account')
     .set({
-      balance: transactions.reduce(
-        (sum, transaction) => sum + transaction.amount,
-        account.initialBalance,
+      balance: Math.round(
+        transactions.reduce(
+          (sum, transaction) => sum + transaction.amount,
+          account.initialBalance,
+        ),
       ),
     })
     .where('id', '=', accountId)

@@ -1,18 +1,15 @@
 import { TRPCError } from '@trpc/server';
 import lodash from 'lodash';
 import z from 'zod';
-import { parsePdfTransactions } from '@/server/ai';
-import { CSVImportFields } from '@/lib/importPresets';
+import { CsvImportFieldSchema } from '@/lib/importPresets';
 import { db } from '@/server/db';
 import { parseSpreadsheet } from '@/server/spreadsheet';
 import { authedProcedure } from '../trpc';
 
-const CSVImportFieldSchema = z.enum(CSVImportFields);
-
 const CSVImportPresetSchema = z.object({
   id: z.number(),
   name: z.string(),
-  fields: z.array(CSVImportFieldSchema),
+  fields: z.array(CsvImportFieldSchema),
   dateFormat: z.string(),
   delimiter: z.string(),
   decimal: z.string(),
@@ -175,36 +172,10 @@ const parseSpreadsheetProcedure = authedProcedure
     return parseSpreadsheet({ buffer, fileName: input.fileName });
   });
 
-const ParsedPdfTransactionSchema = z.object({
-  date: z.string(),
-  description: z.string(),
-  amount: z.number(),
-});
-
-const parsePdfProcedure = authedProcedure
-  .input(
-    z.object({
-      fileBase64: z.string().max(14_000_000),
-      currency: z.string(),
-    }),
-  )
-  .output(z.array(ParsedPdfTransactionSchema))
-  .mutation(async ({ ctx, input }) => {
-    if (!ctx.user) {
-      throw new TRPCError({ code: 'UNAUTHORIZED' });
-    }
-    return parsePdfTransactions({
-      userId: ctx.user.id,
-      fileBase64: input.fileBase64,
-      currency: input.currency,
-    });
-  });
-
 export default {
   list: listPresets,
   create: createPreset,
   delete: deletePreset,
   update: updatePreset,
   parseSpreadsheet: parseSpreadsheetProcedure,
-  parsePdf: parsePdfProcedure,
 };

@@ -41,7 +41,6 @@ export default function AccountListItem({
     handleUploadClick,
     handleFileSelected,
     isPending: isImporting,
-    canImport,
   } = useImportTransactions(account);
 
   return (
@@ -71,21 +70,19 @@ export default function AccountListItem({
       </Link>
 
       <CardAction className="ml-auto flex shrink-0 items-center gap-1 self-center px-4">
-        {canImport && (
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={isImporting}
-            onClick={handleUploadClick}
-            aria-label={`Import transactions for ${account.name}`}
-          >
-            {isImporting ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Upload className="size-4" />
-            )}
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={isImporting}
+          onClick={handleUploadClick}
+          aria-label={`Import transactions for ${account.name}`}
+        >
+          {isImporting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Upload className="size-4" />
+          )}
+        </Button>
         <Button
           variant="ghost"
           size="icon"
