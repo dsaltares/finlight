@@ -120,6 +120,7 @@ export default function IncomeVsExpensesReport({
           {!compact && <XAxis dataKey="bucket" />}
           {!compact && <YAxis />}
           <ChartTooltip
+            wrapperStyle={{ zIndex: 50 }}
             content={
               <ReportTooltipContent
                 formatValue={(v) => formatAmount(v, currency)}

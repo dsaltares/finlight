@@ -94,6 +94,7 @@ export default function CategoryReport({
     >
       <PieChart>
         <ChartTooltip
+          wrapperStyle={{ zIndex: 50 }}
           content={
             <ChartTooltipContent
               nameKey="name"

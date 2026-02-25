@@ -155,6 +155,7 @@ export default function AccountBalancesReport({
           {!compact && <XAxis dataKey="bucket" />}
           {!compact && <YAxis />}
           <ChartTooltip
+            wrapperStyle={{ zIndex: 50 }}
             content={
               <ReportTooltipContent
                 formatValue={(v) => formatAmount(v, currency)}

@@ -147,6 +147,7 @@ export default function LlmCostReport({ compact }: { compact?: boolean } = {}) {
           {!compact && <XAxis dataKey="bucket" />}
           {!compact && <YAxis />}
           <ChartTooltip
+            wrapperStyle={{ zIndex: 50 }}
             content={
               <ReportTooltipContent
                 formatValue={formatCost}

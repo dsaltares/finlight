@@ -238,6 +238,7 @@ export default function BudgetOverTimeSection({
           {!compact && <XAxis dataKey="bucket" />}
           {!compact && <YAxis />}
           <ChartTooltip
+            wrapperStyle={{ zIndex: 50 }}
             content={
               <ChartTooltipContent
                 formatter={(value, _name, item) => (
