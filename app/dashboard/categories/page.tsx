@@ -31,7 +31,7 @@ export default function CategoriesPage() {
   useHotkeys('n', () => {
     if (isDialogOpen()) return;
     onCreateDialogOpen();
-  });
+  }, { preventDefault: true });
 
   const { mutateAsync: createCategory, isPending: isCreating } = useMutation(
     trpc.categories.create.mutationOptions({
@@ -97,7 +97,7 @@ export default function CategoriesPage() {
         />
         <Button onClick={onCreateDialogOpen}>
           <Plus className="size-4" />
-          New category (N)
+          New category
         </Button>
       </div>
 

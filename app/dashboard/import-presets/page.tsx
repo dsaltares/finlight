@@ -27,7 +27,7 @@ export default function ImportPresetsPage() {
   useHotkeys('n', () => {
     if (isDialogOpen()) return;
     onCreateDialogOpen();
-  });
+  }, { preventDefault: true });
 
   const { mutateAsync: createPreset, isPending: isCreating } = useMutation(
     trpc.importPresets.create.mutationOptions({
@@ -71,7 +71,7 @@ export default function ImportPresetsPage() {
       <div className="flex shrink-0 items-center justify-end">
         <Button onClick={onCreateDialogOpen}>
           <Plus className="size-4" />
-          New preset (N)
+          New preset
         </Button>
       </div>
 

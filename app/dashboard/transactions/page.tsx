@@ -177,11 +177,15 @@ export default function TransactionsPage() {
   useHotkeys('n', () => {
     if (isDialogOpen()) return;
     onCreateDialogOpen();
-  });
+  }, { preventDefault: true });
+  useHotkeys('f', () => {
+    if (isDialogOpen()) return;
+    onFilterDialogOpen();
+  }, { preventDefault: true });
   useHotkeys('e', () => {
     if (isDialogOpen() || selectedCount === 0) return;
     onBulkEditDialogOpen();
-  });
+  }, { preventDefault: true });
   useHotkeys('delete, backspace', () => {
     if (isDialogOpen() || selectedCount === 0) return;
     onBulkDeleteDialogOpen();
@@ -267,7 +271,7 @@ export default function TransactionsPage() {
                   </span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Edit selected (E)</TooltipContent>
+              <TooltipContent>Edit selected</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -283,7 +287,7 @@ export default function TransactionsPage() {
                   </span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete selected (Del)</TooltipContent>
+              <TooltipContent>Delete selected</TooltipContent>
             </Tooltip>
           </>
         ) : null}
@@ -325,7 +329,7 @@ export default function TransactionsPage() {
               <Plus className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>New transaction (N)</TooltipContent>
+          <TooltipContent>New transaction</TooltipContent>
         </Tooltip>
       </div>
 

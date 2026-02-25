@@ -28,7 +28,7 @@ export default function AccountsPage() {
   useHotkeys('n', () => {
     if (isDialogOpen()) return;
     onCreateDialogOpen();
-  });
+  }, { preventDefault: true });
 
   const { mutateAsync: createAccount, isPending: isCreating } = useMutation(
     trpc.accounts.create.mutationOptions({
@@ -92,7 +92,7 @@ export default function AccountsPage() {
         ) : null}
         <Button onClick={onCreateDialogOpen} className="ml-auto">
           <Plus className="size-4" />
-          New account (N)
+          New account
         </Button>
       </div>
 
