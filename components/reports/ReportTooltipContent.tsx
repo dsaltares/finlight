@@ -10,7 +10,6 @@ type TooltipFooter = {
 type Props = {
   active?: boolean;
   payload?: Payload<number, string>[];
-  label?: string;
   formatValue: (value: number) => string;
   footer?: TooltipFooter;
   excludeFromItems?: string;
@@ -19,7 +18,6 @@ type Props = {
 export default function ReportTooltipContent({
   active,
   payload,
-  label,
   formatValue,
   footer,
   excludeFromItems,
@@ -34,7 +32,6 @@ export default function ReportTooltipContent({
 
   return (
     <div className="border-border/50 bg-background grid min-w-32 items-start gap-1.5 border px-2.5 py-1.5 text-xs shadow-xl">
-      {label && <div className="font-medium">{label}</div>}
       <div className="grid gap-1.5">
         {items.map((item) => (
           <div

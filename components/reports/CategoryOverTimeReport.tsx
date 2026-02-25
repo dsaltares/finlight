@@ -135,7 +135,7 @@ export default function CategoryOverTimeReport({
     <div className="flex flex-col gap-4">
       <ChartContainer
         config={config}
-        className={compact ? 'h-48 w-full' : 'h-96 w-full'}
+        className={compact ? 'h-48 w-full overflow-visible' : 'h-96 w-full'}
       >
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
