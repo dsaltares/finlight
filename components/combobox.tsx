@@ -30,6 +30,7 @@ type Props = {
   placeholder?: string;
   emptyMessage?: string;
   fullWidth?: boolean;
+  disabled?: boolean;
   renderOption?: (option: Option) => ReactNode;
 };
 
@@ -40,6 +41,7 @@ export default function Combobox({
   placeholder = 'Select...',
   emptyMessage = 'No options found.',
   fullWidth = false,
+  disabled = false,
   renderOption,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -59,6 +61,7 @@ export default function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          disabled={disabled}
           className={cn('justify-between', fullWidth ? 'w-full' : 'w-[200px]')}
         >
           <span className="flex flex-1 items-center truncate">
