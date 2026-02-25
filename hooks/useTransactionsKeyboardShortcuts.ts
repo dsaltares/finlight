@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import useFocusSearch from '@/hooks/useFocusSearch';
 import { isDialogOpen } from '@/lib/keyboard';
 
 type UseTransactionsKeyboardShortcutsArgs = {
@@ -51,12 +52,7 @@ export default function useTransactionsKeyboardShortcuts({
     if (isDialogOpen() || selectedCount === 0) return;
     handleDeselectAll();
   });
-  useHotkeys('/', (e) => {
-    if (e.metaKey || e.ctrlKey) return;
-    if (isDialogOpen()) return;
-    e.preventDefault();
-    searchInputRef.current?.focus();
-  });
+  useFocusSearch(searchInputRef);
   useHotkeys('x', () => {
     if (isDialogOpen() || !hasFilters) return;
     clearFilters();

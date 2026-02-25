@@ -1,7 +1,7 @@
 'use client';
 
 import { IconAdjustments } from '@tabler/icons-react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addMonths, addQuarters, addYears, format } from 'date-fns';
 import { Check, Loader2, Search } from 'lucide-react';
 import { useQueryState } from 'nuqs';
@@ -11,6 +11,7 @@ import BudgetOptionsDialog from '@/components/BudgetOptionsDialog';
 import BudgetTable, { type BudgetEntry } from '@/components/BudgetTable';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import {
   Tooltip,
   TooltipContent,
@@ -40,9 +41,10 @@ export default function BudgetPage() {
   const isDirtyRef = useRef(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const savedTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const { data, isPending: isLoading } = useQuery(
-    trpc.budget.get.queryOptions(queryInput),
-  );
+  const { data, isPending: isLoading, isFetching } = useQuery({
+    ...trpc.budget.get.queryOptions(queryInput),
+    placeholderData: keepPreviousData,
+  });
 
   useEffect(() => {
     if (data) {
@@ -159,6 +161,9 @@ export default function BudgetPage() {
     >
       <div className="flex shrink-0 flex-row items-center gap-2">
         <span className="shrink-0 text-sm font-medium">{periodLabel}</span>
+        {isFetching && !isLoading && (
+          <Spinner className="size-4 shrink-0 text-muted-foreground" />
+        )}
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input

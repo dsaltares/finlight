@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import useFocusSearch from '@/hooks/useFocusSearch';
 import { isDialogOpen } from '@/lib/keyboard';
 
 type UseCategoriesKeyboardShortcutsArgs = {
@@ -15,10 +16,5 @@ export default function useCategoriesKeyboardShortcuts({
     if (isDialogOpen()) return;
     onCreateDialogOpen();
   }, { preventDefault: true });
-  useHotkeys('/', (e) => {
-    if (e.metaKey || e.ctrlKey) return;
-    if (isDialogOpen()) return;
-    e.preventDefault();
-    searchInputRef.current?.focus();
-  });
+  useFocusSearch(searchInputRef);
 }
