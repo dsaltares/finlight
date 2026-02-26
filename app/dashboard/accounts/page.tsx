@@ -82,7 +82,7 @@ export default function AccountsPage() {
     <div
       className="flex min-h-0 flex-col gap-4 overflow-hidden"
       style={{
-        height: 'calc(100dvh - var(--header-height) - 2rem)',
+        height: 'calc(100dvh - var(--header-height) - var(--content-padding) * 2)',
       }}
     >
       {hasAccounts && total ? (

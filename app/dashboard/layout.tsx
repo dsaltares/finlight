@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
       <AppSidebar />
       <SidebarInset>
         <SiteHeader />
-        <div className="flex flex-1 min-h-0 flex-col p-4 w-full">
+        <div className="flex flex-1 min-h-0 flex-col p-(--content-padding) [--content-padding:0.5rem] md:[--content-padding:1rem] w-full">
           <div className="@container/main flex flex-1 min-h-0 flex-col gap-2">
             <Suspense>{children}</Suspense>
           </div>
