@@ -3,6 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { useMemo } from 'react';
+import CategoryPill from '@/components/CategoryPill';
 import { type ColumnMeta, DataTable } from '@/components/DataTable';
 import useSortFromUrl from '@/hooks/useSortFromUrl';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ export type BudgetEntry = {
   type: 'Income' | 'Expense';
   categoryId: number;
   categoryName: string;
+  categoryColor: string;
   target: number;
   actual: number;
 };
@@ -115,6 +117,13 @@ export default function BudgetTable({
       {
         accessorKey: 'categoryName',
         header: 'Category',
+        cell: ({ row }) => (
+          <CategoryPill
+            categoryId={row.original.categoryId}
+            name={row.original.categoryName}
+            color={row.original.categoryColor}
+          />
+        ),
       },
       {
         accessorKey: 'target',
