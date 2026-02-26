@@ -25,6 +25,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 type NavItem = {
@@ -78,6 +79,7 @@ const NavItems: NavItem[] = [
 
 export function NavMain() {
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
   const selectedItemUrl = useMemo(() => {
     const matchingItems = NavItems.filter((item) => {
       const itemPath = item.url.split('?')[0];
@@ -103,7 +105,10 @@ export function NavMain() {
                 asChild
                 isActive={selectedItemUrl === item.url}
               >
-                <Link href={item.url}>
+                <Link
+                  href={item.url}
+                  onClick={() => isMobile && setOpenMobile(false)}
+                >
                   {item.icon && <item.icon />}
                   <span>{item.name}</span>
                 </Link>
