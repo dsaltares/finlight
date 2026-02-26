@@ -1,6 +1,9 @@
 import { format as formatDate } from 'date-fns/format';
+import { isValid } from 'date-fns/isValid';
 import { parse as parseDate } from 'date-fns/parse';
 import Papa from 'papaparse';
+import type { ImportParseError } from '@/lib/importErrors';
+import { serializeImportErrors } from '@/lib/importErrors';
 import { decodeTextBuffer } from '@/lib/fileImport';
 import type { CSVImportField, ImportPresetConfig } from '@/lib/importPresets';
 import { generateImportPreset, parsePdfTransactions } from '@/server/ai';
@@ -12,6 +15,15 @@ import {
 } from '@/server/spreadsheet';
 
 const logger = getLogger('importFile');
+
+export class ImportValidationError extends Error {
+  errors: ImportParseError[];
+  constructor(errors: ImportParseError[]) {
+    super(serializeImportErrors(errors));
+    this.name = 'ImportValidationError';
+    this.errors = errors;
+  }
+}
 
 const SpreadsheetExtensions = new Set(['.xls', '.xlsx']);
 
@@ -202,8 +214,36 @@ function mapRecordsToTransactions({
 }: MapRecordsArgs): ParsedTransaction[] {
   const dateIndex = preset.fields.indexOf('Date');
   const descriptionIndex = preset.fields.indexOf('Description');
+  const expectedColumns = preset.fields.length;
+  const errors: ImportParseError[] = [];
+  const transactions: ParsedTransaction[] = [];
 
-  return records.map((record) => {
+  for (let i = 0; i < records.length; i++) {
+    const record = records[i];
+    const row = i + 1 + preset.rowsToSkipStart;
+
+    if (record.length !== expectedColumns) {
+      errors.push({
+        row,
+        column: String(expectedColumns),
+        value: String(record.length),
+        type: 'wrong_column_count',
+      });
+      continue;
+    }
+
+    const rowErrors = validateRecord({
+      record,
+      row,
+      preset,
+      dateIndex,
+      descriptionIndex,
+    });
+    if (rowErrors.length > 0) {
+      errors.push(...rowErrors);
+      continue;
+    }
+
     const description = record[descriptionIndex] || '';
     const amount = parseNumericField(record, preset, 'Amount');
     const fee = parseNumericField(record, preset, 'Fee');
@@ -211,13 +251,102 @@ function mapRecordsToTransactions({
     const withdrawal = parseNumericField(record, preset, 'Withdrawal');
     const actualAmount = deposit || -Math.abs(withdrawal) || amount;
 
-    return {
+    transactions.push({
       date: formatDateISO(record[dateIndex], preset.dateFormat),
       description,
       amount: Math.round((actualAmount - fee) * 100),
       categoryId: matchCategoryByPattern(description, categories),
-    };
-  });
+    });
+  }
+
+  if (errors.length > 0) {
+    throw new ImportValidationError(errors);
+  }
+
+  return transactions;
+}
+
+type ValidateRecordArgs = {
+  record: string[];
+  row: number;
+  preset: ImportPresetConfig;
+  dateIndex: number;
+  descriptionIndex: number;
+};
+
+function validateRecord({
+  record,
+  row,
+  preset,
+  dateIndex,
+  descriptionIndex,
+}: ValidateRecordArgs): ImportParseError[] {
+  const errors: ImportParseError[] = [];
+
+  if (dateIndex >= 0) {
+    const dateStr = record[dateIndex]?.trim();
+    if (!dateStr) {
+      errors.push({
+        row,
+        column: 'Date',
+        value: '',
+        type: 'missing_required_field',
+      });
+    } else if (!isValidDate(dateStr, preset.dateFormat)) {
+      errors.push({
+        row,
+        column: 'Date',
+        value: dateStr,
+        type: 'invalid_date',
+      });
+    }
+  }
+
+  if (descriptionIndex >= 0) {
+    const description = record[descriptionIndex]?.trim();
+    if (!description) {
+      errors.push({
+        row,
+        column: 'Description',
+        value: '',
+        type: 'missing_required_field',
+      });
+    }
+  }
+
+  for (const fieldName of AmountFields) {
+    const fieldIndex = preset.fields.indexOf(fieldName);
+    if (fieldIndex < 0) continue;
+    const raw = record[fieldIndex]?.trim();
+    if (!raw) continue;
+    const value = parseNumericField(record, preset, fieldName);
+    if (Number.isNaN(value)) {
+      errors.push({
+        row,
+        column: fieldName,
+        value: raw,
+        type: 'invalid_amount',
+      });
+    }
+  }
+
+  return errors;
+}
+
+const AmountFields: CSVImportField[] = [
+  'Amount',
+  'Fee',
+  'Deposit',
+  'Withdrawal',
+];
+
+function isValidDate(dateStr: string, dateFormat: string): boolean {
+  const now = new Date();
+  const utcNow = new Date(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()),
+  );
+  const parsed = parseDate(dateStr, dateFormat, utcNow);
+  return isValid(parsed);
 }
 
 function parseNumericField(

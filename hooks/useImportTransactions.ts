@@ -1,20 +1,31 @@
 import { useMutation } from '@tanstack/react-query';
-import { type ChangeEventHandler, useCallback, useRef } from 'react';
+import { type ChangeEventHandler, useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { arrayBufferToBase64 } from '@/lib/fileImport';
+import type { ImportParseError } from '@/lib/importErrors';
+import { parseImportErrors } from '@/lib/importErrors';
 import { type RouterOutput, useTRPC } from '@/lib/trpc';
 
 type Account = RouterOutput['accounts']['list']['accounts'][number];
 
 export default function useImportTransactions(account: Account) {
   const trpc = useTRPC();
+  const [importErrors, setImportErrors] = useState<ImportParseError[]>([]);
+  const [errorsDialogOpen, setErrorsDialogOpen] = useState(false);
+
   const { mutate: importFileMutation, isPending } = useMutation(
     trpc.transactions.importFile.mutationOptions({
       onSuccess: (count: number) => {
         toast.success(`Imported ${count} transactions.`);
       },
       onError: (e) => {
-        toast.error(`Failed to import transactions. ${e.message}`);
+        const errors = parseImportErrors(e.message);
+        if (errors) {
+          setImportErrors(errors);
+          setErrorsDialogOpen(true);
+        } else {
+          toast.error(`Failed to import transactions. ${e.message}`);
+        }
       },
     }),
   );
@@ -42,10 +53,17 @@ export default function useImportTransactions(account: Account) {
     [importFileMutation, account.id],
   );
 
+  const handleErrorsDialogClose = useCallback(() => {
+    setErrorsDialogOpen(false);
+  }, []);
+
   return {
     fileInputRef,
     isPending,
     handleUploadClick,
     handleFileSelected,
+    importErrors,
+    errorsDialogOpen,
+    handleErrorsDialogClose,
   };
 }
