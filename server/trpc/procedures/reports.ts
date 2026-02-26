@@ -342,7 +342,6 @@ async function computeAccountBalances(
 ): Promise<PositionBucket[]> {
   const currency = await resolveTargetCurrency(input.currency, userId);
   const transactions = await getTransactions(userId, {
-    date: input.date,
     accounts: input.accounts,
     timeZone: input.timeZone,
   });
