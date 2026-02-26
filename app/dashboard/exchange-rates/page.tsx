@@ -58,7 +58,8 @@ export default function ExchangeRatesPage() {
     <div
       className="flex min-h-0 flex-col gap-4 overflow-hidden"
       style={{
-        height: 'calc(100dvh - var(--header-height) - var(--content-padding) * 2)',
+        height:
+          'calc(100dvh - var(--header-height) - var(--content-padding) * 2)',
       }}
     >
       <div className="flex shrink-0 flex-row items-center justify-between gap-3">
