@@ -3,7 +3,7 @@ import { sql } from 'kysely';
 import z from 'zod';
 import { categorizeTransactions } from '@/server/ai';
 import { db } from '@/server/db';
-import { importFile } from '@/server/importFile';
+import { ImportValidationError, importFile } from '@/server/importFile';
 import { rowsToCsv } from '@/server/spreadsheet';
 import { getDateWhereFromFilter } from '@/server/trpc/procedures/dateUtils';
 import { getUserSettings } from '@/server/trpc/procedures/userSettings';
@@ -449,14 +449,22 @@ const importTransactions = authedProcedure
           .executeTakeFirst()) ?? null)
       : null;
 
-    const parsed = await importFile({
-      userId,
-      fileBase64: input.fileBase64,
-      fileName: input.fileName,
-      currency: account.currency,
-      preset,
-      categories,
-    });
+    let parsed: Awaited<ReturnType<typeof importFile>>;
+    try {
+      parsed = await importFile({
+        userId,
+        fileBase64: input.fileBase64,
+        fileName: input.fileName,
+        currency: account.currency,
+        preset,
+        categories,
+      });
+    } catch (e) {
+      if (e instanceof ImportValidationError) {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: e.message });
+      }
+      throw e;
+    }
 
     const enriched = parsed.map((t) => ({
       ...t,

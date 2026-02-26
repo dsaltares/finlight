@@ -20,7 +20,10 @@ import AccountRowActions from './AccountRowActions';
 
 type Account = RouterOutput['accounts']['list']['accounts'][number];
 
-export const DefaultSort: ColumnSort = { id: 'balanceInBaseCurrency', desc: true };
+export const DefaultSort: ColumnSort = {
+  id: 'balanceInBaseCurrency',
+  desc: true,
+};
 const columnHelper = createColumnHelper<Account>();
 
 type UseAccountTableArgs = {
@@ -50,10 +53,10 @@ export default function useAccountTable({
       columnHelper.accessor('name', {
         header: 'Name',
         cell: (info) => {
-          const href = serializeTransactionFilters(
-            '/dashboard/transactions',
-            { accounts: [info.row.original.id], period: 'lastMonth' },
-          );
+          const href = serializeTransactionFilters('/dashboard/transactions', {
+            accounts: [info.row.original.id],
+            period: 'lastMonth',
+          });
           return (
             <Link href={href} className="hover:underline">
               {info.getValue()}
@@ -83,11 +86,7 @@ export default function useAccountTable({
           const balance = info.getValue();
           const currency = info.row.original.currency;
           return (
-            <span
-              className={
-                balance >= 0 ? 'text-green-600' : 'text-red-600'
-              }
-            >
+            <span className={balance >= 0 ? 'text-green-600' : 'text-red-600'}>
               {formatAmount(balance, currency)}
             </span>
           );
@@ -99,11 +98,7 @@ export default function useAccountTable({
         cell: (info) => {
           const balance = info.getValue();
           return (
-            <span
-              className={
-                balance >= 0 ? 'text-green-600' : 'text-red-600'
-              }
-            >
+            <span className={balance >= 0 ? 'text-green-600' : 'text-red-600'}>
               {formatAmount(balance, baseCurrency)}
             </span>
           );
