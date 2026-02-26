@@ -3,6 +3,7 @@
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import type { RowSelectionState } from '@tanstack/react-table';
 import {
+  Download,
   FilterX,
   Pencil,
   Plus,
@@ -11,6 +12,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useQueryState } from 'nuqs';
+import pluralize from 'pluralize';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import BulkEditTransactionsDialog from '@/components/BulkEditTransactionsDialog';
@@ -174,6 +176,31 @@ export default function TransactionsPage() {
     setRowSelection({});
   }, []);
 
+  const { mutate: exportTransactions, isPending: isExporting } = useMutation(
+    trpc.transactions.export.mutationOptions({
+      onSuccess: (csv) => {
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'transactions.csv';
+        link.click();
+        URL.revokeObjectURL(url);
+      },
+      onError: (error) => {
+        toast.error(
+          error.message
+            ? `Failed to export transactions. ${error.message}`
+            : 'Failed to export transactions.',
+        );
+      },
+    }),
+  );
+
+  const handleExport = useCallback(() => {
+    exportTransactions(queryInput);
+  }, [exportTransactions, queryInput]);
+
   useTransactionsKeyboardShortcuts({
     onCreateDialogOpen,
     onFilterDialogOpen,
@@ -230,8 +257,11 @@ export default function TransactionsPage() {
       <div className="flex shrink-0 flex-row items-center gap-3">
         {transactions && transactions.length > 0 ? (
           <span className="shrink-0 text-sm text-muted-foreground">
-            {filteredTransactions.length}{' '}
-            {filteredTransactions.length === 1 ? 'transaction' : 'transactions'}
+            {filteredTransactions.length}
+            <span className="hidden sm:inline">
+              {' '}
+              {pluralize('transaction', filteredTransactions.length)}
+            </span>
           </span>
         ) : null}
         {isFetchingTransactions && !isLoadingTransactions && (
@@ -308,6 +338,26 @@ export default function TransactionsPage() {
           </TooltipTrigger>
           <TooltipContent>Filters</TooltipContent>
         </Tooltip>
+        {filteredTransactions.length > 0 ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleExport}
+                disabled={isExporting}
+                className="shrink-0"
+              >
+                {isExporting ? (
+                  <Spinner className="size-4" />
+                ) : (
+                  <Download className="size-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Export CSV</TooltipContent>
+          </Tooltip>
+        ) : null}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

@@ -1,8 +1,10 @@
 import { TRPCError } from '@trpc/server';
+import { sql } from 'kysely';
 import z from 'zod';
 import { categorizeTransactions } from '@/server/ai';
 import { db } from '@/server/db';
 import { importFile } from '@/server/importFile';
+import { rowsToCsv } from '@/server/spreadsheet';
 import { getDateWhereFromFilter } from '@/server/trpc/procedures/dateUtils';
 import { getUserSettings } from '@/server/trpc/procedures/userSettings';
 import { authedProcedure } from '../trpc';
@@ -29,19 +31,19 @@ export const TransactionSchema = z.object({
 
 export type Transaction = z.infer<typeof TransactionSchema>;
 
+const TransactionFilterInput = z.object({
+  date: DateFilterSchema.optional(),
+  timeZone: z.string().optional(),
+  minAmount: z.number().optional(),
+  maxAmount: z.number().optional(),
+  accounts: z.number().array().optional(),
+  type: TransactionTypeSchema.optional(),
+  categories: z.number().array().optional(),
+  description: z.string().optional(),
+});
+
 const listTransactions = authedProcedure
-  .input(
-    z.object({
-      date: DateFilterSchema.optional(),
-      timeZone: z.string().optional(),
-      minAmount: z.number().optional(),
-      maxAmount: z.number().optional(),
-      accounts: z.number().array().optional(),
-      type: TransactionTypeSchema.optional(),
-      categories: z.number().array().optional(),
-      description: z.string().optional(),
-    }),
-  )
+  .input(TransactionFilterInput)
   .output(z.array(TransactionSchema))
   .query(
     async ({
@@ -495,6 +497,175 @@ const importTransactions = authedProcedure
     return transactions.length;
   });
 
+const exportTransactions = authedProcedure
+  .input(TransactionFilterInput)
+  .output(z.string())
+  .mutation(
+    async ({
+      ctx,
+      input: {
+        date,
+        timeZone,
+        minAmount,
+        maxAmount,
+        accounts,
+        type,
+        categories,
+        description,
+      },
+    }) => {
+      const userId = ctx.user?.id;
+      if (!userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+      }
+
+      let query = await db
+        .selectFrom('account_transaction as t')
+        .innerJoin('bank_account', 't.accountId', 'bank_account.id')
+        .select([
+          't.id',
+          't.amount',
+          't.date',
+          't.description',
+          't.type',
+          't.categoryId',
+          't.accountId',
+          'bank_account.name as accountName',
+          'bank_account.currency',
+        ])
+        .where('bank_account.userId', '=', userId)
+        .where('t.deletedAt', 'is', null);
+
+      if (accounts && accounts.length > 0) {
+        query = query.where('accountId', 'in', accounts);
+      }
+
+      const dateFilter = getDateWhereFromFilter({ filter: date, timeZone });
+      if (dateFilter.gte) {
+        query = query.where('date', '>=', dateFilter.gte);
+      }
+      if (dateFilter.lte) {
+        query = query.where('date', '<=', dateFilter.lte);
+      }
+
+      if (minAmount !== undefined) {
+        query = query.where('amount', '>=', minAmount);
+      }
+      if (maxAmount !== undefined) {
+        query = query.where('amount', '<=', maxAmount);
+      }
+
+      if (type) {
+        query = query.where('type', 'is', type);
+      }
+
+      if (categories && categories.length > 0) {
+        const includeUncategorized = categories.includes(
+          UncategorizedFilterValue,
+        );
+        const categoryIds = categories.filter(
+          (id) => id !== UncategorizedFilterValue,
+        );
+        if (includeUncategorized && categoryIds.length > 0) {
+          query = query.where((eb) =>
+            eb.or([
+              eb('categoryId', 'is', null),
+              eb('categoryId', 'in', categoryIds),
+            ]),
+          );
+        } else if (includeUncategorized) {
+          query = query.where('categoryId', 'is', null);
+        } else {
+          query = query.where('categoryId', 'in', categoryIds);
+        }
+      }
+
+      if (description) {
+        query = query.where('description', 'ilike', `%${description}%`);
+      }
+
+      const filteredIds = (await query.select('t.id').execute()).map(
+        (r) => r.id,
+      );
+
+      if (filteredIds.length === 0) {
+        return '';
+      }
+
+      const accountIds = [
+        ...new Set(
+          (
+            await db
+              .selectFrom('account_transaction')
+              .select('accountId')
+              .where('id', 'in', filteredIds)
+              .groupBy('accountId')
+              .execute()
+          ).map((r) => r.accountId),
+        ),
+      ];
+
+      const rows = await db
+        .with('running_balance', (qb) =>
+          qb
+            .selectFrom('account_transaction as t')
+            .innerJoin('bank_account as a', 't.accountId', 'a.id')
+            .select([
+              't.id',
+              sql<number>`a.initialBalance + sum(t.amount) over (partition by t.accountId order by t.date asc, t.id asc)`.as(
+                'balance',
+              ),
+            ])
+            .where('t.deletedAt', 'is', null)
+            .where('t.accountId', 'in', accountIds),
+        )
+        .selectFrom('account_transaction as t')
+        .innerJoin('bank_account as a', 't.accountId', 'a.id')
+        .innerJoin('running_balance as rb', 't.id', 'rb.id')
+        .leftJoin('category as c', 't.categoryId', 'c.id')
+        .select([
+          't.date',
+          'a.name as accountName',
+          'a.currency',
+          't.amount',
+          'rb.balance',
+          't.type',
+          'c.name as categoryName',
+          't.description',
+        ])
+        .where('t.id', 'in', filteredIds)
+        .orderBy('t.date', 'asc')
+        .orderBy('t.id', 'asc')
+        .execute();
+
+      const header = [
+        'Date',
+        'Account',
+        'Currency',
+        'Amount',
+        'Balance',
+        'Type',
+        'Category',
+        'Description',
+      ];
+      const csvRows = [
+        header,
+        ...rows.map((t) => [
+          t.date,
+          t.accountName,
+          t.currency,
+          (t.amount / 100).toFixed(2),
+          (t.balance / 100).toFixed(2),
+          t.type,
+          t.categoryName ?? '',
+          t.description,
+        ]),
+      ];
+
+      return rowsToCsv({ rows: csvRows });
+    },
+  );
+
 export default {
   list: listTransactions,
   create: createTransaction,
@@ -504,4 +675,5 @@ export default {
   delete: deleteTransaction,
   deleteMany: deleteManyTransactions,
   importFile: importTransactions,
+  export: exportTransactions,
 };
