@@ -101,6 +101,7 @@ const BudgetEntryOutputSchema = z.object({
   type: BudgetEntryTypeSchema,
   categoryId: z.number(),
   categoryName: z.string(),
+  categoryColor: z.string(),
   target: z.number(),
   actual: z.number(),
 });
@@ -155,7 +156,7 @@ const get = authedProcedure
       txQuery.execute(),
       db
         .selectFrom('category')
-        .select(['id', 'name'])
+        .select(['id', 'name', 'color'])
         .where('userId', '=', ctx.user.id)
         .where('deletedAt', 'is', null)
         .execute(),
@@ -201,6 +202,7 @@ const get = authedProcedure
         type: entry.type as 'Income' | 'Expense',
         categoryId: entry.categoryId,
         categoryName: categoriesById[entry.categoryId]?.name ?? 'Unknown',
+        categoryColor: categoriesById[entry.categoryId]?.color ?? '#6B7280',
         target: Math.round(multiplier * entry.target),
         actual: getActual(entry.categoryId, entry.type),
       })),
@@ -208,6 +210,7 @@ const get = authedProcedure
         type: 'Expense' as const,
         categoryId: category.id,
         categoryName: category.name,
+        categoryColor: category.color,
         target: 0,
         actual: getActual(category.id, null),
       })),
