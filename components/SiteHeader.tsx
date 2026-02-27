@@ -15,6 +15,7 @@ const RouteTitleMap: Record<string, string> = {
   '/dashboard/import-presets': 'Import Presets',
   '/dashboard/insights': 'Insights',
   '/dashboard/budget': 'Budget',
+  '/dashboard/goals': 'Savings Goals',
   '/dashboard/exchange-rates': 'Exchange Rates',
   '/dashboard/settings': 'Settings',
 };

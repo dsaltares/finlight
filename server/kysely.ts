@@ -128,6 +128,27 @@ export interface LlmUsage {
   userId: string;
 }
 
+export interface SavingsGoal {
+  completedAt: string | null;
+  createdAt: Generated<string>;
+  currency: Generated<string>;
+  deadline: string | null;
+  deletedAt: string | null;
+  id: Generated<number>;
+  name: string;
+  startDate: string | null;
+  targetAmount: number;
+  updatedAt: Generated<string>;
+  userId: string;
+}
+
+export interface SavingsGoalAccount {
+  accountId: number;
+  createdAt: Generated<string>;
+  goalId: number;
+  id: Generated<number>;
+}
+
 export interface Session {
   createdAt: Generated<string>;
   expiresAt: string;
@@ -177,6 +198,8 @@ export interface DB {
   csv_import_preset: CsvImportPreset;
   exchange_rate: ExchangeRate;
   llm_usage: LlmUsage;
+  savings_goal: SavingsGoal;
+  savings_goal_account: SavingsGoalAccount;
   session: Session;
   user: User;
   user_settings: UserSettings;

@@ -10,6 +10,7 @@ import {
   IconReceipt2,
   IconSettings,
   IconTags,
+  IconTargetArrow,
 } from '@tabler/icons-react';
 import lodash from 'lodash';
 import Link from 'next/link';
@@ -64,6 +65,11 @@ const NavItems: NavItem[] = [
     name: 'Budget',
     url: '/dashboard/budget',
     icon: IconPigMoney,
+  },
+  {
+    name: 'Goals',
+    url: '/dashboard/goals',
+    icon: IconTargetArrow,
   },
   {
     name: 'Exchange Rates',

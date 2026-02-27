@@ -35,5 +35,6 @@ export default function useNavigationKeyboardShortcuts() {
   useHotkeys('a', (e) => navigate(e, '/dashboard/accounts'));
   useHotkeys('c', (e) => navigate(e, '/dashboard/categories'));
   useHotkeys('b', (e) => navigate(e, '/dashboard/budget'));
+  useHotkeys('o', (e) => navigate(e, '/dashboard/goals'));
   useHotkeys('i', (e) => navigate(e, '/dashboard/insights'));
 }

@@ -4,6 +4,7 @@ import categoriesRouter from './procedures/categories';
 import exchangeRatesRouter from './procedures/exchangeRates';
 import importPresetsRouter from './procedures/importPresets';
 import reportsRouter from './procedures/reports';
+import savingsGoalsRouter from './procedures/savingsGoals';
 import transactionsRouter from './procedures/transactions';
 import userSettingsRouter from './procedures/userSettings';
 import { router } from './trpc';
@@ -15,6 +16,7 @@ export const appRouter = router({
   importPresets: importPresetsRouter,
   categories: categoriesRouter,
   reports: reportsRouter,
+  savingsGoals: savingsGoalsRouter,
   transactions: transactionsRouter,
   userSettings: userSettingsRouter,
 });
