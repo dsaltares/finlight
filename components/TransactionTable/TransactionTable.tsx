@@ -1,9 +1,11 @@
 'use client';
 
-import { type RowSelectionState, flexRender } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { flexRender } from '@tanstack/react-table';
+import { ArrowDown, ArrowUp, Check, Loader2 } from 'lucide-react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import CreateUpdateTransactionDialog from '@/components/CreateUpdateTransactionDialog';
+import type { UseTransactionTableArgs } from '@/components/TransactionTable/useTransactionTable';
+import useTransactionTable from '@/components/TransactionTable/useTransactionTable';
 import {
   Table,
   TableBody,
@@ -12,8 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import useTransactionTable from '@/components/TransactionTable/useTransactionTable';
-import type { UseTransactionTableArgs } from '@/components/TransactionTable/useTransactionTable';
 
 export default function TransactionTable(props: UseTransactionTableArgs) {
   const {
@@ -32,14 +32,25 @@ export default function TransactionTable(props: UseTransactionTableArgs) {
     accounts,
     onUpdateDialogClose,
     updateTransaction,
+    isInlineSaving,
+    showSaved,
   } = useTransactionTable(props);
 
   return (
     <>
       <div
         ref={scrollRef}
-        className="min-h-0 flex-1 overflow-auto [&_[data-slot=table-container]]:overflow-visible"
+        className="relative min-h-0 flex-1 overflow-auto [&_[data-slot=table-container]]:overflow-visible"
       >
+        {(isInlineSaving || showSaved) && (
+          <div className="absolute top-1 right-2 z-20">
+            {isInlineSaving ? (
+              <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+            ) : showSaved ? (
+              <Check className="size-3.5 text-muted-foreground" />
+            ) : null}
+          </div>
+        )}
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -48,11 +59,11 @@ export default function TransactionTable(props: UseTransactionTableArgs) {
                   <TableHead
                     key={header.id}
                     style={{ width: header.getSize() }}
-                    className={
+                    className={`px-1 ${
                       header.column.getCanSort()
                         ? 'cursor-pointer select-none'
                         : ''
-                    }
+                    }`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <span className="flex items-center gap-1">
@@ -94,7 +105,7 @@ export default function TransactionTable(props: UseTransactionTableArgs) {
                       data-state={row.getIsSelected() ? 'selected' : undefined}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell key={cell.id} className="p-1">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

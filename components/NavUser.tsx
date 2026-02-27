@@ -29,7 +29,9 @@ export function NavUser() {
 
   const { user } = session;
 
-  const name = user.name;
+  const name = user.name
+    ? user.name.split(' ').slice(0, 2).join(' ')
+    : null;
   const avatarFallback = geAvatarFallback(user);
 
   return (
@@ -43,17 +45,17 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 {user.image ? (
-                  <AvatarImage src={user.image} alt={name} />
+                  <AvatarImage src={user.image} alt={name ?? undefined} />
                 ) : null}
                 <AvatarFallback className="rounded-lg">
                   {avatarFallback}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-xs leading-tight">
                 {name ? (
                   <>
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="text-muted-foreground truncate text-xs">
+                    <span className="truncate font-medium">{name}</span>
+                    <span className="text-muted-foreground truncate text-[11px]">
                       {user.email}
                     </span>
                   </>

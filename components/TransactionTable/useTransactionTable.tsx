@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   type ColumnDef,
   type RowSelectionState,
@@ -10,21 +10,28 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Pencil, Trash2 } from 'lucide-react';
+import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import type { MouseEvent } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import CategoryPill from '@/components/CategoryPill';
 import DescriptionCell from '@/components/TransactionTable/DescriptionCell';
-import TransactionTypePill from '@/components/TransactionTypePill';
+import InlineAmountInput from '@/components/TransactionTable/InlineAmountInput';
+import InlineCategorySelect from '@/components/TransactionTable/InlineCategorySelect';
+import InlineTypeSelect from '@/components/TransactionTable/InlineTypeSelect';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import useDialogForId from '@/hooks/useDialogForId';
 import useTransactionFilters, {
   serializeTransactionFilters,
 } from '@/hooks/useTransactionFilters';
-import { formatAmount, formatDate } from '@/lib/format';
+import { formatDate } from '@/lib/format';
 import { type RouterOutput, useTRPC } from '@/lib/trpc';
 import type { TransactionType } from '@/server/trpc/procedures/schema';
 
@@ -61,7 +68,7 @@ export default function useTransactionTable({
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastSelectedId = useRef<string | null>(null);
   const [sorting, onSortingChange] = useState<SortingState>(DEFAULT_SORT);
-  const { setAccount, setCategory, setType } = useTransactionFilters();
+  const { setAccount } = useTransactionFilters();
 
   const {
     openFor: deleteOpenFor,
@@ -105,6 +112,44 @@ export default function useTransactionTable({
         );
       },
     }),
+  );
+
+  const queryClient = useQueryClient();
+  const [showSaved, setShowSaved] = useState(false);
+  const savedTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const { mutate: inlineUpdate, isPending: isInlineSaving } = useMutation(
+    trpc.transactions.update.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: trpc.transactions.list.queryKey(),
+        });
+        setShowSaved(true);
+        clearTimeout(savedTimeoutRef.current);
+        savedTimeoutRef.current = setTimeout(() => setShowSaved(false), 2000);
+      },
+      onError: (error) => {
+        toast.error(
+          error.message
+            ? `Failed to update transaction. ${error.message}`
+            : 'Failed to update transaction.',
+        );
+      },
+    }),
+  );
+
+  const handleInlineUpdate = useCallback(
+    (
+      id: number,
+      fields: Partial<{
+        type: TransactionType;
+        categoryId: number | null;
+        amount: number;
+      }>,
+    ) => {
+      inlineUpdate({ id, ...fields });
+    },
+    [inlineUpdate],
   );
 
   const handleDelete = useCallback(async () => {
@@ -214,7 +259,7 @@ export default function useTransactionTable({
         header: 'Date',
         cell: ({ getValue }) => formatDate(getValue<string>()),
         sortingFn: 'alphanumeric',
-        size: 150,
+        size: 120,
       },
       {
         accessorKey: 'accountName',
@@ -242,43 +287,41 @@ export default function useTransactionTable({
         accessorKey: 'amount',
         header: 'Amount',
         cell: ({ row }) => (
-          <span
-            className={
-              row.original.amount >= 0 ? 'text-green-600' : 'text-red-600'
-            }
-          >
-            {formatAmount(row.original.amount, row.original.currency)}
-          </span>
+          <InlineAmountInput
+            value={row.original.amount}
+            currency={row.original.currency}
+            onSave={(amount) => handleInlineUpdate(row.original.id, { amount })}
+          />
         ),
         sortingFn: 'basic',
-        size: 120,
+        size: 130,
       },
       {
         accessorKey: 'type',
         header: 'Type',
-        size: 110,
-        cell: ({ getValue }) => {
-          const type = getValue<TransactionType>();
-          return (
-            <TransactionTypePill type={type} onClick={() => setType(type)} />
-          );
-        },
+        size: 100,
+        cell: ({ row }) => (
+          <InlineTypeSelect
+            value={row.original.type}
+            onValueChange={(type) =>
+              handleInlineUpdate(row.original.id, { type })
+            }
+          />
+        ),
       },
       {
         accessorKey: 'categoryName',
         header: 'Category',
-        cell: ({ row }) =>
-          row.original.categoryId &&
-          row.original.categoryName &&
-          row.original.categoryColor ? (
-            <CategoryPill
-              categoryId={row.original.categoryId!}
-              name={row.original.categoryName}
-              color={row.original.categoryColor}
-              onClick={() => setCategory(row.original.categoryId!)}
-            />
-          ) : null,
-        size: 130,
+        cell: ({ row }) => (
+          <InlineCategorySelect
+            value={row.original.categoryId}
+            categories={categories}
+            onValueChange={(categoryId) =>
+              handleInlineUpdate(row.original.id, { categoryId })
+            }
+          />
+        ),
+        size: 140,
       },
       {
         accessorKey: 'description',
@@ -295,27 +338,31 @@ export default function useTransactionTable({
       {
         id: 'actions',
         header: '',
-        size: 80,
+        size: 40,
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={() => onUpdateDialogOpen(row.original.id)}
-            >
-              <Pencil className="size-3.5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={() => onDeleteDialogOpen(row.original.id)}
-            >
-              <Trash2 className="size-3.5" />
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="size-7">
+                <EllipsisVertical className="size-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => onUpdateDialogOpen(row.original.id)}
+              >
+                <Pencil className="size-3.5" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => onDeleteDialogOpen(row.original.id)}
+              >
+                <Trash2 className="size-3.5" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ),
       },
     ],
@@ -323,8 +370,8 @@ export default function useTransactionTable({
       onUpdateDialogOpen,
       onDeleteDialogOpen,
       setAccount,
-      setCategory,
-      setType,
+      handleInlineUpdate,
+      categories,
       handleCopyDescription,
     ],
   );
@@ -370,5 +417,7 @@ export default function useTransactionTable({
     accounts,
     onUpdateDialogClose,
     updateTransaction,
+    isInlineSaving,
+    showSaved,
   };
 }
