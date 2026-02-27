@@ -51,7 +51,7 @@ export default function TransactionTable(props: UseTransactionTableArgs) {
             ) : null}
           </div>
         )}
-        <Table>
+        <Table style={{ minWidth: table.getTotalSize() }}>
           <TableHeader className="sticky top-0 z-10 bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
