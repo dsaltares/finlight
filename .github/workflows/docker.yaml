@@ -64,7 +64,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           cat > ~/.ssh/config << EOF
           Host $SSH_HOST
-            ProxyCommand CF_ACCESS_CLIENT_ID=$CF_ACCESS_CLIENT_ID CF_ACCESS_CLIENT_SECRET=$CF_ACCESS_CLIENT_SECRET cloudflared access ssh --hostname %h
+            ProxyCommand env CF_ACCESS_CLIENT_ID=$CF_ACCESS_CLIENT_ID CF_ACCESS_CLIENT_SECRET=$CF_ACCESS_CLIENT_SECRET cloudflared access ssh --hostname %h
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
           EOF
