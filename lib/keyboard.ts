@@ -12,6 +12,7 @@ const navigationShortcuts: Shortcut[] = [
   { keys: ['g', 'a'], description: 'Go to accounts', sequence: true },
   { keys: ['g', 'c'], description: 'Go to categories', sequence: true },
   { keys: ['g', 'b'], description: 'Go to budget', sequence: true },
+  { keys: ['g', 'o'], description: 'Go to goals', sequence: true },
   { keys: ['g', 'i'], description: 'Go to insights', sequence: true },
 ];
 
@@ -46,6 +47,10 @@ const PageShortcuts: Record<string, Shortcut[]> = {
   ],
   '/dashboard/import-presets': [{ keys: ['n'], description: 'New preset' }],
   '/dashboard/budget': budgetShortcuts,
+  '/dashboard/goals': [
+    { keys: ['n'], description: 'New goal' },
+    { keys: ['/'], description: 'Focus search' },
+  ],
 };
 
 export const getShortcutsForPath = (pathname: string) => {

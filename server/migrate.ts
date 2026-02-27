@@ -7,6 +7,7 @@ import * as m004 from '@/migrations/004_category_color';
 import * as m005 from '@/migrations/005_user_settings';
 import * as m006 from '@/migrations/006_budget';
 import * as m007 from '@/migrations/007_llm_usage';
+import * as m008 from '@/migrations/008_savings_goal';
 import { unknownDb } from '@/server/db';
 import { getLogger } from '@/server/logger';
 
@@ -20,6 +21,7 @@ const migrations: Record<string, Migration> = {
   '005_user_settings': m005,
   '006_budget': m006,
   '007_llm_usage': m007,
+  '008_savings_goal': m008,
 };
 
 export function createMigrator() {

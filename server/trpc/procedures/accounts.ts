@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import z from 'zod';
+import { convertAmount, getRates } from '@/server/currency';
 import { db } from '@/server/db';
 import { authedProcedure } from '@/server/trpc/trpc';
 import { getUserDefaultCurrency } from '@/server/trpc/procedures/userSettings';
@@ -32,41 +33,6 @@ const ListAccountsOutputSchema = z.object({
   total: AmountSchema,
 });
 
-async function getRates(targetCurrency: string, currencies: string[]) {
-  const allCurrencies = [...new Set([...currencies, targetCurrency])];
-  const rates = await Promise.all(
-    allCurrencies.map(async (currency) => {
-      if (currency === 'EUR') {
-        return { currency, rate: 1 };
-      }
-      const row = await db
-        .selectFrom('exchange_rate')
-        .select(['close'])
-        .where('ticker', '=', `EUR${currency}`)
-        .orderBy('date', 'desc')
-        .executeTakeFirst();
-      return { currency, rate: row?.close ?? 1 };
-    }),
-  );
-
-  return rates.reduce<Record<string, number>>((acc, { currency, rate }) => {
-    acc[currency] = rate;
-    return acc;
-  }, {});
-}
-
-function convertAmount(
-  amountInCents: number,
-  currency: string,
-  targetCurrency: string,
-  rates: Record<string, number>,
-) {
-  if (currency === targetCurrency) return amountInCents;
-  const eurToTarget = rates[targetCurrency] ?? 1;
-  const eurToSource = rates[currency] ?? 1;
-  return Math.round((amountInCents * eurToTarget) / eurToSource);
-}
-
 const listAccounts = authedProcedure
   .input(z.object({}))
   .output(ListAccountsOutputSchema)
@@ -83,10 +49,10 @@ const listAccounts = authedProcedure
       .execute();
 
     const baseCurrency = await getUserDefaultCurrency(ctx.user.id);
-    const rates = await getRates(
+    const rates = await getRates([
       baseCurrency,
-      accounts.map((account) => account.currency),
-    );
+      ...accounts.map((account) => account.currency),
+    ]);
     const total = accounts.reduce(
       (sum, account) =>
         sum +

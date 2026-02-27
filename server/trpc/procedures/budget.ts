@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { jsonArrayFrom } from 'kysely/helpers/sqlite';
 import z from 'zod';
+import { convertAmount, getRates } from '@/server/currency';
 import { db } from '@/server/db';
 import { getDateWhereFromFilter } from '@/server/trpc/procedures/dateUtils';
 import {
@@ -12,37 +13,6 @@ import { getUserDefaultCurrency } from '@/server/trpc/procedures/userSettings';
 import { authedProcedure } from '@/server/trpc/trpc';
 
 const BudgetEntryTypeSchema = z.enum(['Income', 'Expense']);
-
-type RatesByCurrency = Record<string, number>;
-
-async function getRates(currencies: string[]): Promise<RatesByCurrency> {
-  const unique = [...new Set(currencies)];
-  const rates = await Promise.all(
-    unique.map(async (currency) => {
-      if (currency === 'EUR') return { currency, rate: 1 };
-      const row = await db
-        .selectFrom('exchange_rate')
-        .select('close')
-        .where('ticker', '=', `EUR${currency}`)
-        .orderBy('date', 'desc')
-        .executeTakeFirst();
-      return { currency, rate: row?.close ?? 1 };
-    }),
-  );
-  return Object.fromEntries(rates.map((r) => [r.currency, r.rate]));
-}
-
-function convertAmount(
-  amountInCents: number,
-  currency: string,
-  targetCurrency: string,
-  rates: RatesByCurrency,
-) {
-  if (currency === targetCurrency) return amountInCents;
-  const eurToTarget = rates[targetCurrency] ?? 1;
-  const eurToSource = rates[currency] ?? 1;
-  return Math.round((amountInCents * eurToTarget) / eurToSource);
-}
 
 export async function ensureBudgetExists(userId: string) {
   const budgetQuery = db
