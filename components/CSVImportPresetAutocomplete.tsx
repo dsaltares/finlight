@@ -28,6 +28,7 @@ export default function CSVImportPresetAutocomplete({
       ...(presets ?? []).map((preset) => ({
         value: `${preset.id}`,
         label: preset.name,
+        keywords: [preset.name],
       })),
     ],
     [presets],

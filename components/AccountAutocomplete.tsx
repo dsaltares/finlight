@@ -25,6 +25,7 @@ export default function AccountAutocomplete({
       accounts.map((account) => ({
         label: account.name,
         value: `${account.id}`,
+        keywords: [account.name],
       })),
     [accounts],
   );
