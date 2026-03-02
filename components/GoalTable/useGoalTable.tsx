@@ -66,7 +66,11 @@ export default function useGoalTable({
         cell: (info) => {
           const isCompleted = !!info.row.original.completedAt;
           return (
-            <span className={isCompleted ? 'line-through text-muted-foreground' : ''}>
+            <span
+              className={
+                isCompleted ? 'line-through text-muted-foreground' : ''
+              }
+            >
               {info.getValue()}
             </span>
           );

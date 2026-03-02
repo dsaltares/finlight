@@ -2,9 +2,7 @@ import { db } from '@/server/db';
 
 export type RatesByCurrency = Record<string, number>;
 
-export async function getRates(
-  currencies: string[],
-): Promise<RatesByCurrency> {
+export async function getRates(currencies: string[]): Promise<RatesByCurrency> {
   const unique = [...new Set(currencies)];
   const rates = await Promise.all(
     unique.map(async (currency) => {
