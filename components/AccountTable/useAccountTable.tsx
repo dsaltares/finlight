@@ -80,6 +80,18 @@ export default function useAccountTable({
           );
         },
       }),
+      columnHelper.accessor('balanceInBaseCurrency', {
+        header: `Balance (${baseCurrency})`,
+        cell: (info) => {
+          const balance = info.getValue();
+          return (
+            <span className={balance >= 0 ? 'text-green-600' : 'text-red-600'}>
+              {formatAmount(balance, baseCurrency)}
+            </span>
+          );
+        },
+        meta: { align: 'right' as const },
+      }),
       columnHelper.accessor('balance', {
         header: 'Balance',
         cell: (info) => {
@@ -88,18 +100,6 @@ export default function useAccountTable({
           return (
             <span className={balance >= 0 ? 'text-green-600' : 'text-red-600'}>
               {formatAmount(balance, currency)}
-            </span>
-          );
-        },
-        meta: { align: 'right' as const },
-      }),
-      columnHelper.accessor('balanceInBaseCurrency', {
-        header: `Balance (${baseCurrency})`,
-        cell: (info) => {
-          const balance = info.getValue();
-          return (
-            <span className={balance >= 0 ? 'text-green-600' : 'text-red-600'}>
-              {formatAmount(balance, baseCurrency)}
             </span>
           );
         },
