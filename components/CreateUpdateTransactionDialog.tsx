@@ -34,6 +34,7 @@ type BaseDialogProps = {
   loading: boolean;
   onClose: () => void;
   accounts: Account[];
+  defaultAccountId?: number;
 };
 
 type CreateDialogProps = {
@@ -64,13 +65,17 @@ export default function CreateUpdateTransactionDialog({
   loading,
   transaction,
   accounts,
+  defaultAccountId: defaultAccountIdProp,
   onClose,
   onCreate,
   onUpdate,
 }: Props) {
   const title = transaction ? 'Edit transaction' : 'Create transaction';
 
-  const defaultAccountId = accounts[0] ? `${accounts[0].id}` : '';
+  const fallbackAccountId = accounts[0] ? `${accounts[0].id}` : '';
+  const defaultAccountId = defaultAccountIdProp
+    ? `${defaultAccountIdProp}`
+    : fallbackAccountId;
 
   const {
     control,
