@@ -40,7 +40,8 @@ export default function TransactionsPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useQueryState('q', { defaultValue: '' });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const { queryInput, hasFilters, clearFilters } = useTransactionFilters();
+  const { queryInput, filters, hasFilters, clearFilters } =
+    useTransactionFilters();
 
   const {
     data: transactions,
@@ -383,6 +384,9 @@ export default function TransactionsPage() {
         open={isCreateDialogOpen}
         loading={isCreating}
         accounts={accounts}
+        defaultAccountId={
+          filters.accounts?.length === 1 ? filters.accounts[0] : undefined
+        }
         onClose={onCreateDialogClose}
         onCreate={createTransaction}
       />
