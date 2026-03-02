@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import Link from 'next/link';
 import { useMemo } from 'react';
 import {
   Area,
@@ -12,6 +13,7 @@ import {
 } from 'recharts';
 import { type ColumnMeta, DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
+import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import {
   type ChartConfig,
   ChartContainer,
@@ -37,11 +39,20 @@ type CategoryRow = {
   total: number;
 };
 
+type FilterBase = {
+  period: string | null;
+  dateFrom: string | null;
+  dateUntil: string | null;
+  accounts: number[] | null;
+};
+
 type Props = {
   data: BudgetBucket[];
   currency: string;
   variant?: 'positive' | 'negative';
   colorMap: Record<string, string>;
+  categoryIdMap: Record<string, number>;
+  filterBase: FilterBase;
   compact?: boolean;
 };
 
@@ -62,6 +73,8 @@ export default function BudgetOverTimeSection({
   currency,
   variant = 'negative',
   colorMap,
+  categoryIdMap,
+  filterBase,
   compact,
 }: Props) {
   const categoryNames = useMemo(() => {
@@ -111,14 +124,23 @@ export default function BudgetOverTimeSection({
         accessorKey: 'category',
         header: 'Category',
         meta: { isSticky: true } satisfies ColumnMeta,
-        cell: ({ row }) => (
-          <Badge
-            className="border-transparent text-white"
-            style={{ backgroundColor: colorMap[row.original.category] }}
-          >
-            {row.original.category}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const categoryId = categoryIdMap[row.original.category] ?? 0;
+          const href = serializeTransactionFilters('/dashboard/transactions', {
+            categories: [categoryId],
+            ...filterBase,
+          });
+          return (
+            <Link href={href}>
+              <Badge
+                className="border-transparent text-white"
+                style={{ backgroundColor: colorMap[row.original.category] }}
+              >
+                {row.original.category}
+              </Badge>
+            </Link>
+          );
+        },
       },
       ...data.map<ColumnDef<CategoryRow>>((d) => ({
         id: d.bucket,
@@ -151,7 +173,7 @@ export default function BudgetOverTimeSection({
         ),
       },
     ],
-    [data, colorMap, variant, currency],
+    [data, colorMap, variant, currency, categoryIdMap, filterBase],
   );
 
   const grandTotal = data.reduce((sum, d) => sum + d.total, 0);
