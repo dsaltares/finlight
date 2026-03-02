@@ -1,10 +1,12 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import Link from 'next/link';
 import { useMemo } from 'react';
 import { Cell, Pie, PieChart } from 'recharts';
 import { type ColumnMeta, DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
+import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import {
   type ChartConfig,
   ChartContainer,
@@ -22,11 +24,20 @@ type CategoryAggregate = {
   value: number;
 };
 
+type FilterBase = {
+  period: string | null;
+  dateFrom: string | null;
+  dateUntil: string | null;
+  accounts: number[] | null;
+};
+
 type Props = {
   data: { categories: CategoryAggregate[]; total: number };
   variant?: 'positive' | 'negative';
   currency: string;
   colorMap: Record<string, string>;
+  categoryIdMap: Record<string, number>;
+  filterBase: FilterBase;
   compact?: boolean;
 };
 
@@ -35,6 +46,8 @@ export default function CategoryReport({
   variant = 'negative',
   currency,
   colorMap,
+  categoryIdMap,
+  filterBase,
   compact,
 }: Props) {
   const config: ChartConfig = Object.fromEntries(
@@ -51,14 +64,23 @@ export default function CategoryReport({
       {
         accessorKey: 'name',
         header: 'Category',
-        cell: ({ row }) => (
-          <Badge
-            className="border-transparent text-white"
-            style={{ backgroundColor: colorMap[row.original.name] }}
-          >
-            {row.original.name}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const categoryId = categoryIdMap[row.original.name] ?? 0;
+          const href = serializeTransactionFilters('/dashboard/transactions', {
+            categories: [categoryId],
+            ...filterBase,
+          });
+          return (
+            <Link href={href}>
+              <Badge
+                className="border-transparent text-white"
+                style={{ backgroundColor: colorMap[row.original.name] }}
+              >
+                {row.original.name}
+              </Badge>
+            </Link>
+          );
+        },
       },
       {
         accessorKey: 'value',
@@ -71,7 +93,7 @@ export default function CategoryReport({
         ),
       },
     ],
-    [colorMap, colorClass, currency],
+    [colorMap, colorClass, currency, categoryIdMap, filterBase],
   );
 
   const pinnedContent = (

@@ -70,11 +70,12 @@ const list = authedProcedure
 
     const goalAccounts = await db
       .selectFrom('savings_goal_account')
-      .innerJoin('savings_goal', 'savings_goal.id', 'savings_goal_account.goalId')
-      .select([
+      .innerJoin(
+        'savings_goal',
+        'savings_goal.id',
         'savings_goal_account.goalId',
-        'savings_goal_account.accountId',
-      ])
+      )
+      .select(['savings_goal_account.goalId', 'savings_goal_account.accountId'])
       .where('savings_goal.userId', '=', ctx.user.id)
       .where('savings_goal.deletedAt', 'is', null)
       .execute();
@@ -114,7 +115,12 @@ const list = authedProcedure
       const currentAmount = relevantAccounts.reduce(
         (sum, account) =>
           sum +
-          convertAmount(account.balance, account.currency, goal.currency, rates),
+          convertAmount(
+            account.balance,
+            account.currency,
+            goal.currency,
+            rates,
+          ),
         0,
       );
       const percentage =
@@ -220,7 +226,8 @@ const update = authedProcedure
       if (fields.name !== undefined) updateFields.name = fields.name;
       if (fields.targetAmount !== undefined)
         updateFields.targetAmount = fields.targetAmount;
-      if (fields.currency !== undefined) updateFields.currency = fields.currency;
+      if (fields.currency !== undefined)
+        updateFields.currency = fields.currency;
       if (fields.startDate !== undefined)
         updateFields.startDate = fields.startDate;
       if (fields.deadline !== undefined)

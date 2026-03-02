@@ -71,10 +71,7 @@ export default function GoalsPage() {
     );
   } else {
     content = (
-      <GoalTable
-        goals={goals}
-        globalFilter={debouncedSearch || undefined}
-      />
+      <GoalTable goals={goals} globalFilter={debouncedSearch || undefined} />
     );
   }
 
@@ -91,9 +88,7 @@ export default function GoalsPage() {
           ref={searchInputRef}
           placeholder="Search..."
           value={filters.q}
-          onChange={(event) =>
-            setFilters({ q: event.target.value || null })
-          }
+          onChange={(event) => setFilters({ q: event.target.value || null })}
           className="w-full"
         />
         <div className="flex shrink-0 items-center gap-2">

@@ -33,18 +33,14 @@ type BaseDialogProps = {
 };
 
 type CreateDialogProps = {
-  onCreate: (
-    input: RouterInput['savingsGoals']['create'],
-  ) => Promise<unknown>;
+  onCreate: (input: RouterInput['savingsGoals']['create']) => Promise<unknown>;
   goal?: never;
   onUpdate?: never;
 };
 
 type UpdateDialogProps = {
   goal: Goal;
-  onUpdate: (
-    input: RouterInput['savingsGoals']['update'],
-  ) => Promise<unknown>;
+  onUpdate: (input: RouterInput['savingsGoals']['update']) => Promise<unknown>;
   onCreate?: never;
 };
 
@@ -69,9 +65,7 @@ export default function CreateUpdateGoalDialog({
 }: Props) {
   const trpc = useTRPC();
   const { data: settings } = useQuery(trpc.userSettings.get.queryOptions());
-  const { data: accountsData } = useQuery(
-    trpc.accounts.list.queryOptions({}),
-  );
+  const { data: accountsData } = useQuery(trpc.accounts.list.queryOptions({}));
   const defaultCurrency = settings?.defaultCurrency ?? 'EUR';
   const accounts = accountsData?.accounts ?? [];
 
@@ -212,11 +206,7 @@ export default function CreateUpdateGoalDialog({
 
           <div className="flex flex-col gap-1">
             <Label htmlFor="goal-deadline">Deadline (optional)</Label>
-            <Input
-              id="goal-deadline"
-              type="date"
-              {...register('deadline')}
-            />
+            <Input id="goal-deadline" type="date" {...register('deadline')} />
           </div>
 
           <div className="flex flex-col gap-1">

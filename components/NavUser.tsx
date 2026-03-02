@@ -29,9 +29,7 @@ export function NavUser() {
 
   const { user } = session;
 
-  const name = user.name
-    ? user.name.split(' ').slice(0, 2).join(' ')
-    : null;
+  const name = user.name ? user.name.split(' ').slice(0, 2).join(' ') : null;
   const avatarFallback = geAvatarFallback(user);
 
   return (

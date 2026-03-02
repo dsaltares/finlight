@@ -15,7 +15,7 @@ export default function IncomeVsBudgetReport({
   compact?: boolean;
 } = {}) {
   const trpc = useTRPC();
-  const { queryInput, displayCurrency } = useInsightsFilters();
+  const { queryInput, displayCurrency, filters } = useInsightsFilters();
   const { data, isPending: isLoading } = useQuery({
     ...trpc.reports.getBudgetOverTimeReport.queryOptions({
       ...queryInput,
@@ -27,6 +27,19 @@ export default function IncomeVsBudgetReport({
   const colorMap = useMemo(
     () => Object.fromEntries((categories ?? []).map((c) => [c.name, c.color])),
     [categories],
+  );
+  const categoryIdMap = useMemo(
+    () => Object.fromEntries((categories ?? []).map((c) => [c.name, c.id])),
+    [categories],
+  );
+  const filterBase = useMemo(
+    () => ({
+      period: filters.period,
+      dateFrom: filters.dateFrom,
+      dateUntil: filters.dateUntil,
+      accounts: filters.accounts,
+    }),
+    [filters.period, filters.dateFrom, filters.dateUntil, filters.accounts],
   );
 
   if (isLoading) {
@@ -46,6 +59,8 @@ export default function IncomeVsBudgetReport({
       currency={displayCurrency}
       variant="positive"
       colorMap={colorMap}
+      categoryIdMap={categoryIdMap}
+      filterBase={filterBase}
       compact={compact}
     />
   );
