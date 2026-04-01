@@ -224,6 +224,12 @@ const createTransactions = authedProcedure
       }
     }
 
+    for (const t of enriched) {
+      if (!t.type) {
+        t.type = 'Expense';
+      }
+    }
+
     const transactions = await db
       .insertInto('account_transaction')
       .values(
@@ -488,6 +494,12 @@ const importTransactions = authedProcedure
         if (enriched[i].categoryId === null && ai.categoryId) {
           enriched[i].categoryId = ai.categoryId;
         }
+      }
+    }
+
+    for (const t of enriched) {
+      if (!t.type) {
+        t.type = 'Expense';
       }
     }
 
