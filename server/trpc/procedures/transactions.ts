@@ -472,6 +472,10 @@ const importTransactions = authedProcedure
       throw e;
     }
 
+    if (parsed.length === 0) {
+      return 0;
+    }
+
     const enriched = parsed.map((t) => ({
       ...t,
       type: undefined as string | undefined,
