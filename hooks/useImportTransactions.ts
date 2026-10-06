@@ -16,6 +16,10 @@ export default function useImportTransactions(account: Account) {
   const { mutate: importFileMutation, isPending } = useMutation(
     trpc.transactions.importFile.mutationOptions({
       onSuccess: (count: number) => {
+        if (count === 0) {
+          toast.info('No transactions found in file.');
+          return;
+        }
         toast.success(`Imported ${count} transactions.`);
       },
       onError: (e) => {
