@@ -17,7 +17,8 @@
     "migrate:to": "dotenv -- tsx scripts/migrate.ts to",
     "importFromElectron": "dotenv -- tsx scripts/importFromElectron.ts",
     "gen-types": "dotenv -- kysely-codegen --config-file kysely-codegen.config.json",
-    "seed": "dotenv -- tsx scripts/seedDemoData.ts"
+    "seed": "dotenv -- tsx scripts/seedDemoData.ts",
+    "db:copy-down": "tsx scripts/copyDown.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.30",

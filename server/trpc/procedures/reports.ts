@@ -11,6 +11,7 @@ import { convertAmount, getRates } from '@/server/currency';
 import { db } from '@/server/db';
 import {
   ensureBudgetExists,
+  getTypeSign,
   granularityToMonthly,
   monthlyToGranularity,
 } from '@/server/trpc/procedures/budget';
@@ -162,13 +163,13 @@ const getCategoryReport = authedProcedure
       .map(([catId, txns]) => ({
         id: Number.parseInt(catId, 10),
         name: txns[0].categoryName || 'Unknown',
-        value: Math.abs(
+        value:
+          getTypeSign(input.type) *
           txns.reduce(
             (sum, t) =>
               sum + convertAmount(t.amount, t.accountCurrency, currency, rates),
             0,
           ),
-        ),
       }))
       .sort((a, b) => b.value - a.value);
 
@@ -217,14 +218,14 @@ const getBucketedCategoryReport = authedProcedure
         const byCat = groupBy(buckets[key], (t) => t.categoryId ?? 'unknown');
         const cats = Object.values(byCat).map((txns) => ({
           name: txns[0].categoryName || 'Unknown',
-          value: Math.abs(
+          value:
+            getTypeSign(input.type) *
             txns.reduce(
               (sum, t) =>
                 sum +
                 convertAmount(t.amount, t.accountCurrency, currency, rates),
               0,
             ),
-          ),
         }));
         return {
           bucket: format(parse(key, dateFormat, new Date()), displayFormat),
@@ -590,14 +591,14 @@ const getBudgetOverTimeReport = authedProcedure
             (txns[0].categoryId
               ? categoriesById[txns[0].categoryId]
               : undefined) ?? 'Unknown',
-          value: Math.abs(
+          value:
+            getTypeSign(input.type) *
             txns.reduce(
               (sum, t) =>
                 sum +
                 convertAmount(t.amount, t.accountCurrency, currency, rates),
               0,
             ),
-          ),
         }));
         return {
           bucket: format(parse(key, dateFormat, new Date()), displayFormat),

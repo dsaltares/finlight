@@ -16,7 +16,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import useSortFromUrl from '@/hooks/useSortFromUrl';
 import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import { formatAmount } from '@/lib/format';
-import { cn } from '@/lib/utils';
+import { cn, getSignedAmountColorClass } from '@/lib/utils';
 
 type CategoryAggregate = {
   id: number;
@@ -56,8 +56,11 @@ export default function CategoryReport({
       { label: c.name, color: colorMap[c.name] ?? 'var(--color-chart-1)' },
     ]),
   );
-  const colorClass = variant === 'positive' ? 'text-green-600' : 'text-red-600';
   const { sorting, onSortingChange } = useSortFromUrl();
+  const pieData = useMemo(
+    () => data.categories.filter((c) => c.value > 0),
+    [data.categories],
+  );
 
   const columns = useMemo<ColumnDef<CategoryAggregate>[]>(
     () => [
@@ -87,19 +90,26 @@ export default function CategoryReport({
         header: 'Amount',
         meta: { align: 'right' } satisfies ColumnMeta,
         cell: ({ row }) => (
-          <span className={colorClass}>
+          <span
+            className={getSignedAmountColorClass(row.original.value, variant)}
+          >
             {formatAmount(row.original.value, currency)}
           </span>
         ),
       },
     ],
-    [colorMap, colorClass, currency, categoryIdMap, filterBase],
+    [colorMap, variant, currency, categoryIdMap, filterBase],
   );
 
   const pinnedContent = (
     <TableRow className="font-medium">
       <TableCell>Total</TableCell>
-      <TableCell className={cn('text-right', colorClass)}>
+      <TableCell
+        className={cn(
+          'text-right',
+          getSignedAmountColorClass(data.total, variant),
+        )}
+      >
         {formatAmount(data.total, currency)}
       </TableCell>
     </TableRow>
@@ -141,14 +151,14 @@ export default function CategoryReport({
           }
         />
         <Pie
-          data={data.categories}
+          data={pieData}
           dataKey="value"
           nameKey="name"
           cx="50%"
           cy="50%"
           outerRadius="70%"
         >
-          {data.categories.map((entry) => (
+          {pieData.map((entry) => (
             <Cell
               key={entry.id}
               fill={colorMap[entry.name] ?? 'var(--color-chart-1)'}

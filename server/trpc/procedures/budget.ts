@@ -45,6 +45,10 @@ export async function ensureBudgetExists(userId: string) {
   return budgetQuery.executeTakeFirstOrThrow();
 }
 
+export function getTypeSign(type: string | null) {
+  return type === 'Income' ? 1 : -1;
+}
+
 export function granularityToMonthly(granularity: string) {
   switch (granularity) {
     case 'Yearly':
@@ -149,18 +153,17 @@ const get = authedProcedure
           monthlyToGranularity(outputGranularity);
 
     const getActual = (categoryId: number, type: string | null) =>
-      Math.abs(
-        transactions
-          .filter(
-            (t) => t.categoryId === categoryId && (!type || t.type === type),
-          )
-          .reduce(
-            (sum, t) =>
-              sum +
-              convertAmount(t.amount, t.accountCurrency, targetCurrency, rates),
-            0,
-          ),
-      );
+      getTypeSign(type) *
+      transactions
+        .filter(
+          (t) => t.categoryId === categoryId && (!type || t.type === type),
+        )
+        .reduce(
+          (sum, t) =>
+            sum +
+            convertAmount(t.amount, t.accountCurrency, targetCurrency, rates),
+          0,
+        );
 
     const usedCategoryIds = new Set(budget.entries.map((e) => e.categoryId));
     const missingCategories = categories.filter(
