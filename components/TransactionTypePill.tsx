@@ -1,8 +1,8 @@
 'use client';
 
-import type { MouseEvent } from 'react';
 import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import type { MouseEvent } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import type { TransactionType } from '@/server/trpc/procedures/schema';

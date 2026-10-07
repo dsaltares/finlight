@@ -23,8 +23,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { TransactionTypes } from '@/server/trpc/procedures/schema';
 import type { RouterInput, RouterOutput } from '@/lib/trpc';
+import { TransactionTypes } from '@/server/trpc/procedures/schema';
 
 type Transaction = RouterOutput['transactions']['list'][number];
 type Account = RouterOutput['accounts']['list']['accounts'][number];

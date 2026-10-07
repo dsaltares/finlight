@@ -2,8 +2,8 @@ import { TRPCError } from '@trpc/server';
 import z from 'zod';
 import { convertAmount, getRates } from '@/server/currency';
 import { db } from '@/server/db';
-import { authedProcedure } from '@/server/trpc/trpc';
 import { getUserDefaultCurrency } from '@/server/trpc/procedures/userSettings';
+import { authedProcedure } from '@/server/trpc/trpc';
 
 const AccountSchema = z.object({
   id: z.number(),

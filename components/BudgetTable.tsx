@@ -5,7 +5,6 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { useMemo } from 'react';
 import CategoryPill from '@/components/CategoryPill';
 import { type ColumnMeta, DataTable } from '@/components/DataTable';
-import useSortFromUrl from '@/hooks/useSortFromUrl';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -15,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { TableCell, TableRow } from '@/components/ui/table';
+import useSortFromUrl from '@/hooks/useSortFromUrl';
 import { formatAmount, formatPercentage } from '@/lib/format';
 import { cn } from '@/lib/utils';
 

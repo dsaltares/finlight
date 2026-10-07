@@ -5,9 +5,8 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { type ColumnMeta, DataTable } from '@/components/DataTable';
-import { Badge } from '@/components/ui/badge';
-import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import ReportTooltipContent from '@/components/reports/ReportTooltipContent';
+import { Badge } from '@/components/ui/badge';
 import {
   type ChartConfig,
   ChartContainer,
@@ -15,6 +14,7 @@ import {
 } from '@/components/ui/chart';
 import { TableCell, TableRow } from '@/components/ui/table';
 import useSortFromUrl from '@/hooks/useSortFromUrl';
+import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import { formatAmount } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
