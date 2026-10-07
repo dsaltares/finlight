@@ -16,7 +16,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import useSortFromUrl from '@/hooks/useSortFromUrl';
 import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import { formatAmount } from '@/lib/format';
-import { cn } from '@/lib/utils';
+import { cn, getSignedAmountColorClass } from '@/lib/utils';
 
 type CategoryBucket = {
   bucket: string;
@@ -73,7 +73,6 @@ export default function CategoryOverTimeReport({
     ]),
   );
 
-  const colorClass = variant === 'positive' ? 'text-green-600' : 'text-red-600';
   const { sorting, onSortingChange } = useSortFromUrl();
 
   const rows = useMemo<CategoryRow[]>(
@@ -118,7 +117,9 @@ export default function CategoryOverTimeReport({
         header: d.bucket,
         meta: { align: 'right' } satisfies ColumnMeta,
         cell: ({ getValue }) => (
-          <span className={colorClass}>
+          <span
+            className={getSignedAmountColorClass(getValue<number>(), variant)}
+          >
             {formatAmount(getValue<number>(), currency)}
           </span>
         ),
@@ -128,13 +129,13 @@ export default function CategoryOverTimeReport({
         header: 'Total',
         meta: { align: 'right' } satisfies ColumnMeta,
         cell: ({ row }) => (
-          <span className={cn(colorClass, 'font-medium')}>
+          <span className={cn(variant, 'font-medium')}>
             {formatAmount(row.original.total, currency)}
           </span>
         ),
       },
     ],
-    [data, colorMap, colorClass, currency, categoryIdMap, filterBase],
+    [data, colorMap, variant, currency, categoryIdMap, filterBase],
   );
 
   const grandTotal = data.reduce((sum, d) => sum + d.total, 0);
@@ -143,11 +144,22 @@ export default function CategoryOverTimeReport({
     <TableRow className="font-medium">
       <TableCell className="sticky left-0 z-10 bg-background">Total</TableCell>
       {data.map((d) => (
-        <TableCell key={d.bucket} className={cn('text-right', colorClass)}>
+        <TableCell
+          key={d.bucket}
+          className={cn(
+            'text-right',
+            getSignedAmountColorClass(d.total, variant),
+          )}
+        >
           {formatAmount(d.total, currency)}
         </TableCell>
       ))}
-      <TableCell className={cn('text-right', colorClass)}>
+      <TableCell
+        className={cn(
+          'text-right',
+          getSignedAmountColorClass(grandTotal, variant),
+        )}
+      >
         {formatAmount(grandTotal, currency)}
       </TableCell>
     </TableRow>
@@ -159,7 +171,7 @@ export default function CategoryOverTimeReport({
         config={config}
         className={compact ? 'h-48 w-full overflow-visible' : 'h-96 w-full'}
       >
-        <BarChart data={data}>
+        <BarChart data={data} stackOffset="sign">
           <CartesianGrid strokeDasharray="3 3" />
           {!compact && <XAxis dataKey="bucket" />}
           {!compact && <YAxis />}

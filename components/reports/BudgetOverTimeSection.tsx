@@ -23,7 +23,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import useSortFromUrl from '@/hooks/useSortFromUrl';
 import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 import { formatAmount } from '@/lib/format';
-import { cn } from '@/lib/utils';
+import { cn, getSignedAmountColorClass } from '@/lib/utils';
 
 type BudgetBucket = {
   bucket: string;
@@ -149,9 +149,7 @@ export default function BudgetOverTimeSection({
         meta: { align: 'right' } satisfies ColumnMeta,
         cell: ({ getValue }) => (
           <span
-            className={
-              variant === 'positive' ? 'text-green-600' : 'text-red-600'
-            }
+            className={getSignedAmountColorClass(getValue<number>(), variant)}
           >
             {formatAmount(getValue<number>(), currency)}
           </span>
@@ -164,7 +162,7 @@ export default function BudgetOverTimeSection({
         cell: ({ row }) => (
           <span
             className={cn(
-              variant === 'positive' ? 'text-green-600' : 'text-red-600',
+              getSignedAmountColorClass(row.original.total, variant),
               'font-medium',
             )}
           >
@@ -255,7 +253,7 @@ export default function BudgetOverTimeSection({
         config={config}
         className={cn('relative z-30 w-full', compact ? 'h-48' : 'h-96')}
       >
-        <ComposedChart data={data}>
+        <ComposedChart data={data} stackOffset="sign">
           <CartesianGrid strokeDasharray="3 3" />
           {!compact && <XAxis dataKey="bucket" />}
           {!compact && <YAxis />}
