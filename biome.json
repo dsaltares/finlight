@@ -10,13 +10,14 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
-      "!**/node_modules/**",
-      "!**/.next/**",
-      "!**/dist/**",
-      "!**/build/**",
-      "!**/components/ui/**",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/dist",
+      "!**/build",
+      "!**/components/ui",
       "!**/hooks/use-mobile.ts",
       "!**/server/kysely.ts",
+      "!types",
       "!**/*.js"
     ]
   },

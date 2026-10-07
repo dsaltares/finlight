@@ -1,6 +1,6 @@
 export default function GoogleIcon() {
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
+    // biome-ignore lint/a11y/noSvgWithoutTitle: decorative icon next to a labelled button
     <svg
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"

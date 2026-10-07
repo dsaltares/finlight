@@ -1,7 +1,7 @@
 'use client';
 
-import type { MouseEvent } from 'react';
 import Link from 'next/link';
+import type { MouseEvent } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { serializeTransactionFilters } from '@/hooks/useTransactionFilters';
 

@@ -93,7 +93,7 @@ export default function CreateUpdateAccountDialog({
         ? `${account.csvImportPresetId}`
         : '',
     });
-  }, [account, open, reset]);
+  }, [account, open, reset, defaultCurrency]);
 
   const onSubmit: SubmitHandler<AccountFormValues> = async (values) => {
     const name = values.name.trim();
