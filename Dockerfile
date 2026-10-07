@@ -3,8 +3,8 @@ WORKDIR /app
 
 RUN apk add --no-cache python3 make g++
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY .yarnrc.yml package.json yarn.lock ./
+RUN corepack enable && yarn install --immutable
 
 # -----------------------------------------------------------
 FROM node:24-alpine AS builder
@@ -13,7 +13,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN yarn build
+RUN corepack enable && yarn build
 
 # -----------------------------------------------------------
 FROM node:24-alpine AS runner
