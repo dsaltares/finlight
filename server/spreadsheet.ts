@@ -30,9 +30,8 @@ function detectFormat(buffer: Buffer): SpreadsheetFormat {
     return 'xls';
   }
 
-  const head = buffer
-    .subarray(0, 256)
-    .toString('utf-8')
+  const head = decodeHtmlBuffer(buffer.subarray(0, 512))
+    .replace(/^\uFEFF/, '')
     .trimStart()
     .toLowerCase();
   if (
@@ -46,6 +45,26 @@ function detectFormat(buffer: Buffer): SpreadsheetFormat {
   return 'unknown';
 }
 
+function detectBomEncoding(buffer: Buffer): string | null {
+  if (buffer[0] === 0xff && buffer[1] === 0xfe) return 'utf-16le';
+  if (buffer[0] === 0xfe && buffer[1] === 0xff) return 'utf-16be';
+  if (buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf) {
+    return 'utf-8';
+  }
+  return null;
+}
+
+function decodeHtmlBuffer(buffer: Buffer): string {
+  const bomEncoding = detectBomEncoding(buffer);
+  if (bomEncoding) {
+    return new TextDecoder(bomEncoding).decode(buffer);
+  }
+  const charset = detectCharset(buffer);
+  return charset
+    ? new TextDecoder(charset).decode(buffer)
+    : decodeTextBuffer(buffer);
+}
+
 function detectCharset(buffer: Buffer): string | null {
   const head = buffer.subarray(0, 1024).toString('ascii').toLowerCase();
   const match = head.match(/charset[= ]*([a-z0-9_-]+)/);
@@ -53,11 +72,7 @@ function detectCharset(buffer: Buffer): string | null {
 }
 
 function parseHtmlTable(buffer: Buffer): string[][] {
-  const charset = detectCharset(buffer);
-  const html = charset
-    ? new TextDecoder(charset).decode(buffer)
-    : decodeTextBuffer(buffer);
-  const $ = cheerio.load(html);
+  const $ = cheerio.load(decodeHtmlBuffer(buffer));
   const rows: string[][] = [];
 
   $('table tr').each((_, tr) => {
@@ -65,7 +80,8 @@ function parseHtmlTable(buffer: Buffer): string[][] {
     $(tr)
       .find('td')
       .each((_, td) => {
-        cells.push($(td).text().trim());
+        const text = $(td).text().trim();
+        cells.push(text || ($(td).attr('x:str') ?? '').trim());
       });
     rows.push(cells);
   });
