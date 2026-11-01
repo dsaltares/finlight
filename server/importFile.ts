@@ -218,7 +218,13 @@ function mapRecordsToTransactions({
   const errors: ImportParseError[] = [];
   const transactions: ParsedTransaction[] = [];
 
-  for (let i = 0; i < records.length; i++) {
+  const lastFullRecordIndex = records.findLastIndex(
+    (record) => record.length === expectedColumns,
+  );
+  const recordsEnd =
+    lastFullRecordIndex >= 0 ? lastFullRecordIndex + 1 : records.length;
+
+  for (let i = 0; i < recordsEnd; i++) {
     const record = records[i];
     const row = i + 1 + preset.rowsToSkipStart;
 
